@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NetWebScript</RootNamespace>
+    <AssemblyName>NetWebScript</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="JsClr\AstBuilder\AstBuilderException.cs" />
+    <Compile Include="JsClr\AstBuilder\AstFilter\AstFilters.cs" />
+    <Compile Include="JsClr\AstBuilder\AstFilter\IAstFilter.cs" />
+    <Compile Include="JsClr\AstBuilder\AstFilter\LastReturn.cs" />
+    <Compile Include="JsClr\AstBuilder\AstFilter\LiteralsTypeFix.cs" />
+    <Compile Include="JsClr\AstBuilder\AstFilter\LogicOperations.cs" />
+    <Compile Include="JsClr\AstBuilder\AstFilter\NullTest.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowGraph\CatchHandlerData.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowGraph\ProtectedRegionData.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\DoWhile.cs" />
+    <Compile Include="JsClr\Ast\ArrayCreationExpression.cs" />
+    <Compile Include="JsClr\Ast\ArrayIndexerExpression.cs" />
+    <Compile Include="JsClr\Ast\AssignableExpression.cs" />
+    <Compile Include="JsClr\Ast\AssignExpression.cs" />
+    <Compile Include="JsClr\Ast\BinaryExpression.cs" />
+    <Compile Include="JsClr\Ast\BinaryOperator.cs" />
+    <Compile Include="JsClr\Ast\ArgumentReferenceExpression.cs" />
+    <Compile Include="JsClr\Ast\BoxExpression.cs" />
+    <Compile Include="JsClr\Ast\BreakStatement.cs" />
+    <Compile Include="JsClr\Ast\Case.cs" />
+    <Compile Include="JsClr\Ast\CastExpression.cs" />
+    <Compile Include="JsClr\Ast\Catch.cs" />
+    <Compile Include="JsClr\Ast\ConditionExpression.cs" />
+    <Compile Include="JsClr\Ast\ContinueStatement.cs" />
+    <Compile Include="JsClr\Ast\UnboxExpression.cs" />
+    <Compile Include="JsClr\Ast\SafeCastExpression.cs" />
+    <Compile Include="JsClr\Ast\DoWhileStatement.cs" />
+    <Compile Include="JsClr\Ast\CurrentExceptionExpression.cs" />
+    <Compile Include="JsClr\Ast\DebugPointExpression.cs" />
+    <Compile Include="JsClr\Ast\Expression.cs" />
+    <Compile Include="JsClr\Ast\FieldReferenceExpression.cs" />
+    <Compile Include="JsClr\Ast\IfStatement.cs" />
+    <Compile Include="JsClr\Ast\IStatementVisitor.cs" />
+    <Compile Include="JsClr\Ast\LiteralExpression.cs" />
+    <Compile Include="JsClr\Ast\MethodInvocationExpression.cs" />
+    <Compile Include="JsClr\Ast\ObjectCreationExpression.cs" />
+    <Compile Include="JsClr\Ast\ReturnStatement.cs" />
+    <Compile Include="JsClr\Ast\Statement.cs" />
+    <Compile Include="JsClr\Ast\SwitchStatement.cs" />
+    <Compile Include="JsClr\Ast\ThisReferenceExpression.cs" />
+    <Compile Include="JsClr\Ast\ThrowStatement.cs" />
+    <Compile Include="JsClr\Ast\TryCatchStatement.cs" />
+    <Compile Include="JsClr\Ast\UnaryExpression.cs" />
+    <Compile Include="JsClr\Ast\UnaryOperator.cs" />
+    <Compile Include="JsClr\Ast\VariableReferenceExpression.cs" />
+    <Compile Include="JsClr\Ast\WhileStatement.cs" />
+    <Compile Include="JsClr\Compiler\InternalMessage.cs" />
+    <Compile Include="JsClr\Compiler\AstScriptWriter.cs" />
+    <Compile Include="JsClr\Compiler\MessageSeverity.cs" />
+    <Compile Include="JsClr\Compiler\ModuleCompiler.cs" />
+    <Compile Include="JsClr\Compiler\ModuleWriter.cs" />
+    <Compile Include="JsClr\JsBuilder\Pattern\InlineFragment.cs" />
+    <Compile Include="JsClr\Runtime\CoreRuntime.cs" />
+    <Compile Include="JsClr\TypeSystem\IdentifierGenerator.cs" />
+    <Compile Include="JsClr\TypeSystem\Anonymous\AnonymousConstructor.cs" />
+    <Compile Include="JsClr\TypeSystem\Anonymous\AnonymousField.cs" />
+    <Compile Include="JsClr\TypeSystem\Anonymous\AnonymousType.cs" />
+    <Compile Include="JsClr\TypeSystem\Helped\ScriptContructorHelped.cs" />
+    <Compile Include="JsClr\TypeSystem\Helped\ScriptFieldHelped.cs" />
+    <Compile Include="JsClr\TypeSystem\Imported\ImportedMethodAlias.cs" />
+    <Compile Include="JsClr\TypeSystem\Imported\ImportedMethodProperty.cs" />
+    <Compile Include="JsClr\TypeSystem\Imported\ImportedConstructor.cs" />
+    <Compile Include="JsClr\TypeSystem\Imported\ImportedConstructorInvoker.cs" />
+    <Compile Include="JsClr\TypeSystem\Imported\ImportedField.cs" />
+    <Compile Include="JsClr\TypeSystem\Imported\ImportedMethod.cs" />
+    <Compile Include="JsClr\TypeSystem\Imported\ImportedType.cs" />
+    <Compile Include="JsClr\TypeSystem\Inlined\InlinedField.cs" />
+    <Compile Include="JsClr\TypeSystem\Inlined\InlinedMethod.cs" />
+    <Compile Include="JsClr\TypeSystem\Invoker\IValueSerializer.cs" />
+    <Compile Include="JsClr\TypeSystem\Invoker\GlobalsInvoker.cs" />
+    <Compile Include="JsClr\TypeSystem\Invoker\IFieldInvoker.cs" />
+    <Compile Include="JsClr\TypeSystem\Invoker\ITypeBoxing.cs" />
+    <Compile Include="JsClr\TypeSystem\Invoker\IMethodInvoker.cs" />
+    <Compile Include="JsClr\TypeSystem\Invoker\IObjectCreationInvoker.cs" />
+    <Compile Include="JsClr\TypeSystem\Invoker\IRootInvoker.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowGraph\ControlFlowGraph.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowGraph\ControlFlowGraphBuilder.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowGraph\ControlFlowSubGraph.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowGraph\InstructionBlock.cs" />
+    <Compile Include="JsClr\AstBuilder\Cil\InstructionVisitor.cs" />
+    <Compile Include="JsClr\AstBuilder\Cil\LocalVariable.cs" />
+    <Compile Include="JsClr\AstBuilder\Cil\MethodCil.cs" />
+    <Compile Include="JsClr\AstBuilder\Cil\Instruction.cs" />
+    <Compile Include="JsClr\AstBuilder\AstFilter\AstFilterBase.cs" />
+    <Compile Include="JsClr\AstBuilder\ExpressionBuilder.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\Block.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\Break.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\Condition.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\Continue.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\FlowTransform.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\Loop.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\Sequence.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\Switch.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\TryCatch.cs" />
+    <Compile Include="JsClr\AstBuilder\InlineExpressionBuilder.cs" />
+    <Compile Include="JsClr\AstBuilder\MethodAst.cs" />
+    <Compile Include="JsClr\JsBuilder\JsSyntax\JsOperators.cs" />
+    <Compile Include="JsClr\JsBuilder\JsSyntax\JsPrecedence.cs" />
+    <Compile Include="JsClr\JsBuilder\JsSyntax\JsToken.cs" />
+    <Compile Include="JsClr\JsBuilder\JsSyntax\JsTokenWriter.cs" />
+    <Compile Include="JsClr\AstBuilder\PdbInfo\PdbAssembly.cs" />
+    <Compile Include="JsClr\AstBuilder\PdbInfo\PdbCatalog.cs" />
+    <Compile Include="JsClr\AstBuilder\PdbInfo\PdbLocalVariable.cs" />
+    <Compile Include="JsClr\AstBuilder\PdbInfo\PdbMethod.cs" />
+    <Compile Include="JsClr\AstBuilder\PdbInfo\PdbSequencePoint.cs" />
+    <Compile Include="JsClr\TypeSystem\Invoker\StandardInvoker.cs" />
+    <Compile Include="JsClr\TypeSystem\IScriptField.cs" />
+    <Compile Include="JsClr\TypeSystem\IScriptMethod.cs" />
+    <Compile Include="JsClr\TypeSystem\IScriptMethodBase.cs" />
+    <Compile Include="JsClr\TypeSystem\IScriptConstructor.cs" />
+    <Compile Include="JsClr\TypeSystem\IScriptType.cs" />
+    <Compile Include="JsClr\TypeSystem\Helped\ScriptTypeHelped.cs" />
+    <Compile Include="JsClr\TypeSystem\Helped\ScriptMethodHelped.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\BooleanType.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\CharType.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\ArrayType.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\DelegateMethodInvoke.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\DelegateType.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\FunctionType.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\NativeMethod.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\NativeType.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\NumberType.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\ObjectConstructor.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\ObjectType.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\StringType.cs" />
+    <Compile Include="JsClr\TypeSystem\RemotingScriptSystem.cs" />
+    <Compile Include="JsClr\Compiler\RuntimeAstFilter.cs" />
+    <Compile Include="JsClr\TypeSystem\Standard\ScriptConstructor.cs" />
+    <Compile Include="JsClr\TypeSystem\Standard\ScriptEnumType.cs" />
+    <Compile Include="JsClr\TypeSystem\Standard\ScriptField.cs" />
+    <Compile Include="JsClr\TypeSystem\Standard\ScriptInterfaceMapping.cs" />
+    <Compile Include="JsClr\TypeSystem\Standard\ScriptMethod.cs" />
+    <Compile Include="JsClr\TypeSystem\Standard\ScriptMethodBase.cs" />
+    <Compile Include="JsClr\TypeSystem\ScriptSystem.cs" />
+    <Compile Include="JsClr\TypeSystem\Standard\ScriptType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="JsClr\AstBuilder\RuntimeHelpersToolkit.cs" />
+    <Compile Include="JsClr\AstBuilder\StatementBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jint\Jint.csproj">
+      <Project>{DBF3AEF6-9D13-4E03-899B-561BCFDD9920}</Project>
+      <Name>Jint</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NetWebScript.Core\NetWebScript.Core.csproj">
+      <Project>{A65F49C8-A32A-41FA-BBCF-16621FEEA418}</Project>
+      <Name>NetWebScript.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NetWebScript.Metadata\NetWebScript.Metadata.csproj">
+      <Project>{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}</Project>
+      <Name>NetWebScript.Metadata</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Samples.Debugging\Microsoft.Samples.Debugging.csproj">
+      <Project>{588FE57F-4673-4753-B6B9-D1A56A63B277}</Project>
+      <Name>Microsoft.Samples.Debugging</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsClr\Runtime\Debug.Client.xjs" />
+    <EmbeddedResource Include="JsClr\Runtime\Core.xjs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

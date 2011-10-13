@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A65F49C8-A32A-41FA-BBCF-16621FEEA418}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NetWebScript</RootNamespace>
+    <AssemblyName>NetWebScript.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnonymousObjectAttribute.cs" />
+    <Compile Include="Equivalents\NotImplementedException.cs" />
+    <Compile Include="Remoting\PortBase.cs" />
+    <Compile Include="Remoting\RemoteInvoker.cs" />
+    <Compile Include="Remoting\RequestData.cs" />
+    <Compile Include="Remoting\ResponseData.cs" />
+    <Compile Include="Remoting\Serialization\AnonymousSerializer.cs" />
+    <Compile Include="Remoting\Serialization\Converter.cs" />
+    <Compile Include="Remoting\Serialization\EvaluableSerializer.cs" />
+    <Compile Include="Remoting\Serialization\IObjectSerializer.cs" />
+    <Compile Include="Remoting\Serialization\MetadataProvider.cs" />
+    <Compile Include="Remoting\Serialization\ScriptTypeSerializer.cs" />
+    <Compile Include="Remoting\Serialization\SerializerBase.cs" />
+    <Compile Include="Remoting\Serialization\SerializerCache.cs" />
+    <Compile Include="Remoting\Serialization\UnknownObjectSerializer.cs" />
+    <Compile Include="Remoting\Serialization\XmlDeserializer.cs" />
+    <Compile Include="Remoting\Serialization\XmlSerializer.cs" />
+    <Compile Include="Remoting\ServerSideAttribute.cs" />
+    <Compile Include="Runtime\SerializationHelper.cs" />
+    <Compile Include="Script\Global.cs" />
+    <Compile Include="Script\JSRegExp.cs" />
+    <Compile Include="Script\JSString.cs" />
+    <Compile Include="Script\Window.cs" />
+    <Compile Include="Script\Xml\Impl\NXmlAttribute.cs" />
+    <Compile Include="Script\Xml\Impl\NXmlDocument.cs" />
+    <Compile Include="Script\Xml\Impl\NXmlElement.cs" />
+    <Compile Include="Script\Xml\Impl\NXmlNamedNodeMap.cs" />
+    <Compile Include="Script\Xml\Impl\NXmlNodeList.cs" />
+    <Compile Include="Script\Xml\Impl\NXmlTextNode.cs" />
+    <Compile Include="Script\Xml\IXmlAttribute.cs" />
+    <Compile Include="Script\Xml\IXmlDocument.cs" />
+    <Compile Include="Script\Xml\IXmlElement.cs" />
+    <Compile Include="Script\Xml\IXmlNamedNodeMap.cs" />
+    <Compile Include="Script\Xml\IXmlNode.cs" />
+    <Compile Include="Script\Xml\IXmlNodeList.cs" />
+    <Compile Include="Script\Xml\XmlNodeType.cs" />
+    <Compile Include="Script\Xml\IXmlTextNode.cs" />
+    <Compile Include="Script\Xml\XmlToolkit.cs" />
+    <Compile Include="CaseConvention.cs" />
+    <Compile Include="Diagnostics\Debugger.cs" />
+    <Compile Include="Equivalents\Array.cs" />
+    <Compile Include="Equivalents\Collections\Generic\List.cs" />
+    <Compile Include="Equivalents\Collections\Generic\Queue.cs" />
+    <Compile Include="Equivalents\Enum.cs" />
+    <Compile Include="Equivalents\Exception.cs" />
+    <Compile Include="GlobalsAttribute.cs" />
+    <Compile Include="IgnoreNamespaceAttribute.cs" />
+    <Compile Include="ImportedAttribute.cs" />
+    <Compile Include="Script\DOMElement.cs" />
+    <Compile Include="Script\JQuery.cs" />
+    <Compile Include="Script\JQueryAjax.cs" />
+    <Compile Include="Script\XMLHttpRequest.cs" />
+    <Compile Include="IntrinsicPropertyAttribute.cs" />
+    <Compile Include="ForceScriptAvailableAttribute.cs" />
+    <Compile Include="Equivalents\StringHelper.cs" />
+    <Compile Include="PreserveCaseAttribute.cs" />
+    <Compile Include="ScriptAliasAttribute.cs" />
+    <Compile Include="ScriptAvailableAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptEquivalentAttribute.cs" />
+    <Compile Include="ScriptInlineAttribute.cs" />
+    <Compile Include="Script\JSArray.cs" />
+    <Compile Include="Script\Date.cs" />
+    <Compile Include="Script\Error.cs" />
+    <Compile Include="Script\JSFunction.cs" />
+    <Compile Include="Script\JSNumber.cs" />
+    <Compile Include="Runtime\RuntimeHelper.cs" />
+    <Compile Include="Runtime\TypeSystemHelper.cs" />
+    <Compile Include="Script\JSObject.cs" />
+    <Compile Include="Runtime\Unsafe.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetWebScript.Metadata\NetWebScript.Metadata.csproj">
+      <Project>{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}</Project>
+      <Name>NetWebScript.Metadata</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

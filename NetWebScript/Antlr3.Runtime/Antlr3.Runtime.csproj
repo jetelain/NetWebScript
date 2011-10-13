@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Antlr3.Runtime</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Antlr.Runtime</RootNamespace>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <ProjectGuid>{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}</ProjectGuid>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SignAssembly>false</SignAssembly>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\net-2.0\</OutputPath>
+    <BaseAddress>285212672</BaseAddress>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;STRONG_NAME;DOTNET2</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Antlr.Runtime</RootNamespace>
+    <Optimize>true</Optimize>
+    <StartupObject />
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\net-2.0\</OutputPath>
+    <BaseAddress>285212672</BaseAddress>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>STRONG_NAME;DOTNET2</DefineConstants>
+    <DocumentationFile>bin\Release\net-2.0\Antlr3.Runtime.xml</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Antlr.Runtime</RootNamespace>
+    <Optimize>true</Optimize>
+    <StartupObject />
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ANTLRFileStream.cs" />
+    <Compile Include="ANTLRStringStream.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BitSet.cs" />
+    <Compile Include="ICharStream.cs" />
+    <Compile Include="CharStreamState.cs" />
+    <Compile Include="ClassicToken.cs" />
+    <Compile Include="CommonToken.cs" />
+    <Compile Include="DFA.cs" />
+    <Compile Include="EarlyExitException.cs" />
+    <Compile Include="FailedPredicateException.cs" />
+    <Compile Include="IIntStream.cs" />
+    <Compile Include="MismatchedNotSetException.cs" />
+    <Compile Include="MismatchedRangeException.cs" />
+    <Compile Include="MismatchedSetException.cs" />
+    <Compile Include="MismatchedTokenException.cs" />
+    <Compile Include="MismatchedTreeNodeException.cs" />
+    <Compile Include="NoViableAltException.cs" />
+    <Compile Include="Parser.cs" />
+    <Compile Include="ParserRuleReturnScope.cs" />
+    <Compile Include="RecognitionException.cs" />
+    <Compile Include="RuleReturnScope.cs" />
+    <Compile Include="Token.cs" />
+    <Compile Include="ITokenSource.cs" />
+    <Compile Include="MissingTokenException.cs" />
+    <Compile Include="Tree\CommonErrorNode.cs" />
+    <Compile Include="UnwantedTokenException.cs" />
+    <Compile Include="Collections\CollectionUtils.cs" />
+    <Compile Include="Collections\HashList.cs" />
+    <Compile Include="Collections\StackList.cs" />
+    <Compile Include="Tree\BaseTree.cs" />
+    <Compile Include="Tree\BaseTreeAdaptor.cs" />
+    <Compile Include="Tree\CommonTree.cs" />
+    <Compile Include="Tree\CommonTreeAdaptor.cs" />
+    <Compile Include="Tree\CommonTreeNodeStream.cs" />
+    <Compile Include="Tree\ITree.cs" />
+    <Compile Include="Tree\ITreeAdaptor.cs" />
+    <Compile Include="Tree\ITreeNodeStream.cs" />
+    <Compile Include="Tree\ParseTree.cs" />
+    <Compile Include="Tree\TreeParser.cs" />
+    <Compile Include="Tree\TreeRuleReturnScope.cs" />
+    <Compile Include="Debug\DebugEventSocketProxy.cs" />
+    <Compile Include="Debug\DebugParser.cs" />
+    <Compile Include="Debug\DebugTokenStream.cs" />
+    <Compile Include="Debug\IDebugEventListener.cs" />
+    <Compile Include="Debug\DebugTreeAdaptor.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Debug\DebugTreeNodeStream.cs" />
+    <Compile Include="Debug\BlankDebugEventListener.cs" />
+    <Compile Include="Debug\RemoteDebugEventSocketListener.cs" />
+    <Compile Include="Debug\TraceDebugEventListener.cs" />
+    <Compile Include="Debug\DebugEventHub.cs" />
+    <Compile Include="Debug\DebugEventRepeater.cs" />
+    <Compile Include="Debug\DebugTreeParser.cs" />
+    <Compile Include="Debug\ParseTreeBuilder.cs" />
+    <Compile Include="Debug\Profiler.cs" />
+    <Compile Include="Debug\Tracer.cs" />
+    <Compile Include="Misc\Stats.cs" />
+    <Compile Include="Misc\ErrorManager.cs" />
+    <Compile Include="Tree\TreeWizard.cs" />
+    <Compile Include="Tree\TreePatternLexer.cs" />
+    <Compile Include="Tree\RewriteRuleNodeStream.cs" />
+    <Compile Include="Tree\TreePatternParser.cs" />
+    <Compile Include="Tree\RewriteCardinalityException.cs" />
+    <Compile Include="Tree\RewriteEarlyExitException.cs" />
+    <Compile Include="Tree\RewriteEmptyStreamException.cs" />
+    <Compile Include="Tree\RewriteRuleElementStream.cs" />
+    <Compile Include="Tree\RewriteRuleSubtreeStream.cs" />
+    <Compile Include="Tree\RewriteRuleTokenStream.cs" />
+    <Compile Include="Tree\UnBufferedTreeNodeStream.cs" />
+    <Compile Include="ANTLRInputStream.cs" />
+    <Compile Include="ANTLRReaderStream.cs" />
+    <Compile Include="BaseRecognizer.cs" />
+    <Compile Include="CommonTokenStream.cs" />
+    <Compile Include="RecognizerSharedState.cs" />
+    <Compile Include="IToken.cs" />
+    <Compile Include="ITokenStream.cs" />
+    <Compile Include="Lexer.cs" />
+    <Compile Include="TokenRewriteStream.cs" />
+    <Compile Include="Tree\ITreeVisitorAction.cs" />
+    <Compile Include="Tree\TreeVisitor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+    <ProjectGuid>{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}</ProjectGuid>
+    <RootNamespace>Antlr.Runtime</RootNamespace>
+  </PropertyGroup>
+</Project>

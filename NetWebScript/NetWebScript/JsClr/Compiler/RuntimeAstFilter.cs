@@ -1,0 +1,184 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using NetWebScript.JsClr.Ast;
+using NetWebScript.JsClr.AstBuilder;
+using NetWebScript.JsClr.AstBuilder.AstFilter;
+using NetWebScript.JsClr.TypeSystem;
+using NetWebScript.Script;
+
+namespace NetWebScript.JsClr.Compiler
+{
+    /// <summary>
+    /// Transform some CLR features into simple methods calls.
+    /// </summary>
+    internal class RuntimeAstFilter : AstFilterBase
+    {
+        private static readonly MethodInfo CreateDelegate = new Func<object, JSFunction, Delegate>(RuntimeHelper.CreateDelegate).Method;
+        private static readonly MethodInfo As = new Func<object, JSFunction, object>(RuntimeHelper.As).Method;
+        private static readonly MethodInfo Cast = new Func<object, JSFunction, object>(RuntimeHelper.Cast).Method;
+        private static readonly MethodInfo GetTypeFromHandle = new Func<RuntimeTypeHandle, Type>(Type.GetTypeFromHandle).Method;
+        
+        private readonly ScriptSystem system;
+        private readonly List<InternalMessage> errors;
+        private MethodAst current;
+
+        internal RuntimeAstFilter(ScriptSystem system, List<InternalMessage> errors)
+        {
+            this.system = system;
+            this.errors = errors;
+        }
+
+        public override Statement Visit(CastExpression castExpression)
+        {
+            var type = system.GetScriptType(castExpression.Type);
+            if (type == null)
+            {
+                AddError(castExpression, string.Format("Type '{0}' is not script available. You cannot cast to that type.", castExpression.Type.FullName));
+            }
+            else if (!type.HaveCastInformation)
+            {
+                // Allow unverified cast
+                AddWarning(castExpression, string.Format("Cast to type '{0}' cannot be verified at runtime. It will never fail, even if object type mismatch.", castExpression.Type.FullName));
+            }
+            else
+            {
+                return new MethodInvocationExpression(castExpression.IlOffset, false, Cast, null, new List<Expression>() {castExpression.Value, new LiteralExpression(castExpression.Type)}).Accept(this);
+            }
+            return castExpression.Value.Accept(this);
+        }
+
+        public override Statement Visit(SafeCastExpression safeCastExpression)
+        {
+            var type = system.GetScriptType(safeCastExpression.Type);
+            if (type == null)
+            {
+                AddError(safeCastExpression, string.Format("Type '{0}' is not script available. You can not cast to that type.", safeCastExpression.Type.FullName));
+            }
+            else if (!type.HaveCastInformation)
+            {
+                // Safe cast cannot rely on an unverifiable cast
+                AddError(safeCastExpression, string.Format("Cast to type '{0}' cannot be verified at runtime. Operation will always fail.", safeCastExpression.Type.FullName));
+            }
+            // SafeCast is implemented by RuntimeHelper.As
+            return new MethodInvocationExpression(safeCastExpression.IlOffset, false, As, null, new List<Expression>() { safeCastExpression.Value, new LiteralExpression(safeCastExpression.Type) }).Accept(this);
+        }
+
+        public override Statement Visit(FieldReferenceExpression fieldReferenceExpression)
+        {
+            var field = system.GetScriptField(fieldReferenceExpression.Field);
+            if (field == null)
+            {
+                AddError(fieldReferenceExpression, string.Format("Field '{0}' of '{1}' is not script available.", fieldReferenceExpression.Field.ToString(), fieldReferenceExpression.Field.DeclaringType.FullName));
+            }
+            return base.Visit(fieldReferenceExpression);
+        }
+
+        public override Statement Visit(LiteralExpression literalExpression)
+        {
+            if (literalExpression.Value != null)
+            {
+                var type = system.GetScriptType(literalExpression.GetExpressionType());
+                if (type == null || type.Serializer == null)
+                {
+                    AddError(literalExpression, string.Format("Type '{0}' is not script available or cannot be serialized in script. You can not use literal value of that type.", literalExpression.GetExpressionType().FullName));
+                }
+                Type literalType = literalExpression.Value as Type;
+                if (literalType != null)
+                {
+                    type = system.GetScriptType(literalType);
+                    if (type == null)
+                    {
+                        AddError(literalExpression, string.Format("Type '{0}' is not script available. You can not make references to that type.", literalType.FullName));
+                    }
+                }
+            }
+            return base.Visit(literalExpression);
+        }
+
+        public override Statement Visit(MethodInvocationExpression methodInvocationExpression)
+        {
+            if (methodInvocationExpression.Method == GetTypeFromHandle)
+            {
+                // Type and RuntimeTypeHandle are "the same" in script
+                // So the method GetTypeFromHandle is the identity function
+                return methodInvocationExpression.Arguments[0].Accept(this);
+            }
+
+            var method = system.GetScriptMethodBase(methodInvocationExpression.Method);
+            if (method == null)
+            {
+                AddError(methodInvocationExpression, string.Format("Method '{0}' of '{1}' is not script available", methodInvocationExpression.Method.ToString(), methodInvocationExpression.Method.DeclaringType.FullName));
+            }
+            return base.Visit(methodInvocationExpression);
+        }
+
+        public override Statement Visit(ObjectCreationExpression objectCreationExpression)
+        {
+            if (typeof(Delegate).IsAssignableFrom(objectCreationExpression.Constructor.DeclaringType))
+            {
+                // Delegates constructor is implemented by RuntimeHelper.CreateDelegate
+                // Test if delegate is created with a literal expression
+                if (IsLiteralNull(objectCreationExpression.Arguments[0]))
+                {
+                    return objectCreationExpression.Arguments[1].Accept(this);
+                }
+                // Otherwise invoke the RuntimeHelper
+                return new MethodInvocationExpression(objectCreationExpression.IlOffset, false, CreateDelegate, null, objectCreationExpression.Arguments).Accept(this);
+            }
+            var ctor = system.GetScriptConstructor(objectCreationExpression.Constructor);
+            if (ctor == null)
+            {
+                AddError(objectCreationExpression, string.Format("Constructor '{0}' of '{1}' is not script available", objectCreationExpression.Constructor.ToString(), objectCreationExpression.Constructor.DeclaringType.FullName));
+            }
+            return base.Visit(objectCreationExpression);
+        }
+
+        public override Statement Visit(BoxExpression boxExpression)
+        {
+            // Box is delegated to type
+            var type = system.GetScriptType(boxExpression.Type);
+            if (type == null || type.Boxing == null)
+            {
+                AddError(boxExpression, string.Format("Type '{0}' is not script available. You can not call any method on it, or either cast it to object.", boxExpression.Type.FullName));
+            }
+            return type.Boxing.BoxValue(type, boxExpression).Accept(this);
+        }
+
+        public override Statement Visit(UnboxExpression unboxExpression)
+        {
+            // Unbox is delegated to type
+            var type = system.GetScriptType(unboxExpression.Type);
+            if (type == null || type.Boxing == null)
+            {
+                AddError(unboxExpression, string.Format("Type '{0}' is not script available. You can not call any method on it, or either cast it to object.", unboxExpression.Type.FullName));
+            }
+            return type.Boxing.UnboxValue(type, unboxExpression).Accept(this);
+        }
+
+        public override void Visit(MethodAst method)
+        {
+            current = method;
+            base.Visit(method);
+        }
+
+
+
+        private static bool IsLiteralNull(Expression expr)
+        {
+            LiteralExpression targetliteral = expr as LiteralExpression;
+            return targetliteral != null && targetliteral.Value == null;
+        }
+
+        private void AddError(Expression statement, string message)
+        {
+            errors.Add(new InternalMessage() { Severity = MessageSeverity.Error, Method = current.Method, Message = message, IlOffset = statement.IlOffset });
+        }
+
+        private void AddWarning(Expression statement, string message)
+        {
+            errors.Add(new InternalMessage() { Severity = MessageSeverity.Warning, Method = current.Method, Message = message, IlOffset = statement.IlOffset });
+        }
+
+    }
+}

@@ -1,0 +1,96 @@
+﻿var NWS = {};
+
+var ArgumentException = function(message) { this.message = message; }
+
+// Object.GetHashCode()
+//Object.prototype.$ghc = (function () { var c = 0; return function () { if (this.$hc!==undefined) return this.$hc; return this.$hc=++c; }; });
+//Object.prototype.$eq = function (o) { return o == this; };
+
+var NS = {};
+
+NS.CT = function (n, b, i) {
+    var t = function () { }
+    t.$n = n;
+    if (b) {
+        t.$b = b;
+        t.prototype = new b;
+        t.prototype.constructor = t;
+    }
+    if (i) {
+        t.prototype.$itfs = i;
+    }
+    return t;
+}
+
+NS.CE = function (n, $v) {
+    var t = NS.CT(n, NS.Enum);
+    t.Box = function (v) { return NS.Enum.Box(t, v); }
+    t.$v = $v;
+    for (var i = 0; i < $v.length; ++i) {
+        var e = $v[i];
+        var o = new t();
+        o.v = e.v;
+        o.n = e.n;
+        t[e.n] = o;
+    }
+    return t;
+}
+
+NS.Enum = function () { }
+NS.Enum.Box = function (t, v) {
+    for (var i=0;i<t.$v.length;++i) {
+        if (t.$v[i].v == v) {
+            return t.$v[i].n;
+        }
+    }
+}
+
+NS.Enum.prototype.toString = function () {
+    return this.n;
+}
+
+
+var $dbgP = function(id, data) { return true; };
+var $dbgE = function(name, data) { };
+var $dbgL = function(v) { return v; };
+
+NWS.CreateDocument = function(name) {
+    if (window.ActiveXObject) {
+        var doc = new ActiveXObject("Microsoft.XMLDOM");
+        var root = doc.createElement(name);
+        doc.appendChild(root);
+        return doc;
+    }
+    else {
+        return document.implementation.createDocument('', name, null);
+    }
+}
+
+NWS.ToXml = function(doc) {
+    if (typeof XMLSerializer !== 'undefined') {
+        return (new XMLSerializer()).serializeToString(doc);
+    }
+    return doc.xml;
+}
+
+NWS.$Filename = function(filename) {
+    var result = null;
+    $j("script").each(function() {
+        var file = $j(this).attr('src');
+		if ( file && file.length >= filename.length && file.substr(file.length-filename.length) == filename)
+		{
+			result = file;
+		}
+    });
+    return result;
+}
+
+NWS.$Modules = [];
+
+NWS.$RegMod = function(name, version, filename) {
+    var module = { Name: name, Version: version, Filename: NWS.$Filename(filename) };
+    NWS.$Modules.push(module);
+    return module;
+}
+
+
