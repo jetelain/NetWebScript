@@ -294,10 +294,7 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
 
         public abstract void OnConv_R_Un(Instruction instruction);
 
-        public virtual void OnUnbox(Instruction instruction)
-        {
-            Unsupported(instruction);
-        }
+        public abstract void OnUnbox(Instruction instruction);
 
         public abstract void OnThrow(Instruction instruction);
 
@@ -310,20 +307,14 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
 
         public abstract void OnStfld(Instruction instruction);
 
-        public virtual void OnLdsfld(Instruction instruction)
-        {
-            Unsupported(instruction);
-        }
+        public abstract void OnLdsfld(Instruction instruction);
 
         public virtual void OnLdsflda(Instruction instruction)
         {
             Unsupported(instruction);
         }
 
-        public virtual void OnStsfld(Instruction instruction)
-        {
-            Unsupported(instruction);
-        }
+        public abstract void OnStsfld(Instruction instruction);
 
         public virtual void OnStobj(Instruction instruction)
         {
