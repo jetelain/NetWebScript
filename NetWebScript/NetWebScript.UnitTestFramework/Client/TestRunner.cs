@@ -3,28 +3,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NetWebScript.Script;
+using System.Reflection;
 
 namespace NetWebScript.UnitTestFramework.Client
 {
-    class TestMethodInfo
+    [AnonymousObject]
+    public class TestClassInfo
     {
-        internal string name;
-        internal JSFunction function;
+        public string name;
+        public ConstructorInfo ctor;
+        public TestMethodInfo[] methods;
     }
 
-    class TestMethodResult
+    [AnonymousObject]
+    public class TestMethodInfo
     {
-        internal string name;
-        internal string message;
-        internal bool isSuccess;
-        internal double duration;
+        public string name;
+        public MethodInfo method;
+    }
+
+    [AnonymousObject]
+    public class TestClassResult
+    {
+        public string name;
+        public TestMethodResult[] methods;
+    }
+
+    [AnonymousObject]
+    public class TestMethodResult
+    {
+        public string name;
+        public string message;
+        public bool isSuccess;
+        public double duration;
     }
 
     [ScriptAvailable]
-    class TestRunner
+    public class TestRunner
     {
+        public TestClassResult Execute(TestClassInfo test)
+        {
+            TestClassResult result = new TestClassResult();
+            result.name = test.name;
+            object target = test.ctor.Invoke(new object[0]);
+            result.methods = new TestMethodResult[test.methods.Length];
+            for(int i =0; i<test.methods.Length;++i)
+            {
+                result.methods[i] = Execute(target, test.methods[i]);
+            }
+            return result;
+        }
 
-        public TestMethodResult Execute(object target, TestMethodInfo test)
+        private TestMethodResult Execute(object target, TestMethodInfo test)
         {
             TestMethodResult result = new TestMethodResult();
             result.name = test.name;
@@ -33,7 +63,7 @@ namespace NetWebScript.UnitTestFramework.Client
             Date start = new Date();
             try
             {
-                test.function.Apply(target);
+                test.method.Invoke(target, new object[0]);
             }
             catch (Exception e)
             {
