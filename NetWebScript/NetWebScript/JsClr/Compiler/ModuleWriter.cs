@@ -15,15 +15,15 @@ namespace NetWebScript.JsClr.Compiler
         private readonly TextWriter writer;
         private readonly ScriptSystem system;
         private readonly bool debuggable;
-        private readonly bool comment;
+        private readonly bool pretty;
         private readonly IScriptMethodBase createTypeMethod;
 
-        public ModuleWriter(TextWriter writer, ScriptSystem system, bool debuggable, bool comment)
+        public ModuleWriter(TextWriter writer, ScriptSystem system, bool debuggable, bool pretty)
         {
             this.writer = writer;
             this.system = system;
             this.debuggable = debuggable;
-            this.comment = comment;
+            this.pretty = pretty;
             createTypeMethod = system.GetScriptMethod(new Func<string, Type, Type[], Type>(TypeSystemHelper.CreateType).Method);
         }
 
@@ -64,7 +64,7 @@ namespace NetWebScript.JsClr.Compiler
         {
             var classMeta = CreateMetadata(moduleMeta, type);
 
-            if (comment)
+            if (pretty)
             {
                 writer.WriteLine();
                 writer.WriteLine();
@@ -124,7 +124,7 @@ namespace NetWebScript.JsClr.Compiler
 
         private void WriteStaticMethod(ScriptType stype, TypeMetadata classMeta, ScriptMethod method)
         {
-            if (comment)
+            if (pretty)
             {
                 writer.WriteLine();
                 writer.WriteLine("// Static {0}", method.Method.ToString());
@@ -141,7 +141,7 @@ namespace NetWebScript.JsClr.Compiler
         }
         private void WriteInstanceMethodBase(ScriptType stype, TypeMetadata classMeta, ScriptMethodBase method)
         {
-            if (comment)
+            if (pretty)
             {
                 writer.WriteLine();
                 writer.WriteLine("// Instance {0}", method.Method.ToString());
@@ -187,7 +187,7 @@ namespace NetWebScript.JsClr.Compiler
                 return;
             }
 
-            var astWriter = new AstScriptWriter(system, method.Method, debuggable ? meta : null);
+            var astWriter = new AstScriptWriter(system, method.Method, debuggable ? meta : null, pretty);
 
             writer.Write("function(");
             ParameterInfo[] parameters = method.Method.GetParameters();
@@ -215,7 +215,7 @@ namespace NetWebScript.JsClr.Compiler
         {
             //var classMeta = new TypeMetadata(moduleMeta, type);
 
-            if (comment)
+            if (pretty)
             {
                 writer.WriteLine();
                 writer.WriteLine();
@@ -225,22 +225,22 @@ namespace NetWebScript.JsClr.Compiler
             var createEnumType = system.GetScriptMethod(new Func<string, NetWebScript.Equivalents.Enum.EnumData[], Type>(NetWebScript.Equivalents.Enum.CreateEnumType).Method);
 
 
-            writer.Write("{2}={0}.{1}('{2}',{{", createEnumType.Owner.TypeId, createEnumType.ImplId, type.TypeId);
+            writer.Write("{2}={0}.{1}('{2}',[", createEnumType.Owner.TypeId, createEnumType.ImplId, type.TypeId);
             bool first = true;
             foreach (var field in type.Type.GetFields(BindingFlags.Public | BindingFlags.Static))
             {
                 if (first)
                 {
+                    first = false;
                     writer.WriteLine();
                 }
                 else
                 {
-                    first = false;
                     writer.WriteLine(",");
                 }
                 writer.Write("{{v:{0},n:'{1}'}}", Convert.ToInt32(field.GetValue(null)), field.Name);
             }
-            writer.WriteLine("});");
+            writer.WriteLine("]);");
         }
     }
 }

@@ -5,10 +5,12 @@ using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Globalization;
+using NetWebScript.Metadata;
+using NetWebScript.Script;
 
 namespace NetWebScript.Remoting.Serialization
 {
-    internal class EvaluableSerializer
+    public class EvaluableSerializer
     {
         private readonly SerializerCache cache;
 
@@ -59,6 +61,40 @@ namespace NetWebScript.Remoting.Serialization
                 return;
             }
 
+            var valueType = value as Type;
+            if (valueType != null)
+            {
+                var key = CRefToolkit.GetCRef(valueType);
+                var scriptType = cache.ScriptModules.SelectMany(m => m.Types.Where(t => t.CRef == key)).FirstOrDefault();
+                writer.Write(scriptType.Name);
+                return;
+            }
+
+            var func = value as JSFunction;
+            if (func != null)
+            {
+                SerializeMethodReference(writer, func.Method);
+                return;
+            }
+
+            var deleg = value as Delegate;
+            if (deleg != null)
+            {
+                if (deleg.Target != null)
+                {
+                    SerializeMethodReference(writer, new Func<object, JSFunction, Delegate>(RuntimeHelper.CreateDelegate).Method);
+                    writer.Write('(');
+                    Serialize(writer, deleg.Target);
+                    writer.Write(',');
+                    SerializeMethodReference(writer, deleg.Method);
+                    writer.Write(')');
+                }
+                else
+                {
+                    SerializeMethodReference(writer, deleg.Method);
+                }
+                return;
+            }
 
             var serializer = cache.GetSerializer(type);
             serializer.WriteScriptStart(writer);
@@ -70,7 +106,7 @@ namespace NetWebScript.Remoting.Serialization
             {
                 if (first)
                 {
-                    first = true;
+                    first = false;
                 }
                 else
                 {
@@ -82,6 +118,22 @@ namespace NetWebScript.Remoting.Serialization
             }
             writer.Write('}');
             serializer.WriteScriptEnd(writer);
+        }
+
+        private void SerializeMethodReference(TextWriter writer, System.Reflection.MethodBase method)
+        {
+            var key = CRefToolkit.GetCRef(method.DeclaringType);
+            var scriptType = cache.ScriptModules.SelectMany(m => m.Types.Where(t => t.CRef == key)).FirstOrDefault();
+
+            key = CRefToolkit.GetCRef(method);
+            var scriptMethod = scriptType.Methods.FirstOrDefault(m => m.CRef == key);
+            writer.Write(scriptType.Name);
+            writer.Write('.');
+            if (!method.IsStatic)
+            {
+                writer.Write("prototype.");
+            }
+            writer.Write(scriptMethod.Name);
         }
 
     }

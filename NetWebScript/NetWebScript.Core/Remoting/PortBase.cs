@@ -14,7 +14,7 @@ namespace NetWebScript.Remoting
 
         private ResponseData Invoke(RequestData request)
         {
-            var scriptType = cache.GetTypeMetadata(request.Type);
+            var scriptType = cache.GetTypeMetadataByScriptName(request.Type);
             var scriptMethod = scriptType.Methods.First(m => m.Name == request.Method);
             var method = (MethodInfo)CRefToolkit.Resolve(scriptMethod.CRef);
             var response = new ResponseData();

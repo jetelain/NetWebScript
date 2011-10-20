@@ -42,15 +42,10 @@
   <ItemGroup>
     <Compile Include="Client\Channel.cs" />
     <Compile Include="Client\TestRunner.cs" />
+    <Compile Include="Client\TestRunnerPage.cs" />
     <Compile Include="Compiler\UnitTestCompiler.cs" />
     <Compile Include="Equivalent\Assert.cs" />
-    <Compile Include="UnitTest1.cs" />
-    <Compile Include="UnitTestGenerator.cs" />
     <Compile Include="UnitTestRemoteRunner.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="UnitTest.htm" />
-    <Content Include="UnitTest.js" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -62,6 +57,10 @@
     <ProjectReference Include="..\NetWebScript.Core\NetWebScript.Core.csproj">
       <Project>{A65F49C8-A32A-41FA-BBCF-16621FEEA418}</Project>
       <Name>NetWebScript.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NetWebScript.Metadata\NetWebScript.Metadata.csproj">
+      <Project>{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}</Project>
+      <Name>NetWebScript.Metadata</Name>
     </ProjectReference>
     <ProjectReference Include="..\NetWebScript\NetWebScript.csproj">
       <Project>{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}</Project>

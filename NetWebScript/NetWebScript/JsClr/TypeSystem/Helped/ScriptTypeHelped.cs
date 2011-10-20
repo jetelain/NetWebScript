@@ -24,6 +24,7 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
             {
                 throw new Exception(string.Format("Type '{0}' asked by '{1}' must be script available.", type.FullName, helperType.FullName));
             }
+            Serializer = helper.Serializer;
         }
 
         #region IScriptType Members
@@ -87,6 +88,11 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
         public Type Type
         {
             get { return type; }
+        }
+        
+        public IScriptType Equivalent
+        {
+            get { return helper; }
         }
 
         public virtual string TypeId
@@ -209,7 +215,8 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
 
         public virtual IValueSerializer Serializer
         {
-            get { return helper.Serializer; }
+            get;
+            set;
         }
     }
 }

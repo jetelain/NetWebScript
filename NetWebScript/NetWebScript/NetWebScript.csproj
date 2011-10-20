@@ -139,6 +139,7 @@
     <Compile Include="JsClr\TypeSystem\Imported\ImportedField.cs" />
     <Compile Include="JsClr\TypeSystem\Imported\ImportedMethod.cs" />
     <Compile Include="JsClr\TypeSystem\Imported\ImportedType.cs" />
+    <Compile Include="JsClr\TypeSystem\Imported\OperatorInvoker.cs" />
     <Compile Include="JsClr\TypeSystem\Inlined\InlinedField.cs" />
     <Compile Include="JsClr\TypeSystem\Inlined\InlinedMethod.cs" />
     <Compile Include="JsClr\TypeSystem\Invoker\IValueSerializer.cs" />

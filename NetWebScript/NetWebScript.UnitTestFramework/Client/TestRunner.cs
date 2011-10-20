@@ -41,6 +41,16 @@ namespace NetWebScript.UnitTestFramework.Client
     [ScriptAvailable]
     public class TestRunner
     {
+        public TestClassResult[] Execute(TestClassInfo[] tests)
+        {
+            TestClassResult[] results = new TestClassResult[tests.Length];
+            for (int i = 0; i < tests.Length; ++i)
+            {
+                results[i] = Execute(tests[i]);
+            }
+            return results;
+        }
+
         public TestClassResult Execute(TestClassInfo test)
         {
             TestClassResult result = new TestClassResult();

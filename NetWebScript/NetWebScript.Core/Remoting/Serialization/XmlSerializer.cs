@@ -65,7 +65,7 @@ namespace NetWebScript.Remoting.Serialization
 
         public static object CopyTo(object target, object source)
         {
-            var members = Unsafe.GetFields(source);
+            var members = Unsafe.GetAll(source);
             for (int i = 0; i < members.Length; ++i)
             {
                 var member = members[i];

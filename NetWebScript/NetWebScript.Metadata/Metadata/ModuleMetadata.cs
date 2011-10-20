@@ -14,6 +14,7 @@ namespace NetWebScript.Metadata
             Assemblies = new List<string>();
             Types = new List<TypeMetadata>();
             Documents = new List<DocumentReference>();
+            Equivalents = new List<EquivalentMetadata>();
         }
 
         [XmlAttribute]
@@ -27,6 +28,9 @@ namespace NetWebScript.Metadata
 
         [XmlElement(ElementName = "Document")]
         public List<DocumentReference> Documents { get; set; }
+
+        [XmlElement(ElementName = "Equivalent")]
+        public List<EquivalentMetadata> Equivalents { get; set; }
 
         public DocumentReference GetDocumentReference(String path)
         {

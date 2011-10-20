@@ -67,12 +67,16 @@
   <ItemGroup>
     <Compile Include="AnonymousObjectAttribute.cs" />
     <Compile Include="Equivalents\NotImplementedException.cs" />
+    <Compile Include="Equivalents\Reflection\ConstructorInfo.cs" />
+    <Compile Include="Equivalents\Reflection\MethodInfo.cs" />
+    <Compile Include="Equivalents\Reflection\MethodBase.cs" />
     <Compile Include="Remoting\PortBase.cs" />
     <Compile Include="Remoting\RemoteInvoker.cs" />
     <Compile Include="Remoting\RequestData.cs" />
     <Compile Include="Remoting\ResponseData.cs" />
     <Compile Include="Remoting\Serialization\AnonymousSerializer.cs" />
     <Compile Include="Remoting\Serialization\Converter.cs" />
+    <Compile Include="Remoting\Serialization\EquivalentSerializer.cs" />
     <Compile Include="Remoting\Serialization\EvaluableSerializer.cs" />
     <Compile Include="Remoting\Serialization\IObjectSerializer.cs" />
     <Compile Include="Remoting\Serialization\MetadataProvider.cs" />

@@ -12,12 +12,30 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
         private readonly MethodInfo method;
         private readonly string name;
         private readonly ImportedType owner;
+        private readonly bool isOperator;
 
         public ImportedMethod(ImportedType owner, MethodInfo method)
         {
-            this.owner = owner;
-            this.method = method;
-            this.name = owner.Name(method);
+            if (method.IsStatic && method.IsSpecialName && method.Name.StartsWith("op_"))
+            {
+                this.owner = owner;
+                this.method = method;
+                isOperator = true;
+                switch (method.Name)
+                {
+                    case "op_Subtraction":
+                        name = "-";
+                        break;
+                    default:
+                        throw new Exception(method.Name);
+                }
+            }
+            else
+            {
+                this.owner = owner;
+                this.method = method;
+                this.name = owner.Name(method);
+            }
         }
 
         public string SlodId
@@ -43,7 +61,14 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
         public IMethodInvoker Invoker
         {
             // Methods works in a standard way
-            get { return StandardInvoker.Instance; }
+            get 
+            {
+                if (isOperator)
+                {
+                    return OperatorInvoker.Instance;
+                }
+                return StandardInvoker.Instance;
+            }
         }
 
     }

@@ -15,11 +15,8 @@ namespace NetWebScript.Test.Material
         public void Root()
         {
             var compiler = new UnitTestCompiler();
-            compiler.Compile(typeof(RootTest).Assembly);
-            StringWriter writer = new StringWriter();
-            compiler.Write(writer);
-            var result = writer.ToString();
-
+            compiler.AddTestsFrom(typeof(RootTest).Assembly);
+            compiler.Write(@"C:\Users\Julien\Test","Tests");
         }
     }
 }

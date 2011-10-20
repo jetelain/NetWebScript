@@ -119,24 +119,30 @@ namespace NetWebScript.JsClr.JsBuilder.JsSyntax
             return new JsToken(JsPrecedence.FullStatement, ToString());
         }
 
-        internal void WriteInBlock(IEnumerable<JsToken> statements)
+        internal void WriteInBlock(bool pretty, IEnumerable<JsToken> statements)
         {
             WriteLine('{');
-            WriteIndented(statements);
+            WriteIndented(pretty, statements);
             Write('}');
         }
 
-        internal void WriteIndented(IEnumerable<JsToken> statements)
+        internal void WriteIndented(bool pretty, IEnumerable<JsToken> statements)
         {
             foreach (JsToken token in statements)
             {
                 if (token != null)
                 {
-                    //Write('\t');
+                    if ( pretty ) Write('\t');
                     if (token.Precedence == JsPrecedence.FullStatement)
                     {
-                        WriteLine(token.Text);
-                        //WriteLine(token.Text.Replace("\n","\n\t"));
+                        if (pretty)
+                        {
+                            WriteLine(token.Text.Replace("\n", "\n\t"));
+                        }
+                        else
+                        {
+                            WriteLine(token.Text);
+                        }
                     }
                     else
                     {

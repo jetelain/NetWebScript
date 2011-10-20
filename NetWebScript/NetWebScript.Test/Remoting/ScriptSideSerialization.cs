@@ -43,6 +43,5 @@ namespace NetWebScript.Test.Remoting
 
             Assert.AreEqual(@"<root><obj c=""aTa""><str n=""aSa"">A field</str><num v=""12"" n=""aSb"" /><num v=""12.34"" n=""aSc"" /><null n=""aSd"" /><null n=""aSe"" /></obj></root>", doc.Xml);
         }
-
     }
 }

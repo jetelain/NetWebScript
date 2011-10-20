@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using NetWebScript;
 using NetWebScript.Script;
 using NetWebScript.Runtime;
+using System.ComponentModel;
 
 namespace NetWebScript.Remoting.Serialization
 {
@@ -79,7 +80,16 @@ namespace NetWebScript.Remoting.Serialization
                     return list;
                 }
             }
-
+            if (value != null)
+            {
+                // Try to use types converter (it also allow to support type equivalents)
+                var sourceType = value.GetType();
+                var converter = TypeDescriptor.GetConverter(sourceType);
+                if (converter.CanConvertTo(type))
+                {
+                    return converter.ConvertTo(value, type);
+                }
+            }
             return System.Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
         }
 

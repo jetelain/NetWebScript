@@ -18,7 +18,8 @@ namespace NetWebScript.JsClr.Compiler
         private static readonly MethodInfo As = new Func<object, JSFunction, object>(RuntimeHelper.As).Method;
         private static readonly MethodInfo Cast = new Func<object, JSFunction, object>(RuntimeHelper.Cast).Method;
         private static readonly MethodInfo GetTypeFromHandle = new Func<RuntimeTypeHandle, Type>(Type.GetTypeFromHandle).Method;
-        
+        private static readonly MethodInfo WrapException = new Func<object, Equivalents.Exception>(Equivalents.Exception.Convert).Method;
+       
         private readonly ScriptSystem system;
         private readonly List<InternalMessage> errors;
         private MethodAst current;
@@ -98,6 +99,12 @@ namespace NetWebScript.JsClr.Compiler
 
         public override Statement Visit(MethodInvocationExpression methodInvocationExpression)
         {
+            //if (methodInvocationExpression.Method == WrapException && methodInvocationExpression.Arguments[0] is CurrentExceptionExpression)
+            //{
+            //    // XXX: Make the WrapException in a specific filter to avoid recursion ???
+            //    return methodInvocationExpression;
+            //}
+
             if (methodInvocationExpression.Method == GetTypeFromHandle)
             {
                 // Type and RuntimeTypeHandle are "the same" in script
@@ -160,6 +167,11 @@ namespace NetWebScript.JsClr.Compiler
         {
             current = method;
             base.Visit(method);
+        }
+
+        public override Statement Visit(CurrentExceptionExpression currentExceptionExpression)
+        {
+            return new MethodInvocationExpression(currentExceptionExpression.IlOffset, false, WrapException, null, new List<Expression>() { currentExceptionExpression });
         }
 
 

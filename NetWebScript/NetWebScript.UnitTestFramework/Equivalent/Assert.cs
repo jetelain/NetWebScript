@@ -13,7 +13,7 @@ namespace NetWebScript.UnitTestFramework.Equivalent
         {
             var a = (object)expected;
             var b = (object)actual;
-            if (a != null && !a.Equals(b))
+            if (a != b) // FIXME: should use object.Equals(a,b), for now works by accident as we tests only use method on primitives types
             {
                 throw new Exception("failed");
             }

@@ -14,7 +14,7 @@ namespace NetWebScript.Script
     public sealed class JSFunction
     {
         private readonly Type type;
-        private readonly MethodInfo method;
+        private readonly MethodBase method;
         private readonly Delegate deleg;
 
         internal JSFunction(Type type)
@@ -22,7 +22,7 @@ namespace NetWebScript.Script
             this.type = type;
         }
 
-        internal JSFunction(MethodInfo method)
+        internal JSFunction(MethodBase method)
         {
             this.method = method;
         }
@@ -68,6 +68,11 @@ namespace NetWebScript.Script
         public object Call(object target, object arg0, object arg1, object arg3)
         {
             return Apply(target, arg0, arg1, arg3);
+        }
+
+        internal MethodBase Method
+        {
+            get { return method; }
         }
     }
 }

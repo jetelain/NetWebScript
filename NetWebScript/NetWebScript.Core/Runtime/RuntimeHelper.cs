@@ -15,7 +15,7 @@ namespace NetWebScript.Script
             throw new PlatformNotSupportedException();
         }
 
-        [ScriptBody(Body = "function(f,t) { return function() { return f.apply(t, arguments); }; }")]
+        [ScriptBody(Body = "function(t,f) { return function() { return f.apply(t, arguments); }; }")]
         public static Delegate CreateDelegate(object target, JSFunction function)
         {
             throw new PlatformNotSupportedException();

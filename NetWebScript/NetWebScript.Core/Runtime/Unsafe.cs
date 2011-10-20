@@ -31,6 +31,18 @@ namespace NetWebScript.Script
             }
         }
 
+
+        [ScriptBody(Body = "function(o){var a=[];for(var k in o){a.push(k);}return a;}")]
+        public static string[] GetAll(object obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException("obj");
+            }
+            Contract.EndContractBlock();
+            return GetFields(obj);
+        }
+
         [ScriptBody(Body = "function(o){if (o.constructor && o.constructor.$n) return o.constructor.$n; return typeof o;}")]
         public static string GetScriptTypeName(object obj)
         {

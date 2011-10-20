@@ -23,10 +23,10 @@ namespace NetWebScript.Remoting.Serialization
         {
             scriptModules.AddRange(modules);
 
-            var meta = GetTypeMetadata(typeof(RemoteInvoker));
+            var meta = GetTypeMetadataByCRef(CRefToolkit.GetCRef(typeof(XmlSerializer)));
             if (meta != null)
             {
-                var key = CRefToolkit.GetCRef(typeof(RemoteInvoker).GetMethod("CopyTo"));
+                var key = CRefToolkit.GetCRef(typeof(XmlSerializer).GetMethod("CopyTo"));
                 var methodMeta = meta.Methods.FirstOrDefault(m => m.CRef == key);
                 if (methodMeta != null)
                 {
@@ -36,15 +36,14 @@ namespace NetWebScript.Remoting.Serialization
             converter = new Converter(this);
         }
 
-        public TypeMetadata GetTypeMetadata(string name)
+        public TypeMetadata GetTypeMetadataByScriptName(string name)
         {
             return scriptModules.SelectMany(m => m.Types.Where(t => t.Name == name)).FirstOrDefault();
         }
 
-        public TypeMetadata GetTypeMetadata(Type type)
+        public TypeMetadata GetTypeMetadataByCRef(string cref)
         {
-            var key = CRefToolkit.GetCRef(type);
-            return scriptModules.SelectMany(m => m.Types.Where(t => t.CRef == key)).FirstOrDefault();
+            return scriptModules.SelectMany(m => m.Types.Where(t => t.CRef == cref)).FirstOrDefault();
         }
 
         private IObjectSerializer CreateSerializer(Type type)
@@ -58,10 +57,26 @@ namespace NetWebScript.Remoting.Serialization
             {
                 return CreateSerializer(attribute, type);
             }
-            var scriptType = GetTypeMetadata(type);
+            var cref = CRefToolkit.GetCRef(type);
+            var scriptType = GetTypeMetadataByCRef(cref);
             if (scriptType != null)
             {
                 return CreateSerializer(scriptType, type);
+            }
+            var equiv = scriptModules.SelectMany(m => m.Equivalents.Where(t => t.CRef == cref)).FirstOrDefault();
+            if (equiv != null)
+            {
+                var equivalentType = (Type)CRefToolkit.Resolve(equiv.EquivalentCRef);
+                var equivalentSerializer = GetSerializer(equivalentType);
+                if (equivalentSerializer != null)
+                {
+                    return new EquivalentSerializer(type, equivalentType, equivalentSerializer);
+                }
+            }
+            var baseType = type.BaseType;
+            if (baseType != null)
+            {
+                return GetSerializer(baseType);
             }
             return null;
         }
@@ -98,5 +113,10 @@ namespace NetWebScript.Remoting.Serialization
         }
 
         public Converter Converter { get { return converter; } }
+
+        internal List<ModuleMetadata> ScriptModules
+        {
+            get { return scriptModules; }
+        }
     }
 }

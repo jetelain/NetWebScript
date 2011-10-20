@@ -22,6 +22,7 @@ namespace NetWebScript.JsClr.TypeSystem
         private readonly List<ScriptType> typesToGenerate = new List<ScriptType>();
         private readonly List<ScriptMethod> methodsToGenerate = new List<ScriptMethod>();
         private readonly List<ScriptEnumType> enumsToGenerate = new List<ScriptEnumType>();
+        private readonly List<ScriptTypeHelped> equivalents = new List<ScriptTypeHelped>();
         private readonly HashSet<Type> implicitScriptAvailable = new HashSet<Type>();
         private readonly Dictionary<Type, Type> scriptEquivalent = new Dictionary<Type, Type>();
 
@@ -83,9 +84,16 @@ namespace NetWebScript.JsClr.TypeSystem
             {
                 return new DelegateType(this, type);
             }
-            if (typeof(Type).IsAssignableFrom(type) || typeof(MethodBase).IsAssignableFrom(type))
+            if (typeof(Type).IsAssignableFrom(type)/* || typeof(MethodInfo).IsAssignableFrom(type)*/)
             {
                 return new FunctionType(this, type);
+            }
+            if (typeof(MethodInfo).IsAssignableFrom(type))
+            {
+                var helped = new ScriptTypeHelped(this, type, typeof(Equivalents.Reflection.MethodInfo));
+                equivalents.Add(helped);
+                helped.Serializer = new FunctionType(this, type);
+                return helped;
             }
             // TODO: Enums
             var imported = (ImportedAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedAttribute), false);
@@ -113,7 +121,10 @@ namespace NetWebScript.JsClr.TypeSystem
             Type helperType = GetEquivalent(type);
             if (helperType != null)
             {
-                return new ScriptTypeHelped(this, type, helperType);
+                var helped = new ScriptTypeHelped(this, type, helperType);
+                equivalents.Add(helped);
+                
+                return helped;
             }
             if (type.IsArray)
             {
@@ -221,6 +232,10 @@ namespace NetWebScript.JsClr.TypeSystem
         internal List<ScriptMethod> MethodsToGenerate
         {
             get { return methodsToGenerate; }
+        }
+        internal List<ScriptTypeHelped> Equivalents
+        {
+            get { return equivalents; }
         }
 
         internal IScriptMethodBase GetScriptMethodBase(MethodBase methodBase)

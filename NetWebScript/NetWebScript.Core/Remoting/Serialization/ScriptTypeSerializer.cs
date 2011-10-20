@@ -12,7 +12,7 @@ namespace NetWebScript.Remoting.Serialization
     {
         private readonly string copyMethod;
         private readonly TypeMetadata typeMetadata;
-        private readonly MethodBaseMetadata emptyCtor;
+        //private readonly MethodBaseMetadata emptyCtor;
 
         public ScriptTypeSerializer(string copyMethod, IObjectSerializer parent, TypeMetadata scriptType, Type type)
             : base(parent,type)
@@ -20,8 +20,8 @@ namespace NetWebScript.Remoting.Serialization
             this.copyMethod = copyMethod;
             this.typeMetadata = scriptType;
 
-            var ctorKey = CRefToolkit.GetCRef(type.GetConstructor(Type.EmptyTypes));
-            emptyCtor = scriptType.Methods.FirstOrDefault(c => c.CRef == ctorKey);
+            //var ctorKey = CRefToolkit.GetCRef(type.GetConstructor(Type.EmptyTypes));
+            //emptyCtor = scriptType.Methods.FirstOrDefault(c => c.CRef == ctorKey);
 
             foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
             {
@@ -39,14 +39,12 @@ namespace NetWebScript.Remoting.Serialization
             writer.Write(copyMethod);
             writer.Write("(new ");
             writer.Write(typeMetadata.Name);
-            writer.Write("().");
-            writer.Write(emptyCtor.Name);
-            writer.Write("(),{");
+            writer.Write("(),");
         }
 
         public override void WriteScriptEnd(System.IO.TextWriter writer)
         {
-            writer.Write("})");
+            writer.Write(")");
         }
     }
 }

@@ -78,6 +78,12 @@ namespace NetWebScript.Equivalents
             return string.Concat(str0, str1, str2, str3);
         }
 
+        [ScriptBody(Inline = "str0+str1+str2")] // FIXME: may not work as expected
+        internal static string Concat(object str0, object str1, object str2)
+        {
+            return string.Concat(str0, str1, str2);
+        }
+
         [ScriptBody(Inline = "$.trim(str)")]
         internal static string Trim(string str)
         {

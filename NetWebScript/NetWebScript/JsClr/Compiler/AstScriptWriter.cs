@@ -20,10 +20,12 @@ namespace NetWebScript.JsClr.Compiler
         private readonly MethodBaseMetadata methodMetadata;
         private readonly MethodBase method;
         private readonly bool isctor;
+        private readonly bool pretty;
 
-        public AstScriptWriter(ScriptSystem system, MethodBase method, MethodBaseMetadata methodMetadata)
+        public AstScriptWriter(ScriptSystem system, MethodBase method, MethodBaseMetadata methodMetadata, bool pretty)
 		{
             this.system = system;
+            this.pretty = pretty;
             if (!Attribute.IsDefined(method, typeof(DebuggerHiddenAttribute)))
             {
                 this.methodMetadata = methodMetadata;
@@ -153,12 +155,12 @@ namespace NetWebScript.JsClr.Compiler
             writer.Write("if(");
             writer.WriteCommaSeparated(ifStatement.Condition.Accept(this));
             writer.WriteLine(")");
-            writer.WriteInBlock(ifStatement.Then.Select(s => s.Accept(this)));
+            writer.WriteInBlock(pretty, ifStatement.Then.Select(s => s.Accept(this)));
             if (ifStatement.Else != null)
             {
                 writer.WriteLine();
                 writer.WriteLine("else");
-                writer.WriteInBlock(ifStatement.Else.Select(s => s.Accept(this)));
+                writer.WriteInBlock(pretty, ifStatement.Else.Select(s => s.Accept(this)));
             }
             return writer.ToFullStatement();
         }
@@ -167,7 +169,7 @@ namespace NetWebScript.JsClr.Compiler
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.WriteLine("try");
-            writer.WriteInBlock(tryCatchStatement.Body.Select(s => s.Accept(this)));
+            writer.WriteInBlock(pretty, tryCatchStatement.Body.Select(s => s.Accept(this)));
             if (tryCatchStatement.CatchList != null)
             {
                 if (tryCatchStatement.CatchList.Count > 1)
@@ -179,13 +181,13 @@ namespace NetWebScript.JsClr.Compiler
                 {
                     Catch @catch = tryCatchStatement.CatchList[0];
                     writer.WriteLine("catch($e)");
-                    writer.WriteInBlock(@catch.Body.Select(s => s.Accept(this)));
+                    writer.WriteInBlock(pretty, @catch.Body.Select(s => s.Accept(this)));
                 }
             }
             if (tryCatchStatement.Finally != null)
             {
                 writer.WriteLine("finally");
-                writer.WriteInBlock(tryCatchStatement.Finally.Select(s => s.Accept(this)));
+                writer.WriteInBlock(pretty, tryCatchStatement.Finally.Select(s => s.Accept(this)));
             }
             return writer.ToFullStatement();
         }
@@ -285,7 +287,7 @@ namespace NetWebScript.JsClr.Compiler
                     writer.Write(Literal(null,@case.Value).Text);
                     writer.WriteLine(":");
                 }
-                writer.WriteIndented(@case.Statements.Select(s => s.Accept(this)));
+                writer.WriteIndented(pretty, @case.Statements.Select(s => s.Accept(this)));
                 writer.Write("break;");
             }
             writer.WriteLine("}");
@@ -313,14 +315,14 @@ namespace NetWebScript.JsClr.Compiler
             writer.Write("while(");
             writer.WriteCommaSeparated(whileStatement.Condition.Accept(this));
             writer.WriteLine(")");
-            writer.WriteInBlock(whileStatement.Body.Select(s => s.Accept(this)));
+            writer.WriteInBlock(pretty, whileStatement.Body.Select(s => s.Accept(this)));
             return writer.ToFullStatement();
         }
         public JsToken Visit(DoWhileStatement whileStatement)
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.WriteLine("do");
-            writer.WriteInBlock(whileStatement.Body.Select(s => s.Accept(this)));
+            writer.WriteInBlock(pretty, whileStatement.Body.Select(s => s.Accept(this)));
             writer.Write("while(");
             writer.WriteCommaSeparated(whileStatement.Condition.Accept(this));
             writer.WriteLine(")");
@@ -444,7 +446,7 @@ namespace NetWebScript.JsClr.Compiler
                     methodMetadata.Variables.Add(new VariableMetadata() { Name = ArgumentName(arg), CName = arg.Name });
                 }
             }
-            writer.WriteIndented(ast.Statements.Select(s => s.Accept(this)));
+            writer.WriteIndented(pretty, ast.Statements.Select(s => s.Accept(this)));
             if (IsDebug)
             {
                 writer.WriteLine("$dbgL();");

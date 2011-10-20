@@ -10,6 +10,7 @@ using NetWebScript.Metadata;
 using System.Reflection;
 using System.Xml.Serialization;
 using NetWebScript.JsClr.AstBuilder.PdbInfo;
+using NetWebScript.Remoting.Serialization;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -26,7 +27,7 @@ namespace NetWebScript.JsClr.Compiler
         /// </summary>
         public bool Debuggable { get; set; }
 
-        public bool MarkerComments { get; set; }
+        public bool PrettyPrint { get; set; }
 
         public ModuleMetadata Metadata { get; set; }
 
@@ -138,7 +139,7 @@ namespace NetWebScript.JsClr.Compiler
             Metadata.Types.Clear();
             Metadata.Name = system.ModuleId;
             HashSet<Assembly> assemblies = new HashSet<Assembly>();
-            var moduleWriter = new ModuleWriter(writer, system, Debuggable, MarkerComments);
+            var moduleWriter = new ModuleWriter(writer, system, Debuggable, PrettyPrint);
             foreach (var type in system.TypesToGenerate.ToArray())
             {
                 assemblies.Add(type.Type.Assembly);
@@ -151,7 +152,12 @@ namespace NetWebScript.JsClr.Compiler
                 moduleWriter.WriteEnumType(Metadata, type);
                 SanityCheck(type);
             }
+            foreach (var type in system.Equivalents)
+            {
+                Metadata.Equivalents.Add(new EquivalentMetadata() { CRef = CRefToolkit.GetCRef(type.Type), EquivalentCRef = CRefToolkit.GetCRef(type.Equivalent.Type) });
+            }
             Metadata.Assemblies.AddRange(assemblies.Select(a => a.FullName));
+            MetadataProvider.Current = new MetadataProvider(Metadata);
         }
 
         private void SanityCheck(IScriptType previous)
