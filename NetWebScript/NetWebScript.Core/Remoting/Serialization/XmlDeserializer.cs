@@ -63,7 +63,7 @@ namespace NetWebScript.Remoting.Serialization
                 Type type;
                 if (meta != null)
                 {
-                    type = (Type)CRefToolkit.Resolve(meta.CRef);
+                    type = CRefToolkit.ResolveType(meta.CRef);
                     serializer = cache.GetSerializer(type);
                 }
                 else

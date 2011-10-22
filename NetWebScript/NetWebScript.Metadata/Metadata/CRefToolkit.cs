@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
+using System.Text;
 
 namespace NetWebScript.Metadata
 {
     /// <summary>
-    /// Utilitaires pour la manipulation des CRef C#. 
+    /// Toolkit to built and parse "cref"
     /// (ECMA-334 3rd Edition, Annex  E.3.1.)
     /// </summary>
     /// <seealso href="http://manpages.ubuntu.com/manpages/lucid/man5/mdoc.5.html">Documentation MONO (CREF FORMAT)</seealso>
     public static class CRefToolkit
     {
-        public static String GetCRef(Type type)
+        public static string GetCRef(Type type)
         {
             StringBuilder signature = new StringBuilder();
             signature.Append("T:");
@@ -97,7 +96,7 @@ namespace NetWebScript.Metadata
             }
         }
 
-        public static String GetCRef(ConstructorInfo method)
+        public static string GetCRef(ConstructorInfo method)
         {
             StringBuilder signature = new StringBuilder();
             signature.Append("M:");
@@ -107,7 +106,7 @@ namespace NetWebScript.Metadata
             return signature.ToString();
         }
 
-        public static String GetCRef(MethodInfo method)
+        public static string GetCRef(MethodInfo method)
         {
             StringBuilder signature = new StringBuilder();
             signature.Append("M:");
@@ -123,16 +122,16 @@ namespace NetWebScript.Metadata
             return signature.ToString();
         }
 
-        public static string GetCRef(PropertyInfo property)
-        {
-            StringBuilder signature = new StringBuilder();
-            signature.Append("P:");
-            signature.AppendType(property.DeclaringType);
-            signature.Append(".");
-            signature.Append(property.Name);
-            signature.AppendParameters(property.GetIndexParameters());
-            return signature.ToString();
-        }
+        //public static string GetCRef(PropertyInfo property)
+        //{
+        //    StringBuilder signature = new StringBuilder();
+        //    signature.Append("P:");
+        //    signature.AppendType(property.DeclaringType);
+        //    signature.Append(".");
+        //    signature.Append(property.Name);
+        //    signature.AppendParameters(property.GetIndexParameters());
+        //    return signature.ToString();
+        //}
 
         public static string GetCRef(FieldInfo property)
         {
@@ -144,60 +143,29 @@ namespace NetWebScript.Metadata
             return signature.ToString();
         }
 
-        public static string GetCRef(EventInfo ev)
+        //public static string GetCRef(EventInfo ev)
+        //{
+        //    StringBuilder signature = new StringBuilder();
+        //    signature.Append("E:");
+        //    signature.AppendType(ev.DeclaringType);
+        //    signature.Append(".");
+        //    signature.Append(ev.Name);
+        //    return signature.ToString();
+        //}
+
+        public static string GetCRef(MethodBase member)
         {
-            StringBuilder signature = new StringBuilder();
-            signature.Append("E:");
-            signature.AppendType(ev.DeclaringType);
-            signature.Append(".");
-            signature.Append(ev.Name);
-            return signature.ToString();
-        }
-
-        public static string GetCRef(MemberInfo member)
-        {
-            Type type = member as Type;
-            if (type != null)
-            {
-                return GetCRef(type);
-            }
-
-            FieldInfo field = member as FieldInfo;
-            if (field != null)
-            {
-                return GetCRef(field);
-            }
-
-            PropertyInfo property = member as PropertyInfo;
-            if (property != null)
-            {
-                return GetCRef(property);
-            }
-
-            MethodInfo method = member as MethodInfo;
-            if (method != null)
-            {
-                return GetCRef(method);
-            }
-
             ConstructorInfo ctor = member as ConstructorInfo;
             if (ctor != null)
             {
                 return GetCRef(ctor);
             }
-
-            EventInfo ev = member as EventInfo;
-            if (ev != null)
-            {
-                return GetCRef(ev);
-            }
-
-            throw new InvalidOperationException();
+            return GetCRef((MethodInfo)member);
         }
 
-        private static Type[] ResolveCRefTypeArray(String name)
+        private static Type[] ResolveCRefTypeArray(string name)
         {
-            List<String> tokens = new List<string>();
+            List<string> tokens = new List<string>();
             StringBuilder token = new StringBuilder();
             int nested = 0;
             for (int i = 0; i < name.Length; ++i)
@@ -236,7 +204,7 @@ namespace NetWebScript.Metadata
             return array;
         }
 
-        private static Type ResolveCRefType(String name)
+        private static Type ResolveCRefType(string name)
         {
             if (name.EndsWith("@"))
             {
@@ -251,7 +219,7 @@ namespace NetWebScript.Metadata
             int idx = name.IndexOf('{');
             if (idx != -1)
             {
-                String generic = name.Substring(0, idx);
+                string generic = name.Substring(0, idx);
                 Type[] array = ResolveCRefTypeArray(name.Substring(idx + 1, name.Length - idx - 2));
                 if (array == null)
                 {
@@ -286,6 +254,70 @@ namespace NetWebScript.Metadata
             return null;
         }
 
+        public static Type ResolveType(string cref)
+        {
+            if (!cref.StartsWith("T:"))
+            {
+                throw new ArgumentException("Invalid type cref", "cref");
+            }
+            return ResolveCRefType(cref.Substring(2));
+        }
+
+        //if (cref.StartsWith("F:")) // Field
+        //{
+        //    return type.GetField(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+        //}
+        //if (cref.StartsWith("E:")) // Event
+        //{
+        //    return type.GetEvent(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+        //}
+        //if (cref.StartsWith("P:")) // Property
+        //{
+        //    return type.GetProperty(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance, null, null, args, null);
+        //}
+
+        public static MethodBase ResolveMethod(string cref)
+        {
+            if (!cref.StartsWith("M:"))
+            {
+                throw new ArgumentException("Invalid method cref", "cref");
+            }
+
+            int p = cref.IndexOf('(');
+            int d = p == -1 ? cref.LastIndexOf('.') : cref.LastIndexOf('.', p);
+
+            if (d == -1)
+            {
+                return null;
+            }
+            string typeName = cref.Substring(2, d-2);
+                
+            Type type = ResolveCRefType(typeName);
+            if (type == null)
+            {
+                return null;
+            }
+
+            string memberName;
+            Type[] args;
+            if (p == -1)
+            {
+                memberName = cref.Substring(d + 1);
+                args = new Type[0];
+            }
+            else
+            {
+                memberName = cref.Substring(d + 1, p - d-1);
+                args = ResolveCRefTypeArray(cref.Substring(p + 1, cref.Length - p - 2));
+            }
+
+            if (memberName == "#ctor")
+            {
+                return type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance, null, args, null);
+            }
+            return type.GetMethod(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance, null, args, null);
+        }
+
         public static string GetDisplayName(string cref)
         {
             if (cref == null)
@@ -303,40 +335,21 @@ namespace NetWebScript.Metadata
 
             if (d != -1)
             {
-                String typeName = cref.Substring(2, d - 2);
-                String memberName;
-
-                Type type = ResolveCRefType(typeName);
-                if (type == null)
-                {
-                    return null;
-                }
-
-                Type[] args;
+                string typeName = cref.Substring(2, d - 2);
+                string memberName;
                 if (p == -1)
                 {
                     memberName = cref.Substring(d + 1);
-                    args = new Type[0];
                 }
                 else
                 {
                     memberName = cref.Substring(d + 1, p - d - 1);
-                    String argsNames = cref.Substring(p + 1, cref.Length - p - 2);
-                    args = ResolveCRefTypeArray(argsNames);
                 }
                 if (cref.StartsWith("F:")) // Field
                 {
                     return memberName;
                 }
-                if (cref.StartsWith("E:")) // Event
-                {
-                    return memberName;
-                }
-                if (cref.StartsWith("P:")) // Property
-                {
-                    return memberName;
-                }
-                if (cref.StartsWith("M:")) // Property
+                if (cref.StartsWith("M:")) // Method
                 {
                     if (memberName == "#ctor")
                     {
@@ -351,71 +364,6 @@ namespace NetWebScript.Metadata
             return null;
 
 
-        }
-
-        public static MemberInfo Resolve(String cref)
-        {
-            if (cref == null)
-            {
-                return null;
-            }
-
-            if (cref.StartsWith("T:")) // Type
-            {
-                return ResolveCRefType(cref.Substring(2));
-            }
-
-            int p = cref.IndexOf('(');
-            int d = p == -1 ? cref.LastIndexOf('.') : cref.LastIndexOf('.', p);
-
-            if (d != -1)
-            {
-                String typeName = cref.Substring(2, d-2);
-                String memberName;
-
-                Type type = ResolveCRefType(typeName);
-                if (type == null)
-                {
-                    return null;
-                }
-
-                Type[] args;
-                if (p == -1)
-                {
-                    memberName = cref.Substring(d + 1);
-                    args = new Type[0];
-                }
-                else
-                {
-                    memberName = cref.Substring(d + 1, p - d-1);
-                    String argsNames = cref.Substring(p + 1, cref.Length - p - 2);
-                    args = ResolveCRefTypeArray(argsNames);
-                }
-                if (cref.StartsWith("F:")) // Field
-                {
-                    return type.GetField(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
-                }
-                if (cref.StartsWith("E:")) // Event
-                {
-                    return type.GetEvent(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
-                }
-                if (cref.StartsWith("P:")) // Property
-                {
-                    return type.GetProperty(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance, null, null, args, null);
-                }
-                if (cref.StartsWith("M:")) // Property
-                {
-                    if (memberName == "#ctor")
-                    {
-                        return type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance, null, args, null);
-                    }
-                    else
-                    {
-                        return type.GetMethod(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance, null, args, null);
-                    }
-                }
-            }
-            return null;
         }
     }
 }

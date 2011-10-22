@@ -66,7 +66,7 @@ namespace NetWebScript.Remoting.Serialization
             var equiv = scriptModules.SelectMany(m => m.Equivalents.Where(t => t.CRef == cref)).FirstOrDefault();
             if (equiv != null)
             {
-                var equivalentType = (Type)CRefToolkit.Resolve(equiv.EquivalentCRef);
+                var equivalentType = CRefToolkit.ResolveType(equiv.EquivalentCRef);
                 var equivalentSerializer = GetSerializer(equivalentType);
                 if (equivalentSerializer != null)
                 {

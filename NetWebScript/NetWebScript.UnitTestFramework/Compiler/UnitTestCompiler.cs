@@ -80,7 +80,7 @@ namespace NetWebScript.UnitTestFramework.Compiler
             var cache = new SerializerCache(compiler.Metadata);
             var serializer = new EvaluableSerializer(cache);
             var page = new TestRunnerPage(testsArray);
-
+            writer.WriteLine("<!DOCTYPE html>");
             writer.WriteLine("<html>");
             writer.WriteLine("<head>");
             writer.WriteLine("<script type=\"text/javascript\" src=\"jquery-1.6.4.min.js\"></script>");

@@ -31,7 +31,7 @@ namespace NetWebScript.UnitTestFramework.Client
                 var classResult = results[i];
 
                 var classRow = JQuery.Select("<tr></tr>");
-                classRow.Append(JQuery.Select("<td></td>").Attr("colspan", "3").Text(classResult.name));
+                classRow.Append(JQuery.Select("<td></td>").Attr("colspan", "3").Css("font-weight", "bold").Css("background","#c0c0c0").Text(classResult.name));
                 table.Append(classRow);
 
                 for (int j = 0; j < classResult.methods.Length; ++j)

@@ -16,7 +16,7 @@ namespace NetWebScript.Remoting
         {
             var scriptType = cache.GetTypeMetadataByScriptName(request.Type);
             var scriptMethod = scriptType.Methods.First(m => m.Name == request.Method);
-            var method = (MethodInfo)CRefToolkit.Resolve(scriptMethod.CRef);
+            var method = (MethodInfo)CRefToolkit.ResolveMethod(scriptMethod.CRef);
             var response = new ResponseData();
             try
             {
