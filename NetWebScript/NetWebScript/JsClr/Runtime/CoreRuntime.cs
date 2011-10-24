@@ -8,8 +8,24 @@ namespace NetWebScript.JsClr.Runtime
 {
     public static class CoreRuntime
     {
-        private const string CoreScript = "NetWebScript.JsClr.Runtime.Core.xjs";
-        private const string DebugClientScript = "NetWebScript.JsClr.Runtime.Debug.Client.xjs";
+        private const string CoreScript = "NetWebScript.JsClr.Runtime.Core.js";
+        private const string DebugClientScript = "NetWebScript.JsClr.Runtime.Debug.Client.js";
+        private const string JQueryScript = "NetWebScript.JsClr.Runtime.jquery-1.6.4.min.js";
+
+        public static string JQueryFilename { get { return "jquery-1.6.4.min.js"; } }
+
+        public static void WriteJQuery(TextWriter writer)
+        {
+            var assembly = typeof(CoreRuntime).Assembly;
+
+            using (var stream = assembly.GetManifestResourceStream(JQueryScript))
+            {
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    writer.Write(reader.ReadToEnd());
+                }
+            }
+        }
 
         public static void WriteRuntime(TextWriter writer, bool isDebuggable)
         {

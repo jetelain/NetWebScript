@@ -82,7 +82,8 @@
     <Compile Include="JsClr\AstBuilder\AstFilter\NullTest.cs" />
     <Compile Include="JsClr\AstBuilder\FlowGraph\CatchHandlerData.cs" />
     <Compile Include="JsClr\AstBuilder\FlowGraph\ProtectedRegionData.cs" />
-    <Compile Include="JsClr\AstBuilder\FlowPrimitives\DoWhile.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\InlineBlock.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\PostLoop.cs" />
     <Compile Include="JsClr\Ast\ArrayCreationExpression.cs" />
     <Compile Include="JsClr\Ast\ArrayIndexerExpression.cs" />
     <Compile Include="JsClr\Ast\AssignableExpression.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="JsClr\Ast\UnaryOperator.cs" />
     <Compile Include="JsClr\Ast\VariableReferenceExpression.cs" />
     <Compile Include="JsClr\Ast\WhileStatement.cs" />
+    <Compile Include="JsClr\Compiler\CompilerMessage.cs" />
     <Compile Include="JsClr\Compiler\InternalMessage.cs" />
     <Compile Include="JsClr\Compiler\AstScriptWriter.cs" />
     <Compile Include="JsClr\Compiler\MessageSeverity.cs" />
@@ -159,12 +161,12 @@
     <Compile Include="JsClr\AstBuilder\Cil\Instruction.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\AstFilterBase.cs" />
     <Compile Include="JsClr\AstBuilder\ExpressionBuilder.cs" />
-    <Compile Include="JsClr\AstBuilder\FlowPrimitives\Block.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\SingleBlock.cs" />
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\Break.cs" />
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\Condition.cs" />
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\Continue.cs" />
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\FlowTransform.cs" />
-    <Compile Include="JsClr\AstBuilder\FlowPrimitives\Loop.cs" />
+    <Compile Include="JsClr\AstBuilder\FlowPrimitives\PreLoop.cs" />
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\Sequence.cs" />
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\Switch.cs" />
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\TryCatch.cs" />
@@ -232,8 +234,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="JsClr\Runtime\Debug.Client.xjs" />
-    <EmbeddedResource Include="JsClr\Runtime\Core.xjs" />
+    <EmbeddedResource Include="JsClr\Runtime\Debug.Client.js" />
+    <EmbeddedResource Include="JsClr\Runtime\Core.js" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -252,7 +254,9 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="JsClr\Runtime\jquery-1.6.4.min.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

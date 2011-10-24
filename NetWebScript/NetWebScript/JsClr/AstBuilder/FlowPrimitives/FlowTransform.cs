@@ -190,9 +190,16 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                     // Ensures that all paths from block goes to condition (continue), end (break), or returns (return).
                     if (graph.DoesAllPathsGoToOrReturn(block, new[] { condition, end }))
                     {
-                        var doWhile = new DoWhile();
+                        var doWhile = new PostLoop();
                         doWhile.Body = PostLoopTransform(block, condition, end);
-                        doWhile.Body.Add(new SingleBlock(condition));
+                        if (HasContinue(doWhile.Body))
+                        {
+                            doWhile.Body.Add(new InlineBlock(condition));
+                        }
+                        else
+                        {
+                            doWhile.Body.Add(new SingleBlock(condition));
+                        }
                         doWhile.Jump = condition.Successors[0] == end ? LoopBody.NoJump : LoopBody.Jump;
                         sequences.Add(doWhile);
                         ProcessNext(sequences, end);
@@ -211,13 +218,13 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
 
                     if (hasPathFromA && !hasPathFromB)
                     {
-                        sequences.Add(new Loop(block) { Body = PreLoopTransform(block, sucA, sucB), Jump = LoopBody.Jump });
+                        sequences.Add(new PreLoop(block) { Body = PreLoopTransform(block, sucA, sucB), Jump = LoopBody.Jump });
                         ProcessNext(sequences, sucB);
                         return;
                     }
                     if (!hasPathFromA && hasPathFromB)
                     {
-                        sequences.Add(new Loop(block) { Body = PreLoopTransform(block, sucB, sucA), Jump = LoopBody.NoJump });
+                        sequences.Add(new PreLoop(block) { Body = PreLoopTransform(block, sucB, sucA), Jump = LoopBody.NoJump });
                         ProcessNext(sequences, sucA);
                         return;
                     }
@@ -297,6 +304,12 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                     ProcessNext(sequences, common);
                 }
             }
+        }
+
+        private bool HasContinue(List<Sequence> list)
+        {
+            // TODO: look for continue in list and childs
+            return false;
         }
     }
 }

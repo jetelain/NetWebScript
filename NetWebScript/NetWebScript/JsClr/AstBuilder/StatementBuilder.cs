@@ -53,7 +53,7 @@ namespace NetWebScript.JsClr.AstBuilder
             current = sequence as SingleBlock;
             if (current != null)
             {
-                if (current is Loop)
+                if (current is InlineBlock)
                 {
                     builder.SetEnforceInline();
                     foreach (Instruction instruction in current.Block)
@@ -83,9 +83,9 @@ namespace NetWebScript.JsClr.AstBuilder
             {
                 statements.Add(new ContinueStatement());
             }
-            else if (sequence is DoWhile)
+            else if (sequence is PostLoop)
             {
-                statements.Add(TransformDoWhile((DoWhile)sequence));
+                statements.Add(TransformDoWhile((PostLoop)sequence));
             }
             else
             {
@@ -193,7 +193,7 @@ namespace NetWebScript.JsClr.AstBuilder
             {
                 throw new AstBuilderException(instruction.Offset, "Unsupported flow stack behaviour");
             }
-            Loop loop = current as Loop;
+            PreLoop loop = current as PreLoop;
             if (loop != null)
             {
                 WhileStatement @while = new WhileStatement();
@@ -268,7 +268,7 @@ namespace NetWebScript.JsClr.AstBuilder
             return new StatementBuilder(built, body, list, @catch, null).statements;
         }
 
-        private Statement TransformDoWhile(DoWhile doWhile)
+        private Statement TransformDoWhile(PostLoop doWhile)
         {
             DoWhileStatement statement = new DoWhileStatement();
             statement.Body = new StatementBuilder(built, body, doWhile.Body, null, statement).statements;

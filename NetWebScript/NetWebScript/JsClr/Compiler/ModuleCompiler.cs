@@ -51,38 +51,16 @@ namespace NetWebScript.JsClr.Compiler
                 throw new Exception(String.Format("{0} is not available in script",type));
             }
             GenerateAst();
-            if (messages.Count(e => e.Severity == MessageSeverity.Error) > 0)
-            {
-                throw new Exception(BuildReport(messages));
-            }
             return scriptType;
         }
 
-        private string BuildReport(IEnumerable<InternalMessage> list)
+        private string BuildReport()
         {
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("Compilation to JavaScript FAILED.");
-            foreach( var error in list )
+            foreach( var error in GetMessages() )
             {
-                PdbSequencePoint point = null;
-                if (error.IlOffset != null)
-                {
-                    PdbMethod pdb = PdbCatalog.GetPdbMethod(error.Method);
-                    if (pdb != null)
-                    {
-                        int offset = error.IlOffset.Value;
-                        point = pdb.SequencePointList.LastOrDefault(p => p.Offset <= offset);
-                    }
-                }
-                if (point != null)
-                {
-                    builder.AppendFormat("{0}({1},{2}): {3}: {4}", point.Filename, point.StartRow, point.StartCol, error.Severity, error.Message);
-                }
-                else
-                {
-                    builder.AppendFormat("{0}: In method '{1}': {2}", error.Severity, error.Method, error.Message);
-                }
-                builder.AppendLine();
+                builder.AppendLine(error.ToString());
             }
             return builder.ToString();
         }
@@ -132,8 +110,46 @@ namespace NetWebScript.JsClr.Compiler
             }
         }
 
+        public List<CompilerMessage> GetMessages()
+        {
+            var list = new List<CompilerMessage>(messages.Count);
+
+            foreach (var error in messages)
+            {
+                PdbSequencePoint point = null;
+                if (error.IlOffset != null)
+                {
+                    PdbMethod pdb = PdbCatalog.GetPdbMethod(error.Method);
+                    if (pdb != null)
+                    {
+                        int offset = error.IlOffset.Value;
+                        point = pdb.SequencePointList.LastOrDefault(p => p.Offset <= offset);
+                    }
+                }
+                var publicMessage = new CompilerMessage();
+                publicMessage.Severity = error.Severity;
+                if (point != null && !string.IsNullOrEmpty(error.Message))
+                {
+                    publicMessage.Message = error.Message;
+                    publicMessage.Filename = point.Filename;
+                    publicMessage.LineNumber = point.StartRow;
+                    publicMessage.LinePosition = point.StartCol;
+                }
+                else
+                {
+                    publicMessage.Message = string.Format("In method '{0}': {1}", error.Method, error.Message);
+                }
+                list.Add(publicMessage);
+            }
+            return list;
+        }
+
         public void Write(TextWriter writer)
         {
+            if (messages.Count(e => e.Severity == MessageSeverity.Error) > 0)
+            {
+                throw new Exception(BuildReport());
+            }
             Metadata.Assemblies.Clear();
             Metadata.Documents.Clear();
             Metadata.Types.Clear();

@@ -41,7 +41,7 @@ namespace NetWebScript.JsClr.AstBuilder
             current = sequence as SingleBlock;
             if (current != null)
             {
-                if (current is Loop || current is Switch || current is DoWhile)
+                if (current is PreLoop || current is Switch || current is PostLoop)
                 {
                     throw new NotImplementedException();
                 }
