@@ -198,7 +198,7 @@ Then {
 
             var result = tester.GetSequence();
             Assert.AreEqual(2, result.Count);
-            var loop = result[0] as Loop;
+            var loop = result[0] as PreLoop;
             var endBlock = result[1] as SingleBlock;
             Assert.IsNotNull(loop);
             Assert.IsNotNull(endBlock);
@@ -237,7 +237,7 @@ Then {
             
             var result = tester.GetSequence();
             Assert.AreEqual(2, result.Count);
-            var loop = result[0] as Loop;
+            var loop = result[0] as PreLoop;
             var endBlock = result[1] as SingleBlock;
             Assert.IsNotNull(loop);
             Assert.IsNotNull(endBlock);
@@ -273,7 +273,7 @@ Then {
 
             var result = tester.GetSequence();
             Assert.AreEqual(2, result.Count);
-            var loop = result[0] as DoWhile;
+            var loop = result[0] as PostLoop;
             var endBlock = result[1] as SingleBlock;
             Assert.IsNotNull(loop);
             Assert.IsNotNull(endBlock);
@@ -323,7 +323,7 @@ Then {
             Assert.AreEqual(3, result.Count);
 
             var start = result[0] as SingleBlock;
-            var loop = result[1] as DoWhile;
+            var loop = result[1] as PostLoop;
             var end = result[2] as SingleBlock;
 
             Assert.IsNotNull(start);

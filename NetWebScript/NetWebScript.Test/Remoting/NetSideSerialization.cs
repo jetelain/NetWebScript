@@ -61,7 +61,7 @@ namespace NetWebScript.Test.Remoting
 
             serializer.Serialize(writer, ctor);
 
-            Assert.AreEqual("", writer.ToString());
+            Assert.AreEqual("(new aTa(),{aSa:aTb,aSb:aTb.prototype.aSc})", writer.ToString());
 
         }
     }

@@ -30,6 +30,11 @@ namespace NetWebScript.UnitTestFramework.Compiler
             compiler.AddEntryPoint(typeof(TestRunnerPage));
         }
 
+        public List<CompilerMessage> GetMessages()
+        {
+            return compiler.GetMessages();
+        }
+
         public void AddTestsFrom(Assembly assembly)
         {
             foreach (var type in assembly.GetTypes())
@@ -45,6 +50,11 @@ namespace NetWebScript.UnitTestFramework.Compiler
 
         public void Write(string path, string pagename)
         {
+            using (var writer = new StreamWriter(new FileStream(Path.Combine(path, CoreRuntime.JQueryFilename), FileMode.Create, FileAccess.Write)))
+            {
+                CoreRuntime.WriteJQuery(writer);
+            }
+
             using ( var writer = new StreamWriter(new FileStream(Path.Combine(path,pagename + ".js"), FileMode.Create, FileAccess.Write)))
             {
                 CoreRuntime.WriteRuntime(writer, compiler.Debuggable);
@@ -83,7 +93,7 @@ namespace NetWebScript.UnitTestFramework.Compiler
             writer.WriteLine("<!DOCTYPE html>");
             writer.WriteLine("<html>");
             writer.WriteLine("<head>");
-            writer.WriteLine("<script type=\"text/javascript\" src=\"jquery-1.6.4.min.js\"></script>");
+            writer.WriteLine("<script type=\"text/javascript\" src=\"{0}\"></script>", CoreRuntime.JQueryFilename);
             writer.WriteLine("<script type=\"text/javascript\" src=\"{0}.js\"></script>", pagename);
             writer.WriteLine("<script type=\"text/javascript\">");
             writer.WriteLine("$(document).ready(function(){");
