@@ -281,5 +281,21 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
         }
 
         #endregion
+
+        public virtual Statement Visit(MakeByRefFieldExpression refExpression)
+        {
+            if (refExpression.Target != null)
+            {
+                refExpression.Target = (Expression)refExpression.Target.Accept(this);
+            }
+            return refExpression;
+        }
+
+        public virtual Statement Visit(ByRefSetExpression byRefSetExpression)
+        {
+            byRefSetExpression.Target = (Expression)byRefSetExpression.Target.Accept(this);
+            byRefSetExpression.Value = (Expression)byRefSetExpression.Value.Accept(this);
+            return byRefSetExpression;
+        }
     }
 }

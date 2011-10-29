@@ -6,6 +6,8 @@ using NetWebScript.JsClr.AstBuilder;
 using NetWebScript.JsClr.AstBuilder.AstFilter;
 using NetWebScript.JsClr.TypeSystem;
 using NetWebScript.Script;
+using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.Runtime;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -174,6 +176,47 @@ namespace NetWebScript.JsClr.Compiler
             return new MethodInvocationExpression(currentExceptionExpression.IlOffset, false, WrapException, null, new List<Expression>() { currentExceptionExpression });
         }
 
+        public override Statement Visit(MakeByRefFieldExpression refExpression)
+        {
+            var field = system.GetScriptField(refExpression.Field);
+            if (field != null)
+            {
+                // FIXME: should delegate work to Invoker
+                if (field.SlodId == null || field.Invoker != StandardInvoker.Instance)
+                {
+                    AddError(refExpression, string.Format("Could not make a reference to field '{0}'", field.Field.Name));
+                }
+                else
+                {
+                    Expression obj = null;
+                    if (field.Field.IsStatic)
+                    {
+                        obj = new LiteralExpression(field.Field.DeclaringType);
+                    }
+                    else
+                    {
+                        obj = refExpression.Target;
+                    }
+                    Expression prop = new LiteralExpression(field.SlodId);
+                    return new ObjectCreationExpression(refExpression.IlOffset, typeof(FieldRef).GetConstructor(new[] { typeof(JSObject), typeof(string) }), new List<Expression>() { obj, prop }).Accept(this);
+                }
+            }
+            else
+            {
+                AddError(refExpression, string.Format("Field '{0}' of '{1}' is not script available.", refExpression.Field.ToString(), refExpression.Field.DeclaringType.FullName));
+            }
+            return base.Visit(refExpression);
+        }
+
+        public override Statement Visit(ByRefSetExpression byRefSetExpression)
+        {
+            return new MethodInvocationExpression(
+                byRefSetExpression.IlOffset, 
+                true,
+                typeof(IRef).GetMethod("Set"), 
+                byRefSetExpression.Target, 
+                new List<Expression>() { byRefSetExpression.Value }).Accept(this);
+        }
 
 
         private static bool IsLiteralNull(Expression expr)

@@ -68,6 +68,10 @@ namespace NetWebScript.JsClr.Ast
         void Visit(SafeCastExpression safeCastExpression);
 
         void Visit(UnboxExpression unboxExpression);
+
+        void Visit(MakeByRefFieldExpression refExpression);
+
+        void Visit(ByRefSetExpression byRefSetExpression);
     }
 
     public interface IStatementVisitor<TResult>
@@ -133,5 +137,9 @@ namespace NetWebScript.JsClr.Ast
         TResult Visit(SafeCastExpression safeCastExpression);
 
         TResult Visit(UnboxExpression unboxExpression);
+
+        TResult Visit(MakeByRefFieldExpression refExpression);
+
+        TResult Visit(ByRefSetExpression byRefSetExpression);
     }
 }

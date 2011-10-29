@@ -300,19 +300,13 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
 
         public abstract void OnLdfld(Instruction instruction);
 
-        public virtual void OnLdflda(Instruction instruction)
-        {
-            Unsupported(instruction);
-        }
-
+        public abstract void OnLdflda(Instruction instruction);
+        
         public abstract void OnStfld(Instruction instruction);
 
         public abstract void OnLdsfld(Instruction instruction);
 
-        public virtual void OnLdsflda(Instruction instruction)
-        {
-            Unsupported(instruction);
-        }
+        public abstract void OnLdsflda(Instruction instruction);
 
         public abstract void OnStsfld(Instruction instruction);
 
@@ -620,7 +614,7 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
 
         public abstract void OnConstrained(Instruction instruction);
 
-        private void Unsupported(Instruction instruction)
+        protected void Unsupported(Instruction instruction)
         {
             throw new AstBuilderException(instruction.Offset, string.Format("IL operation '{0}' is not supported (Instruction: '{1}').", instruction.OpCode.Name, instruction.ToString()));
         }

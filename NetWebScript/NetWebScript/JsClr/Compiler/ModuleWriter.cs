@@ -187,23 +187,27 @@ namespace NetWebScript.JsClr.Compiler
                 return;
             }
 
-            var astWriter = new AstScriptWriter(system, method.Method, debuggable ? meta : null, pretty);
+            var astWriter = new AstScriptWriter(system, method.Ast, debuggable ? meta : null, pretty);
 
             writer.Write("function(");
-            ParameterInfo[] parameters = method.Method.GetParameters();
-            for (int i = 0; i < parameters.Length; ++i)
+            bool first = true;
+            foreach (var arg in method.Ast.Arguments)
             {
-                if (i > 0)
+                if (first)
+                {
+                    first = false;
+                }
+                else
                 {
                     writer.Write(',');
                 }
-                writer.Write(astWriter.ArgumentName(parameters[i]));
+                writer.Write(astWriter.ArgumentName(arg));
             }
             writer.Write(")");
             
             try
             {
-                astWriter.Body(writer, method.Ast);
+                astWriter.WriteBody(writer);
             }
             catch (Exception e)
             {

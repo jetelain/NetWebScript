@@ -18,20 +18,20 @@ namespace NetWebScript.JsClr.Compiler
 	{
         private readonly ScriptSystem system;
         private readonly MethodBaseMetadata methodMetadata;
-        private readonly MethodBase method;
+        private readonly MethodAst method;
         private readonly bool isctor;
         private readonly bool pretty;
 
-        public AstScriptWriter(ScriptSystem system, MethodBase method, MethodBaseMetadata methodMetadata, bool pretty)
+        public AstScriptWriter(ScriptSystem system, MethodAst method, MethodBaseMetadata methodMetadata, bool pretty)
 		{
             this.system = system;
             this.pretty = pretty;
-            if (!Attribute.IsDefined(method, typeof(DebuggerHiddenAttribute)))
+            if (!Attribute.IsDefined(method.Method, typeof(DebuggerHiddenAttribute)))
             {
                 this.methodMetadata = methodMetadata;
             }
             this.method = method;
-            isctor = method is ConstructorInfo;
+            isctor = method.Method is ConstructorInfo;
 		}
 
         public bool IsDebug
@@ -219,33 +219,35 @@ namespace NetWebScript.JsClr.Compiler
 
         public JsToken Visit(ReturnStatement returnStatement)
         {
+            JsTokenWriter writer = new JsTokenWriter();
             if (returnStatement.Value == null)
             {
-                if (isctor)
-                {
-                    if (IsDebug)
-                    {
-                        return JsToken.Statement("$dbgL(); return this");
-                    }
-                    return JsToken.Statement("return this");
-                }
                 if (IsDebug)
                 {
-                    return JsToken.Statement("$dbgL(); return");
+                   writer.Write("$dbgL();");
                 }
-                return JsToken.Statement("return");
-            }
-            JsTokenWriter writer = new JsTokenWriter();
-            writer.Write("return ");
-            if (IsDebug)
-            {
-                writer.Write("$dbgL(");
-                writer.WriteCommaSeparated(returnStatement.Value.Accept(this));
-                writer.Write(")");
+                if (isctor)
+                {
+                    writer.Write("return this");
+                }
+                else
+                {
+                    writer.Write("return");
+                }
             }
             else
             {
-                writer.WriteCommaSeparated(returnStatement.Value.Accept(this));
+                writer.Write("return ");
+                if (IsDebug)
+                {
+                    writer.Write("$dbgL(");
+                    writer.WriteCommaSeparated(returnStatement.Value.Accept(this));
+                    writer.Write(")");
+                }
+                else
+                {
+                    writer.WriteCommaSeparated(returnStatement.Value.Accept(this));
+                }
             }
             return writer.ToToken(JsPrecedence.Statement);
         }
@@ -389,15 +391,16 @@ namespace NetWebScript.JsClr.Compiler
             return scriptType.Serializer.LiteralValue(scriptType, value, this);
         }
 
-        internal void Body(TextWriter targetwriter, MethodAst ast)
+        internal void WriteBody(TextWriter targetwriter)
         {
+            var ast = method;
             JsTokenWriter writer = new JsTokenWriter();
             writer.WriteLine("{");
             if (IsDebug)
             {
                 writer.Write("var t={");
                 bool first = true;
-                if (!method.IsStatic)
+                if (!ast.Method.IsStatic)
                 {
                     first = false;
                     writer.Write("$this:this");
@@ -456,7 +459,6 @@ namespace NetWebScript.JsClr.Compiler
                 writer.WriteLine("return this;");
             }
             writer.Write("}");
-
             targetwriter.Write(writer.ToString());
         }
 
@@ -516,6 +518,16 @@ namespace NetWebScript.JsClr.Compiler
             meta.EndRow = point.EndRow;
             methodMetadata.Points.Add(meta);
             return meta;
+        }
+
+        public JsToken Visit(MakeByRefFieldExpression refExpression)
+        {
+            throw new NotImplementedException();
+        }
+
+        public JsToken Visit(ByRefSetExpression byRefSetExpression)
+        {
+            throw new NotImplementedException();
         }
     }
 }

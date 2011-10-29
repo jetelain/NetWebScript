@@ -87,6 +87,8 @@
     <Compile Include="Remoting\Serialization\XmlDeserializer.cs" />
     <Compile Include="Remoting\Serialization\XmlSerializer.cs" />
     <Compile Include="Remoting\ServerSideAttribute.cs" />
+    <Compile Include="Runtime\IRef.cs" />
+    <Compile Include="Runtime\FieldRef.cs" />
     <Compile Include="Runtime\SerializationHelper.cs" />
     <Compile Include="Script\Global.cs" />
     <Compile Include="Script\JSRegExp.cs" />

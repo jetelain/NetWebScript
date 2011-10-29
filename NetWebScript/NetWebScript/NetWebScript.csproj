@@ -93,11 +93,13 @@
     <Compile Include="JsClr\Ast\ArgumentReferenceExpression.cs" />
     <Compile Include="JsClr\Ast\BoxExpression.cs" />
     <Compile Include="JsClr\Ast\BreakStatement.cs" />
+    <Compile Include="JsClr\Ast\ByRefSetExpression.cs" />
     <Compile Include="JsClr\Ast\Case.cs" />
     <Compile Include="JsClr\Ast\CastExpression.cs" />
     <Compile Include="JsClr\Ast\Catch.cs" />
     <Compile Include="JsClr\Ast\ConditionExpression.cs" />
     <Compile Include="JsClr\Ast\ContinueStatement.cs" />
+    <Compile Include="JsClr\Ast\MakeByRefFieldExpression.cs" />
     <Compile Include="JsClr\Ast\UnboxExpression.cs" />
     <Compile Include="JsClr\Ast\SafeCastExpression.cs" />
     <Compile Include="JsClr\Ast\DoWhileStatement.cs" />

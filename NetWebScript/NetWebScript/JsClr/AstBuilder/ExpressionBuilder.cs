@@ -687,9 +687,19 @@ namespace NetWebScript.JsClr.AstBuilder
             Push(new FieldReferenceExpression(instruction.Offset, Pop(), instruction.OperandField));
         }
 
+        public override void OnLdflda(Instruction instruction)
+        {
+            Push(new MakeByRefFieldExpression(instruction.Offset, Pop(), instruction.OperandField));
+        }
+
         public override void OnLdsfld(Instruction instruction)
         {
             Push(new FieldReferenceExpression(instruction.Offset, null, instruction.OperandField));
+        }
+
+        public override void OnLdsflda(Instruction instruction)
+        {
+            Push(new MakeByRefFieldExpression(instruction.Offset, null, instruction.OperandField));
         }
 
         public override void OnStfld(Instruction instruction)
@@ -924,11 +934,44 @@ namespace NetWebScript.JsClr.AstBuilder
 
         #endregion
 
+
+        #region Reference manipulation
+
+        public override void OnStobj(Instruction instruction)
+        {
+            var value = Pop();
+            var target = Pop();
+            if (!IsByRefValue(target))
+            {
+                Unsupported(instruction);
+            }
+            Exec(new ByRefSetExpression(instruction.Offset, target, value));
+        }
+
+        public override void OnStind_Ref(Instruction instruction)
+        {
+            var value = Pop();
+            var target = Pop();
+            if (!IsByRefValue(target))
+            {
+                Unsupported(instruction);
+            }
+            Exec(new ByRefSetExpression(instruction.Offset, target, value));
+        }
+
+        #endregion
+
         #region Conversions
 
         public override void OnConv_I(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(int), Pop()));
+            Expression expr = Pop();
+            if (IsByRefValue(expr))
+            {
+                // Forbids conversion of a reference to pointer
+                Unsupported(instruction);
+            }
+            Push(new CastExpression(instruction.Offset, typeof(int), expr));
         }
 
         public override void OnConv_I1(Instruction instruction)
@@ -1014,7 +1057,7 @@ namespace NetWebScript.JsClr.AstBuilder
             {
                 // In generic method, a box operation can be asked on an object
                 // wich has no meaning. We simply ignore the instruction in that case
-                // TODO: check in ECMA if this the expected behavior
+                // TODO: check in ECMA if this is the expected behavior
                 return;
             }
             Push(new UnboxExpression(instruction.Offset, instruction.OperandSystemType, Pop()));
@@ -1133,7 +1176,11 @@ namespace NetWebScript.JsClr.AstBuilder
             Push(new SafeCastExpression(instruction.Offset, instruction.OperandSystemType, Pop()));
         }
 
-
+        private static bool IsByRefValue(Expression expr)
+        {
+            var type = expr.GetExpressionType();
+            return type != null && type.IsByRef;
+        }
 
     }
 }

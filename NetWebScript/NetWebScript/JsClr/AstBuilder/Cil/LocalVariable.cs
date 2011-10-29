@@ -26,6 +26,11 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
         public Type LocalType { get; private set; }
 
         /// <summary>
+        /// Allow a RefExpression on variable
+        /// </summary>
+        public bool AllowRef { get; set; }
+
+        /// <summary>
         /// Create a "fictive" <see cref="LocalVariable"/>.
         /// </summary>
         internal LocalVariable(string name, Type localType)
