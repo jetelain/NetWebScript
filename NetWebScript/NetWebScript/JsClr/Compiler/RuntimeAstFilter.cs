@@ -74,6 +74,10 @@ namespace NetWebScript.JsClr.Compiler
             {
                 AddError(fieldReferenceExpression, string.Format("Field '{0}' of '{1}' is not script available.", fieldReferenceExpression.Field.ToString(), fieldReferenceExpression.Field.DeclaringType.FullName));
             }
+            if (field.Field.DeclaringType == typeof(Variable))
+            {
+                return fieldReferenceExpression;
+            }
             return base.Visit(fieldReferenceExpression);
         }
 
@@ -169,6 +173,13 @@ namespace NetWebScript.JsClr.Compiler
         {
             current = method;
             base.Visit(method);
+            foreach (var variable in method.Variables)
+            {
+                if (variable.AllowRef)
+                {
+                    method.Statements.Insert(0, new AssignExpression(null, new VariableReferenceExpression(null, variable), (Expression)new ObjectCreationExpression(null, typeof(Variable).GetConstructor(Type.EmptyTypes), new List<Expression>()).Accept(this)));
+                }
+            }
         }
 
         public override Statement Visit(CurrentExceptionExpression currentExceptionExpression)
@@ -218,6 +229,25 @@ namespace NetWebScript.JsClr.Compiler
                 new List<Expression>() { byRefSetExpression.Value }).Accept(this);
         }
 
+        public override Statement Visit(ByRefGetExpression byRefGetExpression)
+        {
+            return new MethodInvocationExpression(
+                byRefGetExpression.IlOffset,
+                true,
+                typeof(IRef).GetMethod("Get"),
+                byRefGetExpression.Target,
+                new List<Expression>()).Accept(this);
+        }
+
+        public override Statement Visit(VariableReferenceExpression variableReferenceExpression)
+        {
+            var variable = variableReferenceExpression.Variable;
+            if (variable.AllowRef)
+            {
+                return new FieldReferenceExpression(variableReferenceExpression.IlOffset, variableReferenceExpression, typeof(Variable).GetField("localValue")).Accept(this);
+            }
+            return base.Visit(variableReferenceExpression);
+        }
 
         private static bool IsLiteralNull(Expression expr)
         {

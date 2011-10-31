@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="JsClr\AstBuilder\AstBuilderException.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\AstFilters.cs" />
+    <Compile Include="JsClr\AstBuilder\AstFilter\VariablesRef.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\IAstFilter.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\LastReturn.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\LiteralsTypeFix.cs" />
@@ -99,6 +100,8 @@
     <Compile Include="JsClr\Ast\Catch.cs" />
     <Compile Include="JsClr\Ast\ConditionExpression.cs" />
     <Compile Include="JsClr\Ast\ContinueStatement.cs" />
+    <Compile Include="JsClr\Ast\ByRefGetExpression.cs" />
+    <Compile Include="JsClr\Ast\MakeByRefVariableExpression.cs" />
     <Compile Include="JsClr\Ast\MakeByRefFieldExpression.cs" />
     <Compile Include="JsClr\Ast\UnboxExpression.cs" />
     <Compile Include="JsClr\Ast\SafeCastExpression.cs" />

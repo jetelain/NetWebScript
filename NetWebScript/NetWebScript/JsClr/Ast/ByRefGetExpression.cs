@@ -3,21 +3,17 @@ using System.Diagnostics.Contracts;
 
 namespace NetWebScript.JsClr.Ast
 {
-    public sealed class ByRefSetExpression : Expression
+    public sealed class ByRefGetExpression : Expression
     {
-        internal ByRefSetExpression(int ilOffset, Expression target, Expression value)
+        internal ByRefGetExpression(int ilOffset, Expression target)
             : base (ilOffset)
         {
             Contract.Requires(target != null);
-            Contract.Requires(value != null);
             Contract.Requires(target.GetExpressionType().IsByRef);
             this.Target = target;
-            this.Value = value;
         }
 
         public Expression Target { get; internal set; }
-
-        public Expression Value { get; internal set; }
 
         public override Type GetExpressionType()
         {
@@ -36,7 +32,7 @@ namespace NetWebScript.JsClr.Ast
 
         public override string ToString()
         {
-            return String.Format("(*{0}) = {1}", Target.ToString(), Value.ToString());
+            return String.Format("(*{0})", Target.ToString());
         }
     }
 }

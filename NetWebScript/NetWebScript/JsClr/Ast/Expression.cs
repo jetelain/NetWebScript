@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NetWebScript.JsClr.AstBuilder.Cil;
+using System.Diagnostics.Contracts;
 
 namespace NetWebScript.JsClr.Ast
 {
@@ -43,6 +44,13 @@ namespace NetWebScript.JsClr.Ast
         public virtual Expression Clone()
         {
             throw new NotImplementedException();
+        }
+
+        public virtual Expression GetRefValue()
+        {
+            Contract.Requires(IlOffset != null);
+            Contract.Requires(GetExpressionType() != null && GetExpressionType().IsByRef);
+            return new ByRefGetExpression(IlOffset.Value, this);
         }
     }
 

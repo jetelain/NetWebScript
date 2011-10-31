@@ -72,6 +72,10 @@ namespace NetWebScript.JsClr.Ast
         void Visit(MakeByRefFieldExpression refExpression);
 
         void Visit(ByRefSetExpression byRefSetExpression);
+
+        void Visit(MakeByRefVariableExpression makeByRefVariableExpression);
+
+        void Visit(ByRefGetExpression byRefGetExpression);
     }
 
     public interface IStatementVisitor<TResult>
@@ -141,5 +145,9 @@ namespace NetWebScript.JsClr.Ast
         TResult Visit(MakeByRefFieldExpression refExpression);
 
         TResult Visit(ByRefSetExpression byRefSetExpression);
+
+        TResult Visit(MakeByRefVariableExpression makeByRefVariableExpression);
+
+        TResult Visit(ByRefGetExpression byRefGetExpression);
     }
 }

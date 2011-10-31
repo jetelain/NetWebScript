@@ -90,6 +90,7 @@
     <Compile Include="Runtime\IRef.cs" />
     <Compile Include="Runtime\FieldRef.cs" />
     <Compile Include="Runtime\SerializationHelper.cs" />
+    <Compile Include="Runtime\Variable.cs" />
     <Compile Include="Script\Global.cs" />
     <Compile Include="Script\JSRegExp.cs" />
     <Compile Include="Script\JSString.cs" />

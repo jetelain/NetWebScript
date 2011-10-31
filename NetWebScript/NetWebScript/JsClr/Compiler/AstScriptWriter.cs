@@ -529,5 +529,16 @@ namespace NetWebScript.JsClr.Compiler
         {
             throw new NotImplementedException();
         }
+
+        public JsToken Visit(MakeByRefVariableExpression makeByRefVariableExpression)
+        {
+            return JsToken.Name(VariableName(makeByRefVariableExpression.Variable));
+        }
+
+
+        public JsToken Visit(ByRefGetExpression byRefGetExpression)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

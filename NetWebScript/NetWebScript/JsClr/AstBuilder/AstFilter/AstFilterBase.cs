@@ -297,5 +297,16 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
             byRefSetExpression.Value = (Expression)byRefSetExpression.Value.Accept(this);
             return byRefSetExpression;
         }
+
+        public virtual Statement Visit(MakeByRefVariableExpression makeByRefVariableExpression)
+        {
+            return makeByRefVariableExpression;
+        }
+
+        public virtual Statement Visit(ByRefGetExpression byRefGetExpression)
+        {
+            byRefGetExpression.Target = (Expression)byRefGetExpression.Target.Accept(this);
+            return byRefGetExpression;
+        }
     }
 }

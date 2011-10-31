@@ -6,7 +6,7 @@ namespace NetWebScript.JsClr.Ast
 {
     public sealed class MakeByRefFieldExpression : Expression
     {
-        public MakeByRefFieldExpression(int ilOffset, Expression target, FieldInfo field)
+        internal MakeByRefFieldExpression(int ilOffset, Expression target, FieldInfo field)
             : base(ilOffset)
         {
             Contract.Requires(field != null);
@@ -42,5 +42,9 @@ namespace NetWebScript.JsClr.Ast
             return String.Format("&({0}.{1})", Target.ToString(), Field.Name);
         }
 
+        public override Expression GetRefValue()
+        {
+            return new FieldReferenceExpression(IlOffset, Target, Field);
+        }
     }
 }

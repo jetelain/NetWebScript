@@ -13,7 +13,7 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
         /// <summary>
         /// Name of the variable. Generated if unknown.
         /// </summary>
-        public String Name { get; private set; }
+        public string Name { get; private set; }
 
         /// <summary>
         /// IL index of variable
@@ -28,7 +28,7 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
         /// <summary>
         /// Allow a RefExpression on variable
         /// </summary>
-        public bool AllowRef { get; set; }
+        public bool AllowRef { get; internal set; }
 
         /// <summary>
         /// Create a "fictive" <see cref="LocalVariable"/>.

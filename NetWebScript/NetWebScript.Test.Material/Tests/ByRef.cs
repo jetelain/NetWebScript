@@ -15,25 +15,49 @@ namespace NetWebScript.Test.Material.Tests
             target = value;
         }
 
-        private string field;
-
-        [TestMethod]
-        public void InstanceFieldRef()
+        private static void Append(string value, ref string target)
         {
-            field = "OldValue";
-            SetValue("NewValue", out field);
-            Assert.AreEqual("NewValue", field);
+            target = target + value;
         }
 
-
+        private string field;
         private static string sfield;
 
         [TestMethod]
-        public void StaticFieldRef()
+        public void InstanceFieldClassRef()
         {
+            sfield = null;
+            field = "OldValue";
+            SetValue("NewValue", out field);
+            Assert.AreEqual("NewValue", field);
+
+            Append("Suffix", ref field);
+            Assert.AreEqual("NewValueSuffix", field);
+        }
+
+        [TestMethod]
+        public void StaticFieldClassRef()
+        {
+            field = null;
             sfield = "OldValue";
             SetValue("NewValue", out sfield);
             Assert.AreEqual("NewValue", sfield);
+            
+            Append("Suffix", ref sfield);
+            Assert.AreEqual("NewValueSuffix", sfield);
+        }
+
+        [TestMethod]
+        public void VariableClassRef()
+        {
+            field = null;
+            sfield = null;
+            string variable = "OldValue";
+            SetValue("NewValue", out variable);
+            Assert.AreEqual("NewValue", variable);
+
+            Append("Suffix", ref variable);
+            Assert.AreEqual("NewValueSuffix", variable);
         }
     }
 }

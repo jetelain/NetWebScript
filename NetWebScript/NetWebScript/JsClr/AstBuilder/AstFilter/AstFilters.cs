@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NetWebScript.JsClr.Ast;
-
+﻿
 namespace NetWebScript.JsClr.AstBuilder.AstFilter
 {
     public class AstFilters
@@ -14,6 +9,7 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
             new LiteralsTypeFix().Visit(method);
             new LogicOperations().Visit(method);
             new NullTest().Visit(method);
+            new VariableRef().Visit(method);
         }
     }
 }

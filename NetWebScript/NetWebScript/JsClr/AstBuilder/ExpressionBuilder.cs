@@ -567,15 +567,8 @@ namespace NetWebScript.JsClr.AstBuilder
 
         public override void OnLdloca(Instruction instruction)
         {
-            LocalVariable loc = body.Variables[instruction.OperandVariableIndex];
-            if (loc.LocalType.IsValueType)
-            {
-                Push(VariableReference(instruction, instruction.OperandVariableIndex));
-            }
-            else
-            {
-                base.OnLdloca(instruction);
-            }
+            var variable = body.Variables[instruction.OperandVariableIndex];
+            Push(new MakeByRefVariableExpression(instruction.Offset, variable));
         }
 
         public override void OnStloc(Instruction instruction)
@@ -663,6 +656,12 @@ namespace NetWebScript.JsClr.AstBuilder
             if (!method.IsStatic)
             {
                 target = Pop();
+
+                Type type = target.GetExpressionType();
+                if (type != null && type.IsByRef)
+                {
+                    target = target.GetRefValue();
+                }
             }
             Expression call = new MethodInvocationExpression(instruction.Offset, virt, method, target, arguments);
 
@@ -957,6 +956,16 @@ namespace NetWebScript.JsClr.AstBuilder
                 Unsupported(instruction);
             }
             Exec(new ByRefSetExpression(instruction.Offset, target, value));
+        }
+
+        public override void OnLdind_Ref(Instruction instruction)
+        {
+            var target = Pop();
+            if (!IsByRefValue(target))
+            {
+                Unsupported(instruction);
+            }
+            Push(new ByRefGetExpression(instruction.Offset, target));
         }
 
         #endregion
