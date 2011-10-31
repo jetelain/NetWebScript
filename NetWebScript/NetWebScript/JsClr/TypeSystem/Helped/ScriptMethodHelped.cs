@@ -65,7 +65,7 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
                 arguments.Add(methodExpression.Target);
                 arguments.AddRange(methodExpression.Arguments);
 
-                var methdoExpressionProxy = new MethodInvocationExpression(methodExpression.IlOffset, methodExpression.Virtual, helper.Method, null, arguments);
+                var methdoExpressionProxy = new MethodInvocationExpression(methodExpression.IlOffset, false, helper.Method, null, arguments);
                 return helper.Invoker.WriteMethod(helper, methdoExpressionProxy, converter);
             }
             return helper.Invoker.WriteMethod(helper, methodExpression, converter);

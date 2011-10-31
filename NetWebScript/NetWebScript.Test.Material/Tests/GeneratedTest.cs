@@ -8,10 +8,10 @@ namespace NetWebScript.Test.Material.Tests
     [ScriptAvailable]
     public enum Quality
     {
-        Moisi,
+        VeryBad,
         Normal,
-        Bien,
-        Ultime
+        Good,
+        Awesome
     }
 
 
@@ -116,8 +116,8 @@ namespace NetWebScript.Test.Material.Tests
         [TestMethod]
         public void GeneratedEnum()
         {
-            Quality qual = Quality.Bien;
-            Assert.AreEqual("Bien", qual.ToString());
+            Quality qual = Quality.Good;
+            Assert.AreEqual("Good", qual.ToString());
         }
     }
 }

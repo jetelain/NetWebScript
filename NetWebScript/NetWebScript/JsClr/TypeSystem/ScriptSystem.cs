@@ -66,7 +66,7 @@ namespace NetWebScript.JsClr.TypeSystem
             }
             if (type == typeof(object))
             {
-                return new ObjectType();
+                return new ObjectType(this);
             }
             if (type == typeof(char))
             {

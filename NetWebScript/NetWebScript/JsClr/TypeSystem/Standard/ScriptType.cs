@@ -24,7 +24,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             this.system = system;
 
            
-            if (type.BaseType != null)
+            if (type.BaseType != null && type != typeof(NetWebScript.Equivalents.ObjectHelper) && type != typeof(NetWebScript.Script.TypeSystemHelper))
             {
                 this.baseType = system.GetScriptType(type.BaseType);
                 if (this.baseType == null)

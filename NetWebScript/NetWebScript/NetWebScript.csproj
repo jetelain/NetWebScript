@@ -197,6 +197,7 @@
     <Compile Include="JsClr\TypeSystem\Native\BooleanType.cs" />
     <Compile Include="JsClr\TypeSystem\Native\CharType.cs" />
     <Compile Include="JsClr\TypeSystem\Native\ArrayType.cs" />
+    <Compile Include="JsClr\TypeSystem\Native\NativeMethodHelped.cs" />
     <Compile Include="JsClr\TypeSystem\Native\DelegateMethodInvoke.cs" />
     <Compile Include="JsClr\TypeSystem\Native\DelegateType.cs" />
     <Compile Include="JsClr\TypeSystem\Native\FunctionType.cs" />

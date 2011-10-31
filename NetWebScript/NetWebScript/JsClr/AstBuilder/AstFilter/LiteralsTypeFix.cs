@@ -18,6 +18,11 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
             {
                 literal.SetExpressionType(type);
             }
+            DebugPointExpression dbg = expr as DebugPointExpression;
+            if (dbg != null && dbg.Value != null)
+            {
+                SetValueType(dbg.Value, type);
+            }
         }
 
         public override Statement Visit(AssignExpression assignExpression)

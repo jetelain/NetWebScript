@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="AnonymousObjectAttribute.cs" />
     <Compile Include="Equivalents\NotImplementedException.cs" />
+    <Compile Include="Equivalents\ObjectHelper.cs" />
     <Compile Include="Equivalents\Reflection\ConstructorInfo.cs" />
     <Compile Include="Equivalents\Reflection\MethodInfo.cs" />
     <Compile Include="Equivalents\Reflection\MethodBase.cs" />

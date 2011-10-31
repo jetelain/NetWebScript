@@ -10,11 +10,11 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
 {
     class ScriptTypeHelped : IScriptType
     {
-        private readonly Type type;
-        private readonly IScriptType helper;
-        private readonly List<ScriptMethodHelped> methods = new List<ScriptMethodHelped>();
-        private readonly List<ScriptContructorHelped> constructors = new List<ScriptContructorHelped>();
-        private readonly List<ScriptFieldHelped> fields = new List<ScriptFieldHelped>();
+        protected readonly Type type;
+        protected readonly IScriptType helper;
+        protected readonly List<IScriptMethod> methods = new List<IScriptMethod>();
+        protected readonly List<IScriptConstructor> constructors = new List<IScriptConstructor>();
+        protected readonly List<IScriptField> fields = new List<IScriptField>();
 
         public ScriptTypeHelped(ScriptSystem system, Type type, Type helperType)
         {
