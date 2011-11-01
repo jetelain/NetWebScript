@@ -11,6 +11,7 @@ namespace NetWebScript.JsClr.TypeSystem.Native
         public StringType(ScriptSystem system)
             : base(system, typeof(String), typeof(Equivalents.StringHelper))
         {
+            system.GetScriptType(typeof(NetWebScript.Script.JSString));
         }
 
         public override IValueSerializer Serializer

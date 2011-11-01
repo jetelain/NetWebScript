@@ -490,6 +490,21 @@ namespace NetWebScript.JsClr.AstBuilder
             Push(new LiteralExpression(instruction.Offset, null));
         }
 
+        public override void OnInitobj(Instruction instruction)
+        {
+            if (!instruction.OperandSystemType.IsValueType)
+            {
+                Expression expr = Pop();
+                if (IsByRefValue(expr))
+                {
+                    Exec(new ByRefSetExpression(instruction.Offset, expr, new LiteralExpression(instruction.Offset, null)));
+                    return;
+                }
+            }
+            base.OnInitobj(instruction);
+        }
+
+
         public override void OnLdtoken(Instruction instruction)
         {
             Push(new LiteralExpression(instruction.Offset, instruction.Operand));
@@ -524,6 +539,20 @@ namespace NetWebScript.JsClr.AstBuilder
             Push(ArgumentReference(instruction, 3));
         }
 
+        public override void OnLdarga(Instruction instruction)
+        {
+            int index = instruction.OperandArgumentIndex;
+            if (!body.Method.IsStatic)
+            {
+                if (index == 0)
+                {
+                    Unsupported(instruction);
+                }
+                index--;
+            }
+            Push(new MakeByRefArgumentExpression(instruction.Offset, body.Arguments[index]));
+        }
+
         private Expression ArgumentReference(Instruction instruction, int index)
         {
             if (!body.Method.IsStatic)
@@ -532,7 +561,7 @@ namespace NetWebScript.JsClr.AstBuilder
                 {
                     return new ThisReferenceExpression(instruction.Offset, body.Method.DeclaringType);
                 }
-                index -= 1; // the Parameters collection dos not contain the implict this argument
+                index--; // the Parameters collection dos not contain the implict this argument
             }
             return new ArgumentReferenceExpression(instruction.Offset, body.Arguments[index]);
         }
@@ -972,7 +1001,7 @@ namespace NetWebScript.JsClr.AstBuilder
 
         #region Conversions
 
-        public override void OnConv_I(Instruction instruction)
+        private void NumberConversion(Instruction instruction, Type type)
         {
             Expression expr = Pop();
             if (IsByRefValue(expr))
@@ -980,67 +1009,79 @@ namespace NetWebScript.JsClr.AstBuilder
                 // Forbids conversion of a reference to pointer
                 Unsupported(instruction);
             }
-            Push(new CastExpression(instruction.Offset, typeof(int), expr));
+            if (type == expr.GetExpressionType())
+            {
+                Push(expr);
+            }
+            else
+            {
+                Push(new CastExpression(instruction.Offset, type, expr));
+            }
+        }
+
+        public override void OnConv_I(Instruction instruction)
+        {
+            NumberConversion(instruction, typeof(int));
         }
 
         public override void OnConv_I1(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(byte), Pop()));
+            NumberConversion(instruction, typeof(byte));
         }
 
         public override void OnConv_I2(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(short), Pop()));
+            NumberConversion(instruction, typeof(short));
         }
 
         public override void OnConv_I4(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(int), Pop()));
+            NumberConversion(instruction, typeof(int));
         }
 
         public override void OnConv_I8(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(long), Pop()));
+            NumberConversion(instruction, typeof(long));
         }
 
         public override void OnConv_R_Un(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(float), Pop()));
+            NumberConversion(instruction, typeof(float));
         }
 
         public override void OnConv_R4(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(float), Pop()));
+            NumberConversion(instruction, typeof(float));
         }
 
         public override void OnConv_R8(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(double), Pop()));
+            NumberConversion(instruction, typeof(double));
         }
 
         public override void OnConv_U(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(uint), Pop()));
+            NumberConversion(instruction, typeof(uint));
         }
 
         public override void OnConv_U1(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(sbyte), Pop()));
+            NumberConversion(instruction, typeof(sbyte));
         }
 
         public override void OnConv_U2(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(ushort), Pop()));
+            NumberConversion(instruction, typeof(ushort));
         }
 
         public override void OnConv_U4(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(uint), Pop()));
+            NumberConversion(instruction, typeof(uint));
         }
 
         public override void OnConv_U8(Instruction instruction)
         {
-            Push(new CastExpression(instruction.Offset, typeof(ulong), Pop()));
+            NumberConversion(instruction, typeof(ulong));
         }
 
         public override void OnCastclass(Instruction instruction)

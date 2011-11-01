@@ -10,7 +10,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
     class ScriptConstructor : ScriptMethodBase, IScriptConstructor
     {
         internal ScriptConstructor(ScriptSystem system, ScriptType owner, ConstructorInfo method)
-            : base(system,owner,method,null)
+            : base(system, owner, method, null, false)
         {
         }
 

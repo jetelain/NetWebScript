@@ -19,6 +19,20 @@ namespace NetWebScript.Test.Material.Tests
         }
 
         [TestMethod]
+        public void InitialValueInt32()
+        {
+            int[] tab = new int[1];
+            Assert.AreEqual(0, tab[0]);
+        }
+
+        [TestMethod]
+        public void InitialValueObject()
+        {
+            object[] tab = new object[1];
+            Assert.AreEqual(null, tab[0]);
+        }
+
+        [TestMethod]
         public void InlineArrayInt32()
         {
             int[] tab = new int[] { 1, 2, 3, 4, 5 };

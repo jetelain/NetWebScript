@@ -67,16 +67,19 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                 methods.Add(new ScriptConstructor(system, this, ctor));
             }
 
-            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
             {
-                var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(field, typeof(ScriptBodyAttribute));
-                if (native != null)
+                if (field.DeclaringType == type)
                 {
-                    fields.Add(new InlinedField(this, field, native.Inline));
-                }
-                else
-                {
-                    fields.Add(new ScriptField(system, this, field));
+                    var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(field, typeof(ScriptBodyAttribute));
+                    if (native != null)
+                    {
+                        fields.Add(new InlinedField(this, field, native.Inline));
+                    }
+                    else
+                    {
+                        fields.Add(new ScriptField(system, this, field));
+                    }
                 }
             }
         }
@@ -125,6 +128,11 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
 
         private IScriptMethodBase GetScriptMethodBase(MethodBase method)
         {
+            if (method.ReflectedType != method.DeclaringType)
+            {
+                method = method.DeclaringType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly).First(m => m.MethodHandle == method.MethodHandle);
+            }
+
             return methods.FirstOrDefault(m => m.Method == method);
         }
 

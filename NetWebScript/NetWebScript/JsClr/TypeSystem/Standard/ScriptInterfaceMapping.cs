@@ -21,14 +21,14 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                     if (scriptItf != null)
                     {
                         var map = type.GetInterfaceMap(itf);
-                        ProcessInterface(map, scriptItf, scriptType);
+                        ProcessInterface(system, map, scriptItf, scriptType);
                     }
                 }
             }
             // TODO: check that interfaces slots does not create conflicts with type own slots and implementations
         }
 
-        private void ProcessInterface(InterfaceMapping map, IScriptType scriptItf, IScriptType scriptType)
+        private void ProcessInterface(ScriptSystem system, InterfaceMapping map, IScriptType scriptItf, IScriptType scriptType)
         {
             for (int i = 0; i < map.InterfaceMethods.Length; ++i)
             {
@@ -40,10 +40,14 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                     IScriptMethod interfaceScriptMethod = scriptItf.GetScriptMethod(interfaceMethod);
                     if (interfaceScriptMethod != null)
                     {
-                        IScriptMethod targetScriptMethod = scriptType.GetScriptMethod(targetMethod);
-                        if (targetScriptMethod == null || targetScriptMethod.ImplId == null)
+                        IScriptMethod targetScriptMethod = (IScriptMethod)system.GetScriptMethod(targetMethod);
+                        if (targetScriptMethod == null)
                         {
-                            throw new Exception(string.Format("'{0}' cannot implements interface '{1}' : method '{2}' is not available (inlined or non scriptable).", scriptType.Type.FullName, scriptItf.Type.FullName, targetMethod.ToString()));
+                            throw new Exception(string.Format("'{0}' cannot implements interface '{1}' : method '{2}' is not script available.", scriptType.Type.FullName, scriptItf.Type.FullName, targetMethod.ToString()));
+                        }
+                        if (targetScriptMethod.ImplId == null)
+                        {
+                            throw new Exception(string.Format("'{0}' cannot implements interface '{1}' : method '{2}' is script inlined or script sealed and thus cannot implemented.", scriptType.Type.FullName, scriptItf.Type.FullName, targetMethod.ToString()));
                         }
 
                         IScriptMethod potentialConflict;

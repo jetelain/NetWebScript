@@ -7,6 +7,8 @@ using NetWebScript.JsClr.TypeSystem;
 using NetWebScript.JsClr.TypeSystem.Standard;
 using NetWebScript.Script;
 using NetWebScript.Metadata;
+using NetWebScript.JsClr.TypeSystem.Imported;
+using NetWebScript.JsClr.JsBuilder.JsSyntax;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -52,6 +54,10 @@ namespace NetWebScript.JsClr.Compiler
 
         private MethodBaseMetadata CreateMetadata(TypeMetadata type, ScriptMethodBase methodBase)
         {
+            if (type == null)
+            {
+                return null;
+            }
             var meta = new MethodBaseMetadata();
             meta.Type = type;
             meta.Name = methodBase.ImplId;
@@ -117,10 +123,56 @@ namespace NetWebScript.JsClr.Compiler
             {
                 WriteSlot(pair.Key, type, pair.Value);
             }
+
+            foreach (var field in type.Fields)
+            {
+                writer.Write(type.TypeId);
+                writer.Write('.');
+                if (!field.Field.IsStatic)
+                {
+                    writer.Write("prototype.");
+                }
+                writer.Write(field.SlodId);
+                if (field.Field.IsLiteral)
+                {
+                    var value = field.Field.GetRawConstantValue();
+                    var strValue = value as string;
+                    if (strValue != null)
+                    {
+                        writer.WriteLine("={0}; // RAW", JsToken.LiteralString(strValue));
+                    }
+                    else if (value != null)
+                    {
+                        writer.WriteLine("=null; // RAW");
+                    }
+                    else
+                    {
+                        writer.WriteLine("={0}; // RAW", value);
+                    }
+                }
+                else if (field.Field.FieldType.IsValueType)
+                {
+                    writer.WriteLine("=0;");
+                }
+                else
+                {
+                    writer.WriteLine("=null;");
+                }
+            }
         }
 
-        
-
+        private void WriteStaticMethod(ImportedType stype, TypeMetadata classMeta, ScriptMethod method)
+        {
+            if (pretty)
+            {
+                writer.WriteLine();
+                writer.WriteLine("// Static {0}", method.Method.ToString());
+            }
+            writer.Write(method.ImplId);
+            writer.Write('=');
+            WriteMethodBody(classMeta, method);
+            writer.WriteLine(';');
+        }
 
         private void WriteStaticMethod(ScriptType stype, TypeMetadata classMeta, ScriptMethod method)
         {
@@ -139,7 +191,7 @@ namespace NetWebScript.JsClr.Compiler
             WriteMethodBody(classMeta, method);
             writer.WriteLine(';');
         }
-        private void WriteInstanceMethodBase(ScriptType stype, TypeMetadata classMeta, ScriptMethodBase method)
+        private void WriteInstanceMethodBase(IScriptType stype, TypeMetadata classMeta, ScriptMethodBase method)
         {
             if (pretty)
             {
@@ -154,7 +206,7 @@ namespace NetWebScript.JsClr.Compiler
             writer.WriteLine(';');
         }
 
-        private void WriteSlot(string slotId, ScriptType stype, IScriptMethod method)
+        private void WriteSlot(string slotId, IScriptType stype, IScriptMethod method)
         {
             Contract.Requires(method.SlodId != null);
             writer.Write(stype.TypeId);
@@ -168,7 +220,7 @@ namespace NetWebScript.JsClr.Compiler
         }
 
 
-        private void WriteInstanceMethod(ScriptType stype, TypeMetadata classMeta, ScriptMethod method)
+        private void WriteInstanceMethod(IScriptType stype, TypeMetadata classMeta, ScriptMethod method)
         {
             WriteInstanceMethodBase(stype, classMeta, method);
             if (method.SlodId != null)
@@ -245,6 +297,38 @@ namespace NetWebScript.JsClr.Compiler
                 writer.Write("{{v:{0},n:'{1}'}}", Convert.ToInt32(field.GetValue(null)), field.Name);
             }
             writer.WriteLine("]);");
+        }
+
+        internal void WriteTypeExtensions(ModuleMetadata Metadata, TypeSystem.Imported.ImportedType type)
+        {
+            if (pretty)
+            {
+                writer.WriteLine();
+                writer.WriteLine();
+                writer.WriteLine();
+                writer.WriteLine("//### Type {0}", type.Type.ToString());
+            }
+
+            foreach (var method in type.ExtensionMethods)
+            {
+                if (!method.Method.IsAbstract)
+                {
+                    if (method.Method.IsStatic)
+                    {
+                        WriteStaticMethod(type, null, method);
+                    }
+                    else
+                    {
+                        WriteInstanceMethod(type, null, method);
+                    }
+                }
+            }
+
+            var map = type.GetMapping();
+            foreach (var pair in map.Mapping)
+            {
+                WriteSlot(pair.Key, type, pair.Value);
+            }
         }
     }
 }

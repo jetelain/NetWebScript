@@ -52,5 +52,10 @@ namespace NetWebScript.JsClr.Ast
             }
             return String.Format("/*{0}*/",Point.ToString());
         }
+
+        public override Expression Negate()
+        {
+            return new DebugPointExpression(Point, Value.Negate());
+        }
     }
 }

@@ -44,3 +44,8 @@ using System.Collections.Generic;
 [assembly: ForceScriptAvailable(typeof(IEnumerable<>))]
 [assembly: ForceScriptAvailable(typeof(IEnumerator<>))]
 [assembly: ForceScriptAvailable(typeof(IDisposable))]
+
+[assembly: ForceScriptAvailable(typeof(IEqualityComparer))]
+[assembly: ForceScriptAvailable(typeof(IEqualityComparer<>))]
+[assembly: ForceScriptAvailable(typeof(ICollection))]
+[assembly: ForceScriptAvailable(typeof(ICollection<>))]

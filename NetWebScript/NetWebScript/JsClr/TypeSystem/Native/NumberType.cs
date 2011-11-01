@@ -5,15 +5,16 @@ using System.Text;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
 using System.Globalization;
+using NetWebScript.Script;
 
 namespace NetWebScript.JsClr.TypeSystem.Native
 {
     class NumberType : NativeType, IValueSerializer, ITypeBoxing
     {
-        public NumberType(Type type)
+        public NumberType(ScriptSystem system, Type type)
             : base("Number", type)
         {
-
+            system.GetScriptType(typeof(JSNumber));
         }
 
         public override ITypeBoxing Boxing

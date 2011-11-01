@@ -26,6 +26,9 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
                     case "op_Subtraction":
                         name = "-";
                         break;
+                    case "op_Equality":
+                        name = "==";
+                        break;
                     default:
                         throw new Exception(method.Name);
                 }

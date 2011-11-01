@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NetWebScript
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public sealed class ScriptEquivalentAttribute : Attribute
     {
         private readonly Type type;

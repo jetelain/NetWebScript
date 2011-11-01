@@ -12,6 +12,7 @@ namespace NetWebScript.Equivalents
     {
         protected string name;
         protected double value;
+        protected Type type;
 
         public static Enum ToObject(Type enumType, double value)
         {
@@ -25,6 +26,7 @@ namespace NetWebScript.Equivalents
             }
             Enum obj = CreateInstance(enumType);
             obj.value = value;
+            obj.type = enumType;
             return obj;
         }
 
@@ -61,6 +63,7 @@ namespace NetWebScript.Equivalents
                 Enum o = CreateInstance(t);
                 o.value = e.v;
                 o.name = e.n;
+                o.type = t;
                 values[i] = o;
             }
             SetValues(t, values);
@@ -70,6 +73,21 @@ namespace NetWebScript.Equivalents
         public override string ToString()
         {
             return name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            Enum other = obj as Enum;
+            if (obj != null)
+            {
+                return object.Equals(other.type,type) && other.value == value;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return (int)(value % 0x7fffffff);
         }
 
         [AnonymousObject]

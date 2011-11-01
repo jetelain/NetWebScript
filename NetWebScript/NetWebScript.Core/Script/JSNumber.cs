@@ -162,6 +162,28 @@ namespace NetWebScript.Script
         {
             return num.value;
         }
+
+        public static bool operator ==(JSNumber s1, object s2)
+        {
+            return (double)s1 == (s2 as double?);
+        }
+
+        public static bool operator !=(JSNumber s1, object s2)
+        {
+            return (double)s1 != (s2 as double?);
+        }
+
+        [ImportedExtension]
+        public override int GetHashCode()
+        {
+            return (int)(((double)this)%0x7fffffff);
+        }
+
+        [ImportedExtension]
+        public override bool Equals(object obj)
+        {
+            return this == obj;
+        }
     }
 }
 

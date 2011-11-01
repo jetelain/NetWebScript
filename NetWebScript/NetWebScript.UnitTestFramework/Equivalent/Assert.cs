@@ -19,6 +19,22 @@ namespace NetWebScript.UnitTestFramework.Equivalent
             }
         }
 
+        public static void AreEqual(object expected, object actual)
+        {
+            if (!object.Equals(expected, actual))
+            {
+                throw new Exception("failed");
+            }
+        }
+
+        public static void AreSame(object expected, object actual)
+        {
+            if (expected != actual)
+            {
+                throw new Exception("failed");
+            }
+        }
+
         public static void IsNotNull(object value)
         {
             if (value == null)

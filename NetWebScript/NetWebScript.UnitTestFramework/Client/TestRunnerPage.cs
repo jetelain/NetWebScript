@@ -22,6 +22,8 @@ namespace NetWebScript.UnitTestFramework.Client
         {
             var results = new TestRunner().Execute(tests);
 
+            int ok = 0, ko = 0;
+            
             var body = JQuery.Select("body");
             var table = JQuery.Select("<table></table>");
             body.Append(table);
@@ -45,16 +47,28 @@ namespace NetWebScript.UnitTestFramework.Client
                     {
                         methodRow.Append(JQuery.Select("<td style=\"color:green;\">OK</td>"));
                         methodRow.Append(JQuery.Select("<td>" + methodResult.duration + " msec</td>"));
+                        ok++;
                     }
                     else
                     {
                         methodRow.Append(JQuery.Select("<td style=\"color:red;\">KO</td>"));
                         methodRow.Append(JQuery.Select("<td></td>").Text(methodResult.message));
+                        ko++;
                     }
                     table.Append(methodRow);
                 }
             }
-
+            var title = JQuery.Select("title");
+            if (ko == 0)
+            {
+                JQuery.Select("<h1></h1>").Css("color", "green").Text("Success - OK : " + ok + "/" + ok).InsertBefore(table);
+                title.Text("Success - " + title.Text()); ;
+            }
+            else
+            {
+                JQuery.Select("<h1></h1>").Css("color", "red").Text("Failed - OK : " + ok + "/" + (ok + ko)).InsertBefore(table);
+                title.Text("Failed - " + title.Text()); ;
+            }
         }
     }
 }

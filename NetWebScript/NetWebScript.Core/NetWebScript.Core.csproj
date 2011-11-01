@@ -66,6 +66,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnonymousObjectAttribute.cs" />
+    <Compile Include="Equivalents\Collections\Generic\DefaultEqualityComparer.cs" />
+    <Compile Include="Equivalents\Collections\Generic\Dictionary.cs" />
+    <Compile Include="Equivalents\Collections\Generic\EqualityComparer.cs" />
+    <Compile Include="Equivalents\Collections\Generic\KeyValuePair.cs" />
+    <Compile Include="ImportedExtensionAttribute.cs" />
     <Compile Include="Equivalents\NotImplementedException.cs" />
     <Compile Include="Equivalents\ObjectHelper.cs" />
     <Compile Include="Equivalents\Reflection\ConstructorInfo.cs" />

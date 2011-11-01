@@ -158,12 +158,7 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
                         break;
                     case OperandType.InlineType:
                         metadataToken = ReadInt32(il, ref position);
-                        // now we call the ResolveType always using the generic attributes type in order
-                        // to support decompilation of generic methods and classes
-
-                        // thanks to the guys from code project who commented on this missing feature
-
-                        instruction.Operand = module.ResolveType(metadataToken, this.mi.DeclaringType.GetGenericArguments(), this.mi.GetGenericArguments());
+                        instruction.Operand = module.ResolveType(metadataToken, genericTypeArguments, genericMethodArguments);
                         break;
                     case OperandType.InlineI:
                         {

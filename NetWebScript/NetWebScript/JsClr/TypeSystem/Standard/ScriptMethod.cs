@@ -11,7 +11,12 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         private readonly string vslot;
 
         internal ScriptMethod(ScriptSystem system, ScriptType owner, MethodInfo method, string body)
-            : base(system,owner,method, body)
+            : this(system, owner, method, body, owner.IsGlobals)
+        {
+        }
+
+        internal ScriptMethod(ScriptSystem system, IScriptType owner, MethodInfo method, string body, bool isGlobal)
+            : base(system, owner, method, body, isGlobal)
         {
             if (method.IsVirtual)
             {

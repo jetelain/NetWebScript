@@ -93,6 +93,7 @@ namespace NetWebScript.UnitTestFramework.Compiler
             writer.WriteLine("<!DOCTYPE html>");
             writer.WriteLine("<html>");
             writer.WriteLine("<head>");
+            writer.WriteLine("<title>{0}</title>", pagename);
             writer.WriteLine("<script type=\"text/javascript\" src=\"{0}\"></script>", CoreRuntime.JQueryFilename);
             writer.WriteLine("<script type=\"text/javascript\" src=\"{0}.js\"></script>", pagename);
             writer.WriteLine("<script type=\"text/javascript\">");

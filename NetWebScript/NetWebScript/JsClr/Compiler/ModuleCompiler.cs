@@ -168,6 +168,14 @@ namespace NetWebScript.JsClr.Compiler
                 moduleWriter.WriteEnumType(Metadata, type);
                 SanityCheck(type);
             }
+            foreach (var type in system.ImportedTypes.ToArray())
+            {
+                if (type.ExtensionMethods.Count > 0)
+                {
+                    moduleWriter.WriteTypeExtensions(Metadata, type);
+                    SanityCheck(type);
+                }
+            }
             foreach (var type in system.Equivalents)
             {
                 Metadata.Equivalents.Add(new EquivalentMetadata() { CRef = CRefToolkit.GetCRef(type.Type), EquivalentCRef = CRefToolkit.GetCRef(type.Equivalent.Type) });

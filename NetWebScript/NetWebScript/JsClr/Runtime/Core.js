@@ -1,9 +1,5 @@
 ﻿var NWS = {};
 
-// Object.GetHashCode()
-//Object.prototype.$ghc = (function () { var c = 0; return function () { if (this.$hc!==undefined) return this.$hc; return this.$hc=++c; }; });
-//Object.prototype.$eq = function (o) { return o == this; };
-
 var $dbgP = function(id, data) { return true; };
 var $dbgE = function(name, data) { };
 var $dbgL = function(v) { return v; };

@@ -12,15 +12,17 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
     {
         private readonly MethodBase method;
         private readonly string impl;
-        private readonly ScriptType owner;
+        private readonly IScriptType owner;
         private readonly string body;
+        private readonly IMethodInvoker invoker;
 
-        protected ScriptMethodBase(ScriptSystem system, ScriptType owner, MethodBase method, string body)
+        protected ScriptMethodBase(ScriptSystem system, IScriptType owner, MethodBase method, string body, bool isGlobal)
         {
             this.owner = owner;
             this.method = method;
             this.impl = system.CreateImplementationId();
             this.body = body;
+            this.invoker = isGlobal ? (IMethodInvoker)GlobalsInvoker.Instance : (IMethodInvoker)StandardInvoker.Instance;
         }
 
         /// <summary>
@@ -43,14 +45,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
 
         public IMethodInvoker Invoker 
         { 
-            get 
-            {
-                if (owner.IsGlobals)
-                {
-                    return GlobalsInvoker.Instance;
-                }
-                return StandardInvoker.Instance; 
-            } 
+            get { return invoker; } 
         }
 
         public MethodAst Ast

@@ -73,7 +73,19 @@ namespace NetWebScript.Script
             return null;
         }
 
-
-
+        /// <summary>
+        /// Initialize an array of a given size filled with an initial value.
+        /// </summary>
+        /// <param name="size"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        [DebuggerHidden]
+        public static JSArray<object> CreateArray(int size, object value)
+        {
+            var count = size;
+            var array = new JSArray<object>();
+            while (count > 0) { array.Push(value); count--; }
+            return array;
+        }
     }
 }

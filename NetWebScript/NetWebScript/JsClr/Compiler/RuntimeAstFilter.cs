@@ -32,6 +32,24 @@ namespace NetWebScript.JsClr.Compiler
             this.errors = errors;
         }
 
+        public override Statement Visit(ArrayCreationExpression arrayCreationExpression)
+        {
+            if (arrayCreationExpression.Initialize == null)
+            {
+                LiteralExpression value;
+                if (arrayCreationExpression.ItemType.IsValueType)
+                {
+                    value = new LiteralExpression(0);
+                }
+                else
+                {
+                    value = new LiteralExpression(null);
+                }
+                return new MethodInvocationExpression(arrayCreationExpression.IlOffset, false, new Func<int, object, JSArray<object>>(RuntimeHelper.CreateArray).Method, null, new List<Expression>() { arrayCreationExpression .Size, value }).Accept(this);
+            }
+            return base.Visit(arrayCreationExpression);
+        }
+
         public override Statement Visit(CastExpression castExpression)
         {
             var type = system.GetScriptType(castExpression.Type);
@@ -74,7 +92,7 @@ namespace NetWebScript.JsClr.Compiler
             {
                 AddError(fieldReferenceExpression, string.Format("Field '{0}' of '{1}' is not script available.", fieldReferenceExpression.Field.ToString(), fieldReferenceExpression.Field.DeclaringType.FullName));
             }
-            if (field.Field.DeclaringType == typeof(Variable))
+            else if (field.Field.DeclaringType == typeof(Variable))
             {
                 return fieldReferenceExpression;
             }

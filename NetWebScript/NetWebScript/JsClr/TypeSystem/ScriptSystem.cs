@@ -74,7 +74,7 @@ namespace NetWebScript.JsClr.TypeSystem
             }
             if (type == typeof(int) || type == typeof(double) || type == typeof(float) || type == typeof(long) || type == typeof(short) || type == typeof(byte))
             {
-                return new NumberType(type);
+                return new NumberType(this, type);
             }
             if (type == typeof(bool))
             {
@@ -95,11 +95,10 @@ namespace NetWebScript.JsClr.TypeSystem
                 helped.Serializer = new FunctionType(this, type);
                 return helped;
             }
-            // TODO: Enums
             var imported = (ImportedAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedAttribute), false);
             if (imported != null)
             {
-                return new ImportedType(type, imported.Convention, imported.Name);
+                return new ImportedType(this, type, imported.Convention, imported.Name);
             }
             var anonymous = (AnonymousObjectAttribute)Attribute.GetCustomAttribute(type, typeof(AnonymousObjectAttribute));
             if (anonymous != null)
@@ -225,6 +224,12 @@ namespace NetWebScript.JsClr.TypeSystem
         {
             get { return typesToGenerate; }
         }
+
+        internal IEnumerable<ImportedType> ImportedTypes
+        {
+            get { return types.OfType<ImportedType>(); }
+        }
+
         internal List<ScriptEnumType> EnumToGenerate
         {
             get { return enumsToGenerate; }
@@ -298,10 +303,17 @@ namespace NetWebScript.JsClr.TypeSystem
             }
             foreach (Type type in assembly.GetTypes())
             {
-                var attr = (ScriptEquivalentAttribute)Attribute.GetCustomAttribute(type, typeof(ScriptEquivalentAttribute));
+                var attr = (ScriptEquivalentAttribute)Attribute.GetCustomAttribute(type, typeof(ScriptEquivalentAttribute), false);
                 if (attr != null)
                 {
-                    scriptEquivalent.Add(attr.Type, type);
+                    if (scriptEquivalent.ContainsKey(attr.Type))
+                    {
+                        throw new Exception(string.Format("Type '{0}' has more than one equivalent : at least '{1}' and '{2}'", attr.Type, type.FullName, scriptEquivalent[attr.Type].FullName));
+                    }
+                    else
+                    {
+                        scriptEquivalent.Add(attr.Type, type);
+                    }
                 }
             }
         }

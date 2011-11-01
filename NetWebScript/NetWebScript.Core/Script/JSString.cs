@@ -104,6 +104,16 @@ namespace NetWebScript.Script
             return (string)s1 != (string)s2;
         }
 
+        public static bool operator ==(JSString s1, object s2)
+        {
+            return (string)s1 == (s2 as string);
+        }
+
+        public static bool operator !=(JSString s1, object s2)
+        {
+            return (string)s1 != (s2 as string);
+        }
+
         public string Replace(JSRegExp regex, string replaceText)
         {
             if (regex.Global)
@@ -225,6 +235,28 @@ namespace NetWebScript.Script
                 return str.data;
             }
             return null;
+        }
+
+        [ImportedExtension]
+        public override int GetHashCode()
+        {
+	        int hash = 0;
+	        for (int i = 0; i < Length; i++) {
+		        hash = ((hash<<5)-hash)+CharCodeAt(i);
+		        hash = hash & hash; // Convert to 32bit integer
+	        }
+	        return hash;
+        }
+
+        [ImportedExtension]
+        public override bool Equals(object obj)
+        {
+            return this == obj;
+        }
+
+        public override string ToString()
+        {
+            return data;
         }
     }
 }

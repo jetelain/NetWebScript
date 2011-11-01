@@ -84,6 +84,13 @@ namespace NetWebScript.Equivalents
             return string.Concat(str0, str1, str2);
         }
 
+
+        [ScriptBody(Inline = "values.join('')")]// FIXME: may not work as expected
+        internal static string Concat(params object[] values)
+        {
+            return string.Concat(values);
+        }
+
         [ScriptBody(Inline = "$.trim(str)")]
         internal static string Trim(string str)
         {

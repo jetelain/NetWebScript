@@ -540,5 +540,10 @@ namespace NetWebScript.JsClr.Compiler
         {
             throw new NotImplementedException();
         }
+
+        public JsToken Visit(MakeByRefArgumentExpression makeByRefArgumentExpression)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

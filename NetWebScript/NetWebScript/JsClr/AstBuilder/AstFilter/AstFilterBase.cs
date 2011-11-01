@@ -308,5 +308,10 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
             byRefGetExpression.Target = (Expression)byRefGetExpression.Target.Accept(this);
             return byRefGetExpression;
         }
+
+        public Statement Visit(MakeByRefArgumentExpression makeByRefArgumentExpression)
+        {
+            throw new AstBuilderException(makeByRefArgumentExpression.IlOffset, "Unsupported operation");
+        }
     }
 }

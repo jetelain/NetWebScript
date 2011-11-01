@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Diagnostics.Contracts;
 using NetWebScript.JsClr.TypeSystem.Inlined;
 using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.JsClr.TypeSystem.Standard;
 
 namespace NetWebScript.JsClr.TypeSystem.Imported
 {
@@ -15,11 +16,15 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
         private readonly List<ImportedConstructor> constructors = new List<ImportedConstructor>();
         private readonly List<IScriptMethod> methods = new List<IScriptMethod>();
         private readonly List<IScriptField> fields = new List<IScriptField>();
+        private readonly List<ScriptMethod> extensions = new List<ScriptMethod>();
+
         private readonly CaseConvention convention;
         private readonly string name;
+        private readonly ScriptSystem system;
 
-        public ImportedType(Type type, CaseConvention convention, string forceName)
+        public ImportedType(ScriptSystem system, Type type, CaseConvention convention, string forceName)
         {
+            this.system = system;
             this.type = type;
             this.convention = convention;
 
@@ -40,6 +45,18 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             else
             {
                 this.name = typeName;
+            }
+
+
+            foreach (var method in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                if (Attribute.IsDefined(method, typeof(ImportedExtensionAttribute)))
+                {
+                    var scriptMethod = new ScriptMethod(system, this, method, null, false);
+                    extensions.Add(scriptMethod);
+                    methods.Add(scriptMethod);
+                    system.MethodsToGenerate.Add(scriptMethod);
+                }
             }
         }
 
@@ -169,6 +186,16 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
         public bool HaveCastInformation
         {
             get { return false; }
+        }
+
+        public List<ScriptMethod> ExtensionMethods
+        {
+            get { return extensions; }
+        }
+
+        internal ScriptInterfaceMapping GetMapping()
+        {
+            return new ScriptInterfaceMapping(system, this);
         }
     }
 }

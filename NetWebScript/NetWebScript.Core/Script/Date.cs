@@ -148,7 +148,7 @@ namespace NetWebScript.Script
 
         public static bool operator ==(Date a, Date b)
         {
-            return a.datetime == b.datetime;
+            return a == b || ( a != null && b != null && a.datetime == b.datetime);
         }
 
         public static bool operator >(Date a, Date b)
@@ -163,7 +163,7 @@ namespace NetWebScript.Script
 
         public static bool operator !=(Date a, Date b)
         {
-            return a.datetime != b.datetime;
+            return !(a == b);
         }
 
         public static bool operator <(Date a, Date b)
@@ -179,6 +179,16 @@ namespace NetWebScript.Script
         public static double operator -(Date a, Date b)
         {
             return (double)((a.datetime - b.datetime).TotalMilliseconds);
+        }
+
+        public static bool operator ==(Date a, object b)
+        {
+            return a == b as Date;
+        }
+
+        public static bool operator !=(Date a, object b)
+        {
+            return a != b as Date;
         }
 
         public static int Parse(string value)
@@ -329,6 +339,18 @@ namespace NetWebScript.Script
         public static double UTC(int year, int month, int day, int hours, int minutes, int seconds, int milliseconds)
         {
             return GetTime(new DateTime(year, month, day, hours, minutes, seconds, milliseconds, DateTimeKind.Utc));
+        }
+
+        [ImportedExtension]
+        public override bool Equals(object obj)
+        {
+            return this == obj;
+        }
+
+        [ImportedExtension]
+        public override int GetHashCode()
+        {
+            return (int)((this - new Date(0)) % 0x7fffffff);
         }
     }
 }
