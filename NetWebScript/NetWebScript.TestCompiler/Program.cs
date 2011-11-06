@@ -9,17 +9,45 @@ namespace NetWebScript.TestCompiler
 {
     class Program
     {
+        static int Usage()
+        {
+            Console.WriteLine("Error: Usage: NetWebScript.TestCompiler.exe [/debug] [/pretty] testassembly.dll");
+            return 1;
+        }
+
         static int Main(string[] args)
         {
-            if (args.Length != 1)
+            bool debug = false, pretty = false;
+            string assemblyFileName = null;
+            foreach (var arg in args)
             {
-                Console.WriteLine("Error: Usage: NetWebScript.TestCompiler.exe testassembly.dll");
-                return 1;
+                if (string.Equals(arg, "/debug", StringComparison.OrdinalIgnoreCase))
+                {
+                    debug = true;
+                }
+                else if (string.Equals(arg,"/pretty",StringComparison.OrdinalIgnoreCase))
+                {
+                    pretty = true;
+                }
+                else if (assemblyFileName == null)
+                {
+                    assemblyFileName = arg;
+                }
+                else
+                {
+                    return Usage();
+                }
             }
-            var file = new FileInfo(args[0]);
+
+            if (assemblyFileName == null)
+            {
+                return Usage();
+            }
+
+            var file = new FileInfo(assemblyFileName);
             if (!file.Exists)
             {
-                Console.Error.WriteLine("Error: File '{0}' does not exists.", args[0]);
+                Console.Error.WriteLine("Error: File '{0}' does not exists.", assemblyFileName);
                 return 2;
             }
             try
@@ -31,7 +59,7 @@ namespace NetWebScript.TestCompiler
                 }
                 
                 var assembly = Assembly.LoadFrom(file.FullName);
-                var compiler = new UnitTestCompiler();
+                var compiler = new UnitTestCompiler(pretty, debug);
                 compiler.AddTestsFrom(assembly);
 
                 var messages = compiler.GetMessages();

@@ -45,9 +45,9 @@ var Debugger = {
     },
 
     Start: function () {
-		$j.support.cors = true;
+		$.support.cors = true;
         var success = true;
-        var xhr = $j.ajax({
+        var xhr = $.ajax({
             type: 'POST',
             url: Debugger.Url + "?cmd=start",
             data: Debugger.Identity(),
@@ -67,7 +67,7 @@ var Debugger = {
             Debugger.ProcessAll(c);
 
             var timer = setInterval(Debugger.QueryStatus, 5000);
-            $j(window).unload(function () {
+            $(window).unload(function () {
                 clearInterval(timer);
                 var c = new Debugger.Channel();
                 c.Send('stop');
@@ -84,7 +84,7 @@ var Debugger = {
     },
 
     QueryStatus: function () {
-        $j.ajax({
+        $.ajax({
             url: Debugger.Url,
             data: { t: Debugger.Tid, cmd: 'status' },
             dataType: 'text',
@@ -149,7 +149,7 @@ var Debugger = {
         };
         this.Send = function (cmd, data) {
             var success = true;
-            var xhr = $j.ajax({
+            var xhr = $.ajax({
                 url: Debugger.Url,
                 data: { t: Debugger.Tid, cmd: cmd, data: data || '', mode: mode },
                 dataType: 'text',
@@ -163,9 +163,9 @@ var Debugger = {
         };
         this.SendPost = function (cmd, data, postData) {
             var success = true;
-            var xhr = $j.ajax({
+            var xhr = $.ajax({
                 type: 'POST',
-                url: Debugger.Url + "?" + $j.param({ t: Debugger.Tid, cmd: cmd, data: data || '', mode: mode }),
+                url: Debugger.Url + "?" + $.param({ t: Debugger.Tid, cmd: cmd, data: data || '', mode: mode }),
                 data: postData,
                 dataType: 'text',
                 timeout: 2500,
@@ -259,7 +259,7 @@ var Debugger = {
                     value.setAttribute("Name", "this");
                     node.appendChild(value);
                 }
-                else if (!$j.isFunction(value)) {
+                else if (!$.isFunction(value)) {
                     var vnode;
                     if (typeof value === "object") {
                         if (depth < 2) {

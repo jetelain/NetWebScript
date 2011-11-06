@@ -20,10 +20,12 @@ namespace NetWebScript.UnitTestFramework.Compiler
         private readonly ModuleCompiler compiler;
         private readonly List<Type> tests = new List<Type>();
 
-        public UnitTestCompiler()
+
+        public UnitTestCompiler(bool pretty, bool debug)
         {
             compiler = new ModuleCompiler();
-            compiler.PrettyPrint = true;
+            compiler.PrettyPrint = pretty;
+            compiler.Debuggable = debug;
             compiler.ImportAssemblyMappings(typeof(UnitTestCompiler).Assembly);
             compiler.AddEntryPoint(typeof(TestRunner));
             compiler.AddEntryPoint(typeof(RemoteInvoker));
@@ -98,6 +100,10 @@ namespace NetWebScript.UnitTestFramework.Compiler
             writer.WriteLine("<script type=\"text/javascript\" src=\"{0}.js\"></script>", pagename);
             writer.WriteLine("<script type=\"text/javascript\">");
             writer.WriteLine("$(document).ready(function(){");
+            if (compiler.Debuggable)
+            {
+                writer.WriteLine("$dbgStart();");
+            }
             serializer.Serialize(writer, new Action(page.Run));
             writer.WriteLine(".call(null);");
             writer.WriteLine("});");

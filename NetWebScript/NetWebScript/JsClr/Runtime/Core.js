@@ -4,15 +4,18 @@ var $dbgP = function(id, data) { return true; };
 var $dbgE = function(name, data) { };
 var $dbgL = function(v) { return v; };
 
-NWS.CreateDocument = function(name) {
-    if (window.ActiveXObject) {
+NWS.CreateDocument = function (name) {
+    if (document.implementation && document.implementation.createDocument) {
+        return document.implementation.createDocument('', name, null);
+    }
+    else if (window.ActiveXObject) {
         var doc = new ActiveXObject("Microsoft.XMLDOM");
         var root = doc.createElement(name);
         doc.appendChild(root);
         return doc;
     }
     else {
-        return document.implementation.createDocument('', name, null);
+        throw new Error('Unsupported');
     }
 }
 

@@ -532,7 +532,7 @@ namespace NetWebScript.JsClr.Compiler
 
         public JsToken Visit(MakeByRefVariableExpression makeByRefVariableExpression)
         {
-            return JsToken.Name(VariableName(makeByRefVariableExpression.Variable));
+            return JsToken.Name(VariableReference(makeByRefVariableExpression.Variable));
         }
 
 

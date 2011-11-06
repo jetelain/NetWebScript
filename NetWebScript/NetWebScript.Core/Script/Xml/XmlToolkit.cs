@@ -14,12 +14,14 @@ namespace NetWebScript.Script.Xml
         /// <param name="rootElementName">Root element name.</param>
         /// <returns>A new instance of IXmlDocument.</returns>
         [ScriptBody(Body= @"function(n) {
-if (window.ActiveXObject) {
+if(document.implementation && document.implementation.createDocument)
+return document.implementation.createDocument('', n, null);
+if(window.ActiveXObject){
 var d = new ActiveXObject('Microsoft.XMLDOM');
 d.appendChild(d.createElement(n));
 return d;
 }
-return document.implementation.createDocument('', n, null);
+throw new Error('Unsupported');
 }")]
         public static IXmlDocument CreateDocument(string rootElementName)
         {
