@@ -80,5 +80,12 @@ namespace NetWebScript.Equivalents
             }
             return false;
         }
+
+        [ScriptBody(Inline = "obj.constructor")]
+        private static Type GetType(this object obj)
+        {
+            return obj.GetType();
+        }
+
     }
 }

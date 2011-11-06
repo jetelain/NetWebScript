@@ -56,6 +56,7 @@
     <Compile Include="Tests\Collections.Generic\DictionaryTest.cs" />
     <Compile Include="Tests\Collections.Generic\ListTest.cs" />
     <Compile Include="Tests\Delegates.cs" />
+    <Compile Include="Tests\ExportedTest.cs" />
     <Compile Include="Tests\Flow.cs" />
     <Compile Include="Tests\GeneratedTest.cs" />
     <Compile Include="Tests\Logic.cs" />
@@ -74,7 +75,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)NetWebScript.TestCompiler\bin\$(ConfigurationName)\NetWebScript.TestCompiler.exe /debug /pretty $(TargetPath)</PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)NetWebScript.TestCompiler\bin\$(ConfigurationName)\NetWebScript.TestCompiler.exe /pretty $(TargetPath)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

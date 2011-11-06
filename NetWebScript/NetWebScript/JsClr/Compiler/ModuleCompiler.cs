@@ -176,6 +176,9 @@ namespace NetWebScript.JsClr.Compiler
                     SanityCheck(type);
                 }
             }
+
+            moduleWriter.WriteExports(system.TypesToGenerate.Where(t => t.IsExported));
+            
             foreach (var type in system.Equivalents)
             {
                 Metadata.Equivalents.Add(new EquivalentMetadata() { CRef = CRefToolkit.GetCRef(type.Type), EquivalentCRef = CRefToolkit.GetCRef(type.Equivalent.Type) });

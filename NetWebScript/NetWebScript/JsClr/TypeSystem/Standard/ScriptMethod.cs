@@ -10,12 +10,12 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
     {
         private readonly string vslot;
 
-        internal ScriptMethod(ScriptSystem system, ScriptType owner, MethodInfo method, string body)
-            : this(system, owner, method, body, owner.IsGlobals)
+        internal ScriptMethod(ScriptSystem system, ScriptType owner, MethodInfo method, string body, string exportedName)
+            : this(system, owner, method, body, exportedName, owner.IsGlobals)
         {
         }
 
-        internal ScriptMethod(ScriptSystem system, IScriptType owner, MethodInfo method, string body, bool isGlobal)
+        internal ScriptMethod(ScriptSystem system, IScriptType owner, MethodInfo method, string body, string exportedName, bool isGlobal)
             : base(system, owner, method, body, isGlobal)
         {
             if (method.IsVirtual)
@@ -23,7 +23,14 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                 var baseMethod = method.GetBaseDefinition();
                 if (baseMethod == method || baseMethod == null)
                 {
-                    vslot = system.CreateSplotId();
+                    if (exportedName != null)
+                    {
+                        vslot = exportedName;
+                    }
+                    else
+                    {
+                        vslot = system.CreateSplotId();
+                    }
                 }
                 else
                 {
@@ -33,7 +40,11 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                         throw new Exception();
                     }
                 }
-            }           
+            }
+            else if ( exportedName != null )
+            {
+                vslot = exportedName;
+            }
         }
 
         /// <summary>

@@ -19,10 +19,41 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         private readonly ScriptSystem system;
         private readonly bool isGlobals;
 
+        private readonly CaseConvention exportCaseConvention;
+        private readonly bool isExported;
+        private readonly string exportedName;
+        private readonly string exportedNamespace;
+
         public ScriptType(ScriptSystem system, Type type)
         {
             this.system = system;
 
+            if (!type.IsGenericType)
+            {
+                // Generic types are not allowed to be exported !
+                var exported = (ExportedAttribute)Attribute.GetCustomAttribute(type, typeof(ExportedAttribute));
+                if (exported != null)
+                {
+                    this.isExported = true;
+                    this.exportCaseConvention = exported.Convention;
+                    if (exported.Name != null)
+                    {
+                        exportedName = exported.Name;
+                    }
+                    else
+                    {
+                        exportedName = CaseToolkit.GetMemberName(exportCaseConvention, type.Name);
+                    }
+                    if (Attribute.IsDefined(type, typeof(IgnoreNamespaceAttribute)))
+                    {
+                        exportedNamespace = string.Empty;
+                    }
+                    else
+                    {
+                        exportedNamespace = type.Namespace;
+                    }
+                }
+            }
            
             if (type.BaseType != null && type != typeof(NetWebScript.Equivalents.ObjectHelper) && type != typeof(NetWebScript.Script.TypeSystemHelper))
             {
@@ -67,6 +98,15 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                 methods.Add(new ScriptConstructor(system, this, ctor));
             }
 
+            if (isExported)
+            {
+                var pubCtors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                if (pubCtors.Length > 1)
+                {
+                    throw new Exception(string.Format("Type '{0}' is exported, it cannot have more than one public constructor", type.FullName));
+                }
+            }
+
             foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (field.DeclaringType == type)
@@ -78,7 +118,13 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                     }
                     else
                     {
-                        fields.Add(new ScriptField(system, this, field));
+                        string exported = null;
+                        if (isExported && field.IsPublic && !field.IsStatic)
+                        {
+                            exported = CaseToolkit.GetMemberName(exportCaseConvention, field.Name);
+                            // FIXME: check for conflicts
+                        }
+                        fields.Add(new ScriptField(system, this, field, exported));
                     }
                 }
             }
@@ -99,8 +145,15 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             }
             else 
             {
+                string exported = null;
+                if (isExported && method.IsPublic && !method.IsStatic)
+                {
+                    // Static methods will have correct name on the export object
+                    exported = CaseToolkit.GetMemberName(exportCaseConvention, method.Name);
+                    // FIXME: check for conflicts
+                }
                 var body = native != null ? native.Body : null;
-                var generated = new ScriptMethod(system, this, method, body);
+                var generated = new ScriptMethod(system, this, method, body, exported);
                 if (late)
                 {
                     system.MethodsToGenerate.Add(generated);
@@ -189,6 +242,26 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         public bool HaveCastInformation
         {
             get { return true; }
+        }
+
+        public bool IsExported
+        {
+            get { return isExported; }
+        }
+
+        public string ExportName
+        {
+            get { return exportedName; }
+        }
+
+        public string ExportNamespace
+        {
+            get { return exportedNamespace; }
+        }
+
+        public CaseConvention ExportCaseConvention
+        {
+            get { return exportCaseConvention; }
         }
     }
 }

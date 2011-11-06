@@ -9,6 +9,7 @@ using NetWebScript.Script;
 using NetWebScript.Metadata;
 using NetWebScript.JsClr.TypeSystem.Imported;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
+using System.Collections.Generic;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -328,6 +329,74 @@ namespace NetWebScript.JsClr.Compiler
             foreach (var pair in map.Mapping)
             {
                 WriteSlot(pair.Key, type, pair.Value);
+            }
+        }
+
+        internal void WriteExports(IEnumerable<ScriptType> iEnumerable)
+        {
+            
+            foreach (var type in iEnumerable.OrderBy(t => t.ExportNamespace))
+            {
+                WriteExports(type);
+            }
+        }
+
+        private void WriteExports(ScriptType type)
+        {
+            if (pretty)
+            {
+                writer.WriteLine();
+                writer.WriteLine("//### Exports of {0}", type.Type.FullName);
+            }
+            if (!string.IsNullOrEmpty(type.ExportNamespace))
+            {
+                EnsureNamespace(type.ExportNamespace);
+                writer.Write("{0}.", type.ExportNamespace);
+            }
+            else
+            {
+                writer.Write("var ");
+            }
+            var ctor = type.Methods.OfType<ScriptConstructor>().FirstOrDefault(c => c.Method.IsPublic);
+            if (ctor != null)
+            {
+                var argsCount = ctor.Method.GetParameters().Length;
+                writer.Write("{0}=function(", type.ExportName);
+                for (int i = 0; i < argsCount; ++i) { if (i > 0) { writer.Write(','); } writer.Write("a{0}", i); }
+                writer.Write("){{return new {0}().{1}(", type.TypeId, ctor.ImplId);
+                for (int i = 0; i < argsCount; ++i) { if (i > 0) { writer.Write(','); } writer.Write("a{0}", i); }
+                writer.WriteLine(");};");
+            }
+            else
+            {
+                writer.WriteLine("{0}={{}};", type.ExportName);
+            }
+            foreach (var method in type.Methods.OfType<ScriptMethod>().Where(m => m.Method.IsStatic && m.Method.IsPublic))
+            {
+                if (!string.IsNullOrEmpty(type.ExportNamespace))
+                {
+                    writer.Write("{0}.", type.ExportNamespace);
+                }
+                writer.WriteLine("{0}.{1}={2}.{3};", type.ExportName, CaseToolkit.GetMemberName(type.ExportCaseConvention, method.Method.Name), type.TypeId, method.ImplId);
+            }
+        }
+
+        private readonly HashSet<string> namespaces = new HashSet<string>();
+        private void EnsureNamespace(string p)
+        {
+            if (!namespaces.Contains(p))
+            {
+                int i = p.LastIndexOf('.');
+                if (i != -1)
+                {
+                    EnsureNamespace(p.Substring(0, i));
+                    writer.WriteLine("{0}={{}};", p);
+                }
+                else
+                {
+                    writer.WriteLine("var {0}={{}};", p);
+                }
+                namespaces.Add(p);
             }
         }
     }

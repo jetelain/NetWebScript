@@ -52,7 +52,7 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             {
                 if (Attribute.IsDefined(method, typeof(ImportedExtensionAttribute)))
                 {
-                    var scriptMethod = new ScriptMethod(system, this, method, null, false);
+                    var scriptMethod = new ScriptMethod(system, this, method, null, null, false);
                     extensions.Add(scriptMethod);
                     methods.Add(scriptMethod);
                     system.MethodsToGenerate.Add(scriptMethod);

@@ -13,11 +13,18 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         private readonly string slotId;
         private readonly ScriptType owner;
 
-        internal ScriptField(ScriptSystem system, ScriptType owner, FieldInfo field)
+        internal ScriptField(ScriptSystem system, ScriptType owner, FieldInfo field, string exportedSlot)
         {
             this.owner = owner;
             this.field = field;
-            this.slotId = system.CreateSplotId();
+            if (exportedSlot != null)
+            {
+                this.slotId = exportedSlot;
+            }
+            else
+            {
+                this.slotId = system.CreateSplotId();
+            }
         }
 
         public string SlodId
