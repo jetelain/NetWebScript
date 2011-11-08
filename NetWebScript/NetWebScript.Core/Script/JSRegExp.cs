@@ -9,7 +9,7 @@ namespace NetWebScript.Script
     /// <summary>
     /// JavaScript regular expression
     /// </summary>
-    [Imported(Name="RegExp"), IgnoreNamespace]
+    [Imported(Name = "RegExp", IgnoreNamespace = true)]
     public sealed class JSRegExp
     {
         private readonly Regex regex;

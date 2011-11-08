@@ -2,7 +2,7 @@
 
 namespace NetWebScript.Script.Xml
 {
-    [IgnoreNamespace, Imported]
+    [Imported(IgnoreNamespace = true)]
     public interface IXmlNamedNodeMap
     {
         IXmlNode GetNamedItem(string name);

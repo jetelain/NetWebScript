@@ -22,13 +22,13 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
         private readonly string name;
         private readonly ScriptSystem system;
 
-        public ImportedType(ScriptSystem system, Type type, CaseConvention convention, string forceName)
+        public ImportedType(ScriptSystem system, Type type, ImportedAttribute imported)
         {
             this.system = system;
             this.type = type;
-            this.convention = convention;
-
-            string typeName = forceName;
+            this.convention = imported.Convention;
+            
+            string typeName = imported.Name;
             if (typeName == null)
             {
                 typeName = type.Name;
@@ -38,7 +38,7 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
                 }
             }
 
-            if (!string.IsNullOrEmpty(type.Namespace) && !Attribute.IsDefined(type, typeof(IgnoreNamespaceAttribute)))
+            if (!string.IsNullOrEmpty(type.Namespace) && !imported.IgnoreNamespace)
             {
                 this.name = type.Namespace + "." + typeName;
             }

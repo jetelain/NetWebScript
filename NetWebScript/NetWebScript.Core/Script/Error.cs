@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NetWebScript.Script
 {
-    [IgnoreNamespace, Imported]
+    [Imported(IgnoreNamespace=true)]
     public class Error
     {
         public Error()

@@ -5,7 +5,7 @@ namespace NetWebScript.Script
     /// <summary>
     /// Wrapper object to work with numercial values.
     /// </summary>
-    [IgnoreNamespace, Imported(Name="Number")]
+    [Imported(Name="Number", IgnoreNamespace=true)]
     public sealed class JSNumber
     {
         private readonly double value;

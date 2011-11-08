@@ -44,7 +44,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                     {
                         exportedName = CaseToolkit.GetMemberName(exportCaseConvention, type.Name);
                     }
-                    if (Attribute.IsDefined(type, typeof(IgnoreNamespaceAttribute)))
+                    if (exported.IgnoreNamespace)
                     {
                         exportedNamespace = string.Empty;
                     }

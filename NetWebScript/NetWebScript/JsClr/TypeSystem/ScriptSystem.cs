@@ -98,7 +98,7 @@ namespace NetWebScript.JsClr.TypeSystem
             var imported = (ImportedAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedAttribute), false);
             if (imported != null)
             {
-                return new ImportedType(this, type, imported.Convention, imported.Name);
+                return new ImportedType(this, type, imported);
             }
             var anonymous = (AnonymousObjectAttribute)Attribute.GetCustomAttribute(type, typeof(AnonymousObjectAttribute));
             if (anonymous != null)

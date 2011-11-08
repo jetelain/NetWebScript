@@ -125,7 +125,6 @@
     <Compile Include="Equivalents\Enum.cs" />
     <Compile Include="Equivalents\Exception.cs" />
     <Compile Include="GlobalsAttribute.cs" />
-    <Compile Include="IgnoreNamespaceAttribute.cs" />
     <Compile Include="ImportedAttribute.cs" />
     <Compile Include="Script\DOMElement.cs" />
     <Compile Include="Script\JQuery.cs" />

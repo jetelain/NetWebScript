@@ -2,7 +2,7 @@
 
 namespace NetWebScript.Script.Xml
 {
-    [Imported, IgnoreNamespace]
+    [Imported(IgnoreNamespace = true)]
     public interface IXmlNode
     {
         IXmlNode AppendChild(IXmlNode child);

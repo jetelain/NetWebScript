@@ -12,6 +12,8 @@ namespace NetWebScript
 
         public string Name { get; set; }
 
+        public bool IgnoreNamespace { get; set; }
+
         public ExportedAttribute()
         {
             Convention = CaseConvention.CSharpConvention;

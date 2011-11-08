@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NetWebScript.Script.Xml
 {
-    [Imported, IgnoreNamespace]
+    [Imported(IgnoreNamespace = true)]
     public interface IXmlElement : IXmlNode
     {
         void SetAttribute(string name, string value);

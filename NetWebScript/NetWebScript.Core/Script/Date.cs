@@ -4,7 +4,7 @@ namespace NetWebScript.Script
     /// <summary>
     /// JavaScript / ECMAScript Date.
     /// </summary>
-    [Imported, IgnoreNamespace]
+    [Imported(IgnoreNamespace = true)]
     public sealed class Date
     {
         private readonly DateTime datetime;

@@ -2,7 +2,7 @@
 
 namespace NetWebScript.Script
 {
-    [Imported(Name="window"), IgnoreNamespace]
+    [Imported(Name="window", IgnoreNamespace=true)]
     public sealed class Window
     {
         private Window()

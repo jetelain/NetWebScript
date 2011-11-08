@@ -10,7 +10,7 @@ namespace NetWebScript.Script
     /// For production code, it is recommanded to use standard .Net containers instead of this class (such as <see cref="System.Collections.Generic.List{T}"/>).
     /// </remarks>
     /// <typeparam name="T">Type of element</typeparam>
-    [IgnoreNamespace, Imported(Name="Array")]
+    [Imported(Name="Array", IgnoreNamespace=true)]
     public sealed class JSArray<T>
     {
         // This class is intend to have EXACTLY the same API as the native Array object as defined in ECMAScript

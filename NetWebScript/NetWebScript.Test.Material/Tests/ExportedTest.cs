@@ -7,7 +7,7 @@ using NetWebScript.Script;
 
 namespace NetWebScript.Test.Material.Tests
 {
-    [ScriptAvailable, Exported, IgnoreNamespace]
+    [ScriptAvailable, Exported(IgnoreNamespace=true)]
     public class ExportedA
     {
         private readonly string info;

@@ -10,7 +10,7 @@ namespace NetWebScript.Script
     /// Represents a JavaScript Function. <br />
     /// In NetWebScript type system, it can be either a <see cref="Type"/>, <see cref="Delegate"/> or <see cref="MethodInfo"/>.
     /// </summary>
-    [Imported(Name="Function"), IgnoreNamespace]
+    [Imported(Name="Function", IgnoreNamespace=true)]
     public sealed class JSFunction
     {
         private readonly Type type;

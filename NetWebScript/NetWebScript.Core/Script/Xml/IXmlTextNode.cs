@@ -2,7 +2,7 @@
 
 namespace NetWebScript.Script.Xml
 {
-    [IgnoreNamespace, Imported]
+    [Imported(IgnoreNamespace = true)]
     public interface IXmlTextNode : IXmlNode
     {
         IXmlTextNode SplitText(int offset);

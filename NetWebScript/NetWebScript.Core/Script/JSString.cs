@@ -7,7 +7,7 @@ namespace NetWebScript.Script
     /// <summary>
     /// JavaScript string
     /// </summary>
-    [Imported(Name="String"), IgnoreNamespace]
+    [Imported(Name="String", IgnoreNamespace=true)]
     public sealed class JSString
     {
         private readonly string data;
