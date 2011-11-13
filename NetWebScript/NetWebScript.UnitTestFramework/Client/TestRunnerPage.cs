@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NetWebScript.Script;
+using NetWebScript.Page;
 
 namespace NetWebScript.UnitTestFramework.Client
 {
 
     [ScriptAvailable]
-    public class TestRunnerPage
+    public class TestRunnerPage : IScriptPage
     {
         private TestClassInfo[] tests;
 
@@ -18,7 +19,7 @@ namespace NetWebScript.UnitTestFramework.Client
             this.tests = tests;
         }
 
-        public void Run()
+        public void OnLoad()
         {
             var results = new TestRunner().Execute(tests);
 
@@ -70,5 +71,7 @@ namespace NetWebScript.UnitTestFramework.Client
                 title.Text("Failed - " + title.Text()); ;
             }
         }
+
+
     }
 }

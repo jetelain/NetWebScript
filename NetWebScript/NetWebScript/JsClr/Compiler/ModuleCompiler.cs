@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using NetWebScript.JsClr.AstBuilder;
+using NetWebScript.JsClr.AstBuilder.PdbInfo;
 using NetWebScript.JsClr.TypeSystem;
 using NetWebScript.JsClr.TypeSystem.Standard;
-using NetWebScript.JsClr.AstBuilder;
-using System.IO;
 using NetWebScript.Metadata;
-using System.Reflection;
-using System.Xml.Serialization;
-using NetWebScript.JsClr.AstBuilder.PdbInfo;
 using NetWebScript.Remoting.Serialization;
+using NetWebScript.Script;
+using NetWebScript.Page;
 
 namespace NetWebScript.JsClr.Compiler
 {
-    public class ModuleCompiler
+    /// <summary>
+    /// IL to JavaScript compiler (using System.Reflection)
+    /// </summary>
+    public sealed class ModuleCompiler : IScriptDependencies
     {
         private readonly ScriptSystem system;
         private readonly RuntimeAstFilter runtimeFilter;
         private readonly List<InternalMessage> messages = new List<InternalMessage>();
+        private readonly List<Type> typesToBeExported = new List<Type>();
+        private readonly HashSet<Assembly> assemblies = new HashSet<Assembly>();
         private int index;
         private int indexMethods;
 
@@ -27,30 +33,57 @@ namespace NetWebScript.JsClr.Compiler
         /// </summary>
         public bool Debuggable { get; set; }
 
+        /// <summary>
+        /// Indent and add some commands on generated script to be human freindly
+        /// </summary>
         public bool PrettyPrint { get; set; }
 
+        /// <summary>
+        /// Metadata of generated script
+        /// </summary>
         public ModuleMetadata Metadata { get; set; }
 
+        /// <summary>
+        /// Creates a compiler using default script system.
+        /// </summary>
         public ModuleCompiler() : this(new ScriptSystem())
         {
 
         }
 
+        /// <summary>
+        /// Created a compiler using a custom script system
+        /// </summary>
+        /// <param name="system">Script system to use</param>
         public ModuleCompiler(ScriptSystem system)
         {
             this.system = system;
             runtimeFilter = new RuntimeAstFilter(system, messages);
             Metadata = new ModuleMetadata();
+
+            AddAssemblyPrivate(typeof(TypeSystemHelper).Assembly);
+            AddEntryPoint(typeof(TypeSystemHelper));
         }
 
+        /// <summary>
+        /// Add a type to generated script.
+        /// All referenced assemblies (including type.Assembly) will be added.
+        /// </summary>
+        /// <param name="type">Type to add</param>
+        /// <returns>Script version of type</returns>
         public IScriptType AddEntryPoint(Type type)
         {
+            if (!assemblies.Contains(type.Assembly))
+            {
+                AddAssemblyPrivate(type.Assembly);
+            }
             var scriptType = system.GetScriptType(type);
             if (scriptType == null)
             {
                 throw new Exception(String.Format("{0} is not available in script",type));
             }
             GenerateAst();
+            EnsureExports();
             return scriptType;
         }
 
@@ -110,6 +143,10 @@ namespace NetWebScript.JsClr.Compiler
             }
         }
 
+        /// <summary>
+        /// Procude all compilation messages, including errors and warnings, with original source code references.
+        /// </summary>
+        /// <returns>Compilation messages</returns>
         public List<CompilerMessage> GetMessages()
         {
             var list = new List<CompilerMessage>(messages.Count);
@@ -144,6 +181,10 @@ namespace NetWebScript.JsClr.Compiler
             return list;
         }
 
+        /// <summary>
+        /// Write script to the provided writer.
+        /// </summary>
+        /// <param name="writer">Target</param>
         public void Write(TextWriter writer)
         {
             if (messages.Count(e => e.Severity == MessageSeverity.Error) > 0)
@@ -200,9 +241,47 @@ namespace NetWebScript.JsClr.Compiler
             ModuleMetadataSerializer.Write(writer, Metadata);
         }
 
-        public void ImportAssemblyMappings(Assembly assembly)
+
+
+        private void AddAssemblyPrivate(Assembly assembly)
         {
+            if (assemblies.Contains(assembly))
+            {
+                return;
+            }
+            assemblies.Add(assembly);
+            foreach (var dependency in assembly.GetReferencedAssemblies())
+            {
+                AddAssemblyPrivate(Assembly.Load(dependency));
+            }
             system.ImportAssemblyMappings(assembly);
+            typesToBeExported.AddRange(assembly.GetTypes().Where(t => Attribute.IsDefined(t, typeof(ScriptAvailableAttribute)) && Attribute.IsDefined(t, typeof(ExportedAttribute))));
+        }
+
+        /// <summary>
+        /// Add an assembly yo generated script. This imply to add all exported types of the assembly.
+        /// All referenced assemblies will be added too.
+        /// </summary>
+        /// <param name="assembly"></param>
+        public void AddAssembly(Assembly assembly)
+        {
+            AddAssemblyPrivate(assembly);
+            EnsureExports();
+        }
+
+        private void EnsureExports()
+        {
+            while (typesToBeExported.Count > 0)
+            {
+                var lastIdx = typesToBeExported.Count - 1;
+                system.GetScriptType(typesToBeExported[lastIdx]);
+                typesToBeExported.RemoveAt(lastIdx);
+            }
+        }
+
+        void IScriptDependencies.AddType(Type info)
+        {
+            AddEntryPoint(info);
         }
     }
 }

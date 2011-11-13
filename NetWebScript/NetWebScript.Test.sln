@@ -22,7 +22,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Test.Material", "NetWebScript.Test.Material\NetWebScript.Test.Material.csproj", "{14818415-D080-4F02-8766-6D4614E1C19F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2} = {65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D} = {6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Metadata", "NetWebScript.Metadata\NetWebScript.Metadata.csproj", "{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}"
@@ -31,7 +30,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Antlr3.Runtime", "Antlr3.Ru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jint", "Jint\Jint.csproj", "{DBF3AEF6-9D13-4E03-899B-561BCFDD9920}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.TestCompiler", "NetWebScript.TestCompiler\NetWebScript.TestCompiler.csproj", "{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.CompilerCLI", "NetWebScript.CompilerCLI\NetWebScript.CompilerCLI.csproj", "{A131E7E5-98D1-45DD-9C07-EA63AA69F291}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -69,9 +68,9 @@ Global
 		SccProjectUniqueName10 = NetWebScript\\NetWebScript.csproj
 		SccProjectName10 = NetWebScript
 		SccLocalPath10 = NetWebScript
-		SccProjectUniqueName11 = NetWebScript.TestCompiler\\NetWebScript.TestCompiler.csproj
-		SccProjectName11 = NetWebScript.TestCompiler
-		SccLocalPath11 = NetWebScript.TestCompiler
+		SccProjectUniqueName11 = NetWebScript.CompilerCLI\\NetWebScript.CompilerCLI.csproj
+		SccProjectName11 = NetWebScript.CompilerCLI
+		SccLocalPath11 = NetWebScript.CompilerCLI
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = NetWebScript.vsmdi
@@ -185,16 +184,16 @@ Global
 		{DBF3AEF6-9D13-4E03-899B-561BCFDD9920}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DBF3AEF6-9D13-4E03-899B-561BCFDD9920}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DBF3AEF6-9D13-4E03-899B-561BCFDD9920}.Release|x86.ActiveCfg = Release|Any CPU
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}.Debug|x86.ActiveCfg = Debug|x86
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}.Debug|x86.Build.0 = Debug|x86
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}.Release|Any CPU.ActiveCfg = Release|x86
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}.Release|Mixed Platforms.Build.0 = Release|x86
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}.Release|x86.ActiveCfg = Release|x86
-		{6C5B29C5-39EB-497C-BC5E-60D3C7A6E54D}.Release|x86.Build.0 = Release|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.Debug|x86.ActiveCfg = Debug|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.Debug|x86.Build.0 = Debug|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.Release|Any CPU.ActiveCfg = Release|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.Release|x86.ActiveCfg = Release|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

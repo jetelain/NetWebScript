@@ -77,6 +77,9 @@
     <Compile Include="Equivalents\Reflection\ConstructorInfo.cs" />
     <Compile Include="Equivalents\Reflection\MethodInfo.cs" />
     <Compile Include="Equivalents\Reflection\MethodBase.cs" />
+    <Compile Include="Page\IScriptDependencies.cs" />
+    <Compile Include="Page\IScriptPage.cs" />
+    <Compile Include="Page\IScriptPageFactory.cs" />
     <Compile Include="Remoting\PortBase.cs" />
     <Compile Include="Remoting\RemoteInvoker.cs" />
     <Compile Include="Remoting\RequestData.cs" />

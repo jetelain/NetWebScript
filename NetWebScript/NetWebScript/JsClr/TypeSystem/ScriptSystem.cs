@@ -29,8 +29,6 @@ namespace NetWebScript.JsClr.TypeSystem
         public ScriptSystem(string moduleId) 
         {
             this.moduleId = moduleId;
-            GetScriptType(typeof(TypeSystemHelper));
-            ImportAssemblyMappings(typeof(ForceScriptAvailableAttribute).Assembly);
         }
 
         public ScriptSystem() : this("a")
