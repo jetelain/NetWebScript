@@ -276,6 +276,7 @@ namespace NetWebScript.JsClr.Compiler
                 var lastIdx = typesToBeExported.Count - 1;
                 system.GetScriptType(typesToBeExported[lastIdx]);
                 typesToBeExported.RemoveAt(lastIdx);
+                GenerateAst();
             }
         }
 

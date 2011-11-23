@@ -6,460 +6,461 @@ using NetWebScript.Script;
 using NetWebScript.Script.Xml;
 using NetWebScript.Script;
 using System.Diagnostics;
+using NetWebScript.Script.HTML;
 
 namespace NetWebScript.Diagnostics
 {
-    public static class Debugger
-    {
-        private static string serverUrl = "http://localhost:9090/";
-        private static string threadId = null;
-        private static Script.JSObject breakPoints = new Script.JSObject();
-        private static Script.JSArray<StackFrame> callStack = new Script.JSArray<StackFrame>();
-        private static int stepDeep = 0;
+	public static class Debugger
+	{
+		private static string serverUrl = "http://localhost:9090/";
+		private static string threadId = null;
+		private static Script.JSObject breakPoints = new Script.JSObject();
+		private static Script.JSArray<StackFrame> callStack = new Script.JSArray<StackFrame>();
+		private static int stepDeep = 0;
 
-        [DebuggerHidden]
-        private static void Break(string cmd, string id)
-        {
-            var c = new Channel("wait");
-            c.SendPost(cmd, id, DumpStack());
-            while (true)
-            {
-                var msg = c.Get();
-                if (msg == null)
-                {
-                    Detach();
-                    return;
-                }
-                if (msg.cmd == "continue")
-                {
-                    stepDeep = 0;
-                    break;
-                }
-                else if (msg.cmd == "step")
-                {
-                    var mode = msg.data;
-                    if (mode == "up")
-                    {
-                        stepDeep = callStack.Length - 1;
-                    }
-                    else if (mode == "dw")
-                    {
-                        stepDeep = callStack.Length + 1;
-                    }
-                    else
-                    {
-                        stepDeep = callStack.Length;
-                    }
-                    break;
-                }
-                else if (msg.cmd == "detach")
-                {
-                    Detach();
-                    return;
-                }
-                else
-                {
-                    Process(c, msg.cmd, msg.data);
+		[DebuggerHidden]
+		private static void Break(string cmd, string id)
+		{
+			var c = new Channel("wait");
+			c.SendPost(cmd, id, DumpStack());
+			while (true)
+			{
+				var msg = c.Get();
+				if (msg == null)
+				{
+					Detach();
+					return;
+				}
+				if (msg.cmd == "continue")
+				{
+					stepDeep = 0;
+					break;
+				}
+				else if (msg.cmd == "step")
+				{
+					var mode = msg.data;
+					if (mode == "up")
+					{
+						stepDeep = callStack.Length - 1;
+					}
+					else if (mode == "dw")
+					{
+						stepDeep = callStack.Length + 1;
+					}
+					else
+					{
+						stepDeep = callStack.Length;
+					}
+					break;
+				}
+				else if (msg.cmd == "detach")
+				{
+					Detach();
+					return;
+				}
+				else
+				{
+					Process(c, msg.cmd, msg.data);
 
-                }
-            }
-            c.ModeNoWait();
-            c.Send("continueACK", null);
-            ProcessAll(c);
-        }
+				}
+			}
+			c.ModeNoWait();
+			c.Send("continueACK", null);
+			ProcessAll(c);
+		}
 
-        /// <summary>
-        /// Starts connection with debug server
-        /// </summary>
-        [DebuggerHidden]
-        internal static void Start()
-        {
-            //FIXME: $.support.cors = true;
-            var success = true;
-            var xhr = JQuery.Ajax(new JQueryAjax()
-            {
-                Type = "POST",
-                Url = serverUrl + "?cmd=start",
-                Data = Identity(),
-                DataType = "text",
-                Timeout = 500,
-                Async = false,
-                Cache = false,
-                Error = delegate() { success = false; }
-            });
-            if (success)
-            {
-                var result = xhr.ResponseText;
-                var i = result.IndexOf(':');
-                threadId = result.Substring(0, i);
+		/// <summary>
+		/// Starts connection with debug server
+		/// </summary>
+		[DebuggerHidden]
+		internal static void Start()
+		{
+			//FIXME: $.support.cors = true;
+			var success = true;
+            var xhr = JQuery.Ajax(new JQueryAjaxSettings()
+			{
+				Type = "POST",
+				Url = serverUrl + "?cmd=start",
+				Data = Identity(),
+				DataType = "text",
+				Timeout = 500,
+				Async = false,
+				Cache = false,
+				Error = (a,b,c) => { success = false; }
+			});
+			if (success)
+			{
+				var result = xhr.ResponseText;
+				var i = result.IndexOf(':');
+				threadId = result.Substring(0, i);
 
-                var c = new Channel(null);
-                Process(c, "listbp", result.Substring(i + 1));
-                ProcessAll(c);
+				var c = new Channel(null);
+				Process(c, "listbp", result.Substring(i + 1));
+				ProcessAll(c);
 
-                var timer = Window.SetInterval(new Action(QueryStatus), 5000);
-                //FIXME
-                //$(window).unload(function () {
-                //    clearInterval(timer);
-                //    var c = new Debugger.Channel();
-                //    c.Send('stop');
-                //});
-            }
-            else
-            {
-                Window.Alert("Debugger unavailable Status=" + xhr.Status);
-            }
-        }
+				var timer = Window.SetInterval(new Action(QueryStatus), 5000);
+				//FIXME
+				//$(window).unload(function () {
+				//    clearInterval(timer);
+				//    var c = new Debugger.Channel();
+				//    c.Send('stop');
+				//});
+			}
+			else
+			{
+				Window.Alert("Debugger unavailable Status=" + xhr.Status);
+			}
+		}
 
-        [DebuggerHidden]
-        private static void Detach()
-        {
-            stepDeep = 0;
-            breakPoints = new Script.JSObject();
-        }
+		[DebuggerHidden]
+		private static void Detach()
+		{
+			stepDeep = 0;
+			breakPoints = new Script.JSObject();
+		}
 
-        [DebuggerHidden]
-        private static void QueryStatus()
-        {
-            JQuery.Ajax(new JQueryAjax()
-            {
-                Url = serverUrl,
-                Data = new ToServerMessage { t = threadId, cmd = "status" },
-                DataType = "text",
-                Async = true,
-                Cache = false,
-                Success = Status
-            });
-        }
+		[DebuggerHidden]
+		private static void QueryStatus()
+		{
+            JQuery.Ajax(new JQueryAjaxSettings()
+			{
+				Url = serverUrl,
+				Data = new ToServerMessage { t = threadId, cmd = "status" },
+				DataType = "text",
+				Async = true,
+				Cache = false,
+				Success = new Action<string>(Status)
+			});
+		}
 
-        [DebuggerHidden]
-        private static void Status(string hasp)
-        {
-            if (hasp == "true")
-            {
-                var c = new Channel(null);
-                c.Send("ping", null);
-                ProcessAll(c);
-            }
-        }
-
-
-        [DebuggerHidden]
-        private static void ProcessAll(Channel c)
-        {
-            Message msg = null;
-            while ((msg = c.Get()) != null)
-            {
-                Process(c, msg.cmd, msg.data);
-            }
-        }
-
-        [DebuggerHidden]
-        private static void Process(Channel c, string cmd, string data)
-        {
-            if (cmd == "addbp")
-            {
-                breakPoints[data] = "full";
-                c.Send("bpACK", data);
-            }
-            else if (cmd == "rmbp")
-            {
-                breakPoints.Delete(data);
-                c.Send("rmbpACK", data);
-            }
-            else if (cmd == "listbp")
-            {
-                var ids = data.Split(',');
-                for (var i = 0; i < ids.Length; ++i)
-                {
-                    breakPoints[ids[i]] = "full";
-                }
-                c.Send("bpACK", data);
-            }
-            else if (cmd == "detach")
-            {
-                Detach();
-            }
-            else if (cmd == "retreive")
-            {
-                object result;
-                try
-                {
-                    result = Window.Eval(data);
-                }
-                catch (Exception e)
-                {
-                    result = e.Message;
-                }
-                c.SendPost("result", data, DumpResult(result));
-            }
-        }
-
-        private class Channel
-        {
-            private Script.JSArray<Message> q;
-            private string mode;
-
-            [DebuggerHidden]
-            public Channel(string m)
-            {
-                this.q = new Script.JSArray<Message>();
-                this.mode = m ?? "nowait";
-            }
-
-            [DebuggerHidden]
-            public void ModeNoWait()
-            {
-                mode = "nowait";
-            }
-
-            [DebuggerHidden]
-            public bool Send(string cmd, string data)
-            {
-                bool success = true;
-                var xhr = JQuery.Ajax(new JQueryAjax()
-                {
-                    Url = serverUrl,
-                    Data = new ToServerMessage() { t = threadId, cmd = cmd, data = data ?? "", mode = mode },
-                    DataType = "text",
-                    Timeout = 2500,
-                    Async = false,
-                    Cache = false,
-                    Error = delegate() { success = false; }
-                });
-                if (success) Push(xhr.ResponseText);
-                return success;
-            }
-            [DebuggerHidden]
-            public bool SendPost(string cmd, string data, string postData)
-            {
-                bool success = true;
-                var xhr = JQuery.Ajax(new JQueryAjax()
-                {
-                    Type = "POST",
-                    Url = serverUrl + "?" + JQuery.Param(new ToServerMessage() { t = threadId, cmd = cmd, data = data ?? "", mode = mode }),
-                    Data = postData,
-                    DataType = "text",
-                    Timeout = 2500,
-                    Async = false,
-                    Cache = false,
-                    Error = delegate() { success = false; }
-                });
-                if (success) Push(xhr.ResponseText);
-                return success;
-            }
-            [DebuggerHidden]
-            public void Push(string result)
-            {
-                if (result != null && result != "nop" && result != "wait")
-                {
-                    var i = result.IndexOf(':');
-                    if (i == -1)
-                    {
-                        q.Push(new Message() { cmd = result, data = null });
-                    }
-                    else
-                    {
-                        q.Push(new Message() { cmd = result.Substring(0, i), data = result.Substring(i + 1) });
-                    }
-                }
-            }
-            [DebuggerHidden]
-            public Message Get()
-            {
-                if (q.Length > 0)
-                {
-                    return q.Shift();
-                }
-                if (mode == "wait")
-                {
-                    while (q.Length == 0 && Send("ping", null)) ;
-                    if (q.Length > 0)
-                    {
-                        return q.Shift();
-                    }
-                }
-                return null;
-            }
-        }
-
-        [AnonymousObject]
-        private class Message
-        {
-            public string cmd;
-            public string data;
-        }
-
-        [AnonymousObject]
-        private class ToServerMessage
-        {
-            public string cmd;
-            public string data;
-            public string t;
-            public string mode;
-        }
-
-        [AnonymousObject]
-        private class StackFrame
-        {
-            public int Id;
-            public string Name;
-            public object Context;
-            public string Point;
-        }
+		[DebuggerHidden]
+		private static void Status(string hasp)
+		{
+			if (hasp == "true")
+			{
+				var c = new Channel(null);
+				c.Send("ping", null);
+				ProcessAll(c);
+			}
+		}
 
 
+		[DebuggerHidden]
+		private static void ProcessAll(Channel c)
+		{
+			Message msg = null;
+			while ((msg = c.Get()) != null)
+			{
+				Process(c, msg.cmd, msg.data);
+			}
+		}
 
-        /// <summary>
-        /// Called when entering a method
-        /// </summary>
-        /// <param name="name">Method identifier</param>
-        /// <param name="context">Method local variables (including $this)</param>
-        [DebuggerHidden]
-        internal static void Enter(string name, object context)
-        {
-            callStack.Push(new StackFrame() { Id = callStack.Length, Name = name, Context = context });
-        }
+		[DebuggerHidden]
+		private static void Process(Channel c, string cmd, string data)
+		{
+			if (cmd == "addbp")
+			{
+				breakPoints[data] = "full";
+				c.Send("bpACK", data);
+			}
+			else if (cmd == "rmbp")
+			{
+				breakPoints.Delete(data);
+				c.Send("rmbpACK", data);
+			}
+			else if (cmd == "listbp")
+			{
+				var ids = data.Split(',');
+				for (var i = 0; i < ids.Length; ++i)
+				{
+					breakPoints[ids[i]] = "full";
+				}
+				c.Send("bpACK", data);
+			}
+			else if (cmd == "detach")
+			{
+				Detach();
+			}
+			else if (cmd == "retreive")
+			{
+				object result;
+				try
+				{
+					result = Window.Eval(data);
+				}
+				catch (Exception e)
+				{
+					result = e.Message;
+				}
+				c.SendPost("result", data, DumpResult(result));
+			}
+		}
 
-        /// <summary>
-        /// Called when leaving a method
-        /// </summary>
-        /// <param name="v">Value to return as-is</param>
-        /// <returns>Value of <paramref name="v"/></returns>
-        [DebuggerHidden]
-        internal static object Leave(object v)
-        {
-            callStack.Pop();
-            return v;
-        }
+		private class Channel
+		{
+			private Script.JSArray<Message> q;
+			private string mode;
 
-        [DebuggerHidden]
-        private static string DumpStack()
-        {
-            var doc = XmlToolkit.CreateDocument("StackFrame");
-            for (var i = 0; i < callStack.Length; ++i)
-            {
-                var frame = callStack[i];
-                var element = doc.CreateElement("Frame");
-                element.SetAttribute("Id", Unsafe.NumberToString(frame.Id));
-                element.SetAttribute("Name", frame.Name);
-                element.SetAttribute("Point", frame.Point);
-                if (i == callStack.Length - 1)
-                {
-                    element.AppendChild(DumpObject(frame.Context, doc, 0));
-                }
-                doc.DocumentElement.AppendChild(element);
-            }
-            return XmlToolkit.ToXml(doc);
-        }
+			[DebuggerHidden]
+			public Channel(string m)
+			{
+				this.q = new Script.JSArray<Message>();
+				this.mode = m ?? "nowait";
+			}
 
-        [DebuggerHidden]
-        private static string DumpResult(object obj)
-        {
-            var doc = XmlToolkit.CreateDocument("Dump");
-            doc.DocumentElement.AppendChild(DumpObject(obj, doc, 0));
-            return XmlToolkit.ToXml(doc);
-        }
+			[DebuggerHidden]
+			public void ModeNoWait()
+			{
+				mode = "nowait";
+			}
 
-        [DebuggerHidden]
-        private static string ToStringSafe(object obj)
-        {
-            try
-            {
-                return obj.ToString();
-            }
-            catch
-            {
-                return "(exception catched)";
-            }
-        }
+			[DebuggerHidden]
+			public bool Send(string cmd, string data)
+			{
+				bool success = true;
+                var xhr = JQuery.Ajax(new JQueryAjaxSettings()
+				{
+					Url = serverUrl,
+					Data = new ToServerMessage() { t = threadId, cmd = cmd, data = data ?? "", mode = mode },
+					DataType = "text",
+					Timeout = 2500,
+					Async = false,
+					Cache = false,
+                    Error = (a, b, c) => { success = false; }
+				});
+				if (success) Push(xhr.ResponseText);
+				return success;
+			}
+			[DebuggerHidden]
+			public bool SendPost(string cmd, string data, string postData)
+			{
+				bool success = true;
+                var xhr = JQuery.Ajax(new JQueryAjaxSettings()
+				{
+					Type = "POST",
+					Url = serverUrl + "?" + JQuery.Param(new ToServerMessage() { t = threadId, cmd = cmd, data = data ?? "", mode = mode }),
+					Data = postData,
+					DataType = "text",
+					Timeout = 2500,
+					Async = false,
+					Cache = false,
+                    Error = (a, b, c) => { success = false; }
+				});
+				if (success) Push(xhr.ResponseText);
+				return success;
+			}
+			[DebuggerHidden]
+			public void Push(string result)
+			{
+				if (result != null && result != "nop" && result != "wait")
+				{
+					var i = result.IndexOf(':');
+					if (i == -1)
+					{
+						q.Push(new Message() { cmd = result, data = null });
+					}
+					else
+					{
+						q.Push(new Message() { cmd = result.Substring(0, i), data = result.Substring(i + 1) });
+					}
+				}
+			}
+			[DebuggerHidden]
+			public Message Get()
+			{
+				if (q.Length > 0)
+				{
+					return q.Shift();
+				}
+				if (mode == "wait")
+				{
+					while (q.Length == 0 && Send("ping", null)) ;
+					if (q.Length > 0)
+					{
+						return q.Shift();
+					}
+				}
+				return null;
+			}
+		}
+
+		[AnonymousObject]
+		private class Message
+		{
+			public string cmd;
+			public string data;
+		}
+
+		[AnonymousObject]
+		private class ToServerMessage
+		{
+			public string cmd;
+			public string data;
+			public string t;
+			public string mode;
+		}
+
+		[AnonymousObject]
+		private class StackFrame
+		{
+			public int Id;
+			public string Name;
+			public object Context;
+			public string Point;
+		}
 
 
-        [DebuggerHidden]
-        private static IXmlElement DumpObject(object obj, IXmlDocument doc, int depth)
-        {
-            var node = doc.CreateElement("P");
-            node.SetAttribute("Value", ToStringSafe(obj));
-            node.SetAttribute("Type", Unsafe.GetScriptTypeName(obj));
-            if (NetWebScript.Script.JSObject.TypeOf(obj) == "object")
-            {
-                foreach (var key in Unsafe.GetFields(obj))
-                {
-                    var value = NetWebScript.Script.JSObject.Get(obj, key);
-                    if (key == "$this")
-                    {
-                        var dump = DumpObject(value, doc, 0);
-                        dump.SetAttribute("Name", "this");
-                        node.AppendChild(dump);
-                    }
-                    else
-                    {
-                        IXmlElement vnode;
-                        if (NetWebScript.Script.JSObject.TypeOf(value) == "object")
-                        {
-                            if (depth < 2)
-                            {
-                                vnode = DumpObject(value, doc, depth + 1);
-                            }
-                            else
-                            {
-                                vnode = doc.CreateElement("P");
-                                vnode.SetAttribute("Value", ToStringSafe(value));
-                                vnode.SetAttribute("Retreive", "true");
-                                vnode.SetAttribute("Type", Unsafe.GetScriptTypeName(value));
-                            }
-                        }
-                        else
-                        {
-                            vnode = doc.CreateElement("P");
-                            vnode.SetAttribute("Value", ToStringSafe(value));
-                            vnode.SetAttribute("Type", Unsafe.GetScriptTypeName(value));
-                        }
-                        vnode.SetAttribute("Name", key);
-                        node.AppendChild(vnode);
-                    }
-                }
-            }
-            return node;
-        }
 
-        [DebuggerHidden]
-        private static string Identity()
-        {
-            var doc = XmlToolkit.CreateDocument("Identity");
-            //    doc.DocumentElement.SetAttribute("Url", document.location.href);
-            //    for (var i = 0; i < NWS.$Modules.length; ++i) {
-            //        var mod = NWS.$Modules[i];
-            //        var element = doc.CreateElement("Module");
-            //        element.SetAttribute("Name", mod.Name);
-            //        element.SetAttribute("Version", mod.Version);
-            //        element.SetAttribute("Filename", mod.Filename);
-            //        doc.DocumentElement.AppendChild(element);
-            //    }
-            return XmlToolkit.ToXml(doc);
-        }
+		/// <summary>
+		/// Called when entering a method
+		/// </summary>
+		/// <param name="name">Method identifier</param>
+		/// <param name="context">Method local variables (including $this)</param>
+		[DebuggerHidden]
+		internal static void Enter(string name, object context)
+		{
+			callStack.Push(new StackFrame() { Id = callStack.Length, Name = name, Context = context });
+		}
 
-        /// <summary>
-        /// Called by each potential break point
-        /// </summary>
-        /// <param name="id">Point of code identifier</param>
-        /// <returns>always true</returns>
-        [DebuggerHidden]
-        internal static bool Point(string id)
-        {
-	        if ( callStack.Length > 0) 
-            {
-		        callStack[callStack.Length-1].Point = id;
-	        }
-            if ( stepDeep>0 && stepDeep >= callStack.Length ) 
-            {
-                Break("steped", id);
-            }
-            else if (breakPoints[id] != Script.JSObject.Undefined) 
-            {
-                Break("reached", id);
-            }
-            return true;
-        }
-    }
+		/// <summary>
+		/// Called when leaving a method
+		/// </summary>
+		/// <param name="v">Value to return as-is</param>
+		/// <returns>Value of <paramref name="v"/></returns>
+		[DebuggerHidden]
+		internal static object Leave(object v)
+		{
+			callStack.Pop();
+			return v;
+		}
+
+		[DebuggerHidden]
+		private static string DumpStack()
+		{
+			var doc = XmlToolkit.CreateDocument("StackFrame");
+			for (var i = 0; i < callStack.Length; ++i)
+			{
+				var frame = callStack[i];
+				var element = doc.CreateElement("Frame");
+				element.SetAttribute("Id", Unsafe.NumberToString(frame.Id));
+				element.SetAttribute("Name", frame.Name);
+				element.SetAttribute("Point", frame.Point);
+				if (i == callStack.Length - 1)
+				{
+					element.AppendChild(DumpObject(frame.Context, doc, 0));
+				}
+				doc.DocumentElement.AppendChild(element);
+			}
+			return XmlToolkit.ToXml(doc);
+		}
+
+		[DebuggerHidden]
+		private static string DumpResult(object obj)
+		{
+			var doc = XmlToolkit.CreateDocument("Dump");
+			doc.DocumentElement.AppendChild(DumpObject(obj, doc, 0));
+			return XmlToolkit.ToXml(doc);
+		}
+
+		[DebuggerHidden]
+		private static string ToStringSafe(object obj)
+		{
+			try
+			{
+				return obj.ToString();
+			}
+			catch
+			{
+				return "(exception catched)";
+			}
+		}
+
+
+		[DebuggerHidden]
+		private static IXmlElement DumpObject(object obj, IXmlDocument doc, int depth)
+		{
+			var node = doc.CreateElement("P");
+			node.SetAttribute("Value", ToStringSafe(obj));
+			node.SetAttribute("Type", Unsafe.GetScriptTypeName(obj));
+			if (NetWebScript.Script.JSObject.TypeOf(obj) == "object")
+			{
+				foreach (var key in Unsafe.GetFields(obj))
+				{
+					var value = NetWebScript.Script.JSObject.Get(obj, key);
+					if (key == "$this")
+					{
+						var dump = DumpObject(value, doc, 0);
+						dump.SetAttribute("Name", "this");
+						node.AppendChild(dump);
+					}
+					else
+					{
+						IXmlElement vnode;
+						if (NetWebScript.Script.JSObject.TypeOf(value) == "object")
+						{
+							if (depth < 2)
+							{
+								vnode = DumpObject(value, doc, depth + 1);
+							}
+							else
+							{
+								vnode = doc.CreateElement("P");
+								vnode.SetAttribute("Value", ToStringSafe(value));
+								vnode.SetAttribute("Retreive", "true");
+								vnode.SetAttribute("Type", Unsafe.GetScriptTypeName(value));
+							}
+						}
+						else
+						{
+							vnode = doc.CreateElement("P");
+							vnode.SetAttribute("Value", ToStringSafe(value));
+							vnode.SetAttribute("Type", Unsafe.GetScriptTypeName(value));
+						}
+						vnode.SetAttribute("Name", key);
+						node.AppendChild(vnode);
+					}
+				}
+			}
+			return node;
+		}
+
+		[DebuggerHidden]
+		private static string Identity()
+		{
+			var doc = XmlToolkit.CreateDocument("Identity");
+			//    doc.DocumentElement.SetAttribute("Url", document.location.href);
+			//    for (var i = 0; i < NWS.$Modules.length; ++i) {
+			//        var mod = NWS.$Modules[i];
+			//        var element = doc.CreateElement("Module");
+			//        element.SetAttribute("Name", mod.Name);
+			//        element.SetAttribute("Version", mod.Version);
+			//        element.SetAttribute("Filename", mod.Filename);
+			//        doc.DocumentElement.AppendChild(element);
+			//    }
+			return XmlToolkit.ToXml(doc);
+		}
+
+		/// <summary>
+		/// Called by each potential break point
+		/// </summary>
+		/// <param name="id">Point of code identifier</param>
+		/// <returns>always true</returns>
+		[DebuggerHidden]
+		internal static bool Point(string id)
+		{
+			if ( callStack.Length > 0) 
+			{
+				callStack[callStack.Length-1].Point = id;
+			}
+			if ( stepDeep>0 && stepDeep >= callStack.Length ) 
+			{
+				Break("steped", id);
+			}
+			else if (breakPoints[id] != Script.JSObject.Undefined) 
+			{
+				Break("reached", id);
+			}
+			return true;
+		}
+	}
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NetWebScript.Script
+namespace NetWebScript.Script.HTML
 {
     [Imported(Name="window", IgnoreNamespace=true)]
     public sealed class Window
@@ -34,9 +34,15 @@ namespace NetWebScript.Script
             throw new PlatformNotSupportedException();
         }
 
-        internal static object Eval(string data)
+        public static object Eval(string data)
         {
             throw new NotImplementedException();
+        }
+
+        public static IWindow Instance
+        {
+            [ScriptBody(Inline = "window")]
+            get { throw new PlatformNotSupportedException(); }
         }
     }
 }

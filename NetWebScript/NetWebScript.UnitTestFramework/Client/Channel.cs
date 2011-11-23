@@ -80,12 +80,12 @@ namespace NetWebScript.Test.Client
         public bool Send(String cmd, String data)
         {
             bool success = true;
-            XMLHttpRequest request = JQuery.Ajax(new JQueryAjax()
+            XMLHttpRequest request = JQuery.Ajax(new JQueryAjaxSettings()
             {
                 Async = false,
                 Cache = false,
                 Url = url,
-                Error = delegate() { success = false; },
+                Error = (a,b,c) => { success = false; },
                 Timeout = 2500,
                 DataType = "text",
                 Data = new HttpMessage() { P = p, Cmd = cmd, Data = data, Mode = waitMode ? "wait" : "nowait" }

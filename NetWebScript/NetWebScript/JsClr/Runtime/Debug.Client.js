@@ -45,7 +45,7 @@ var Debugger = {
     },
 
     Start: function () {
-		$.support.cors = true;
+        $.support.cors = true;
         var success = true;
         var xhr = $.ajax({
             type: 'POST',
@@ -239,17 +239,21 @@ var Debugger = {
         }
         return typeof obj;
     },
+    SafeToString: function (obj) {
+        if (obj === undefined) return '(undefined)';
+        if (obj === null) return '(null)';
+        var value;
+        try {
+            value = obj.toString();
+        }
+        catch (e) {
+            value = '(exception catched)';
+        }
+        return value;
+    },
     DumpObject: function (obj, doc, depth) {
         var node = doc.createElement("P");
-		var value;
-		try {
-			value = obj.toString();
-		}
-		catch(e) {
-			value = '(exception catched)';
-		}
-
-        node.setAttribute("Value", value);
+        node.setAttribute("Value", Debugger.SafeToString(obj));
         node.setAttribute("Type", Debugger.TypeNameOf(obj));
         if (typeof obj === "object") {
             for (var key in obj) {
@@ -267,14 +271,14 @@ var Debugger = {
                         }
                         else {
                             vnode = doc.createElement("P")
-                            vnode.setAttribute("Value", '' + value);
+                            vnode.setAttribute("Value", Debugger.SafeToString(value));
                             vnode.setAttribute("Retreive", "true");
                             vnode.setAttribute("Type", Debugger.TypeNameOf(value));
                         }
                     }
                     else {
                         vnode = doc.createElement("P")
-                        vnode.setAttribute("Value", '' + value);
+                        vnode.setAttribute("Value", Debugger.SafeToString(value));
                         vnode.setAttribute("Type", typeof value);
                     }
                     vnode.setAttribute("Name", key);

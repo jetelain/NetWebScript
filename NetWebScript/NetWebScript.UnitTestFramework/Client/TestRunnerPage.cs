@@ -25,49 +25,49 @@ namespace NetWebScript.UnitTestFramework.Client
 
             int ok = 0, ko = 0;
             
-            var body = JQuery.Select("body");
-            var table = JQuery.Select("<table></table>");
+            var body = JQuery.Query("body");
+            var table = JQuery.Query("<table></table>");
             body.Append(table);
 
             for (int i = 0; i < results.Length; ++i)
             {
                 var classResult = results[i];
 
-                var classRow = JQuery.Select("<tr></tr>");
-                classRow.Append(JQuery.Select("<td></td>").Attr("colspan", "3").Css("font-weight", "bold").Css("background","#c0c0c0").Text(classResult.name));
+                var classRow = JQuery.Query("<tr></tr>");
+                classRow.Append(JQuery.Query("<td></td>").Attr("colspan", "3").Css("font-weight", "bold").Css("background", "#c0c0c0").Text(classResult.name));
                 table.Append(classRow);
 
                 for (int j = 0; j < classResult.methods.Length; ++j)
                 {
                     var methodResult = classResult.methods[j];
-                    var methodRow = JQuery.Select("<tr></tr>");
+                    var methodRow = JQuery.Query("<tr></tr>");
 
-                    methodRow.Append(JQuery.Select("<td></td>").Text(methodResult.name));
+                    methodRow.Append(JQuery.Query("<td></td>").Text(methodResult.name));
 
                     if (methodResult.isSuccess)
                     {
-                        methodRow.Append(JQuery.Select("<td style=\"color:green;\">OK</td>"));
-                        methodRow.Append(JQuery.Select("<td>" + methodResult.duration + " msec</td>"));
+                        methodRow.Append(JQuery.Query("<td style=\"color:green;\">OK</td>"));
+                        methodRow.Append(JQuery.Query("<td>" + methodResult.duration + " msec</td>"));
                         ok++;
                     }
                     else
                     {
-                        methodRow.Append(JQuery.Select("<td style=\"color:red;\">KO</td>"));
-                        methodRow.Append(JQuery.Select("<td></td>").Text(methodResult.message));
+                        methodRow.Append(JQuery.Query("<td style=\"color:red;\">KO</td>"));
+                        methodRow.Append(JQuery.Query("<td></td>").Text(methodResult.message));
                         ko++;
                     }
                     table.Append(methodRow);
                 }
             }
-            var title = JQuery.Select("title");
+            var title = JQuery.Query("title");
             if (ko == 0)
             {
-                JQuery.Select("<h1></h1>").Css("color", "green").Text("Success - OK : " + ok + "/" + ok).InsertBefore(table);
+                JQuery.Query("<h1></h1>").Css("color", "green").Text("Success - OK : " + ok + "/" + ok).InsertBefore(table);
                 title.Text("Success - " + title.Text()); ;
             }
             else
             {
-                JQuery.Select("<h1></h1>").Css("color", "red").Text("Failed - OK : " + ok + "/" + (ok + ko)).InsertBefore(table);
+                JQuery.Query("<h1></h1>").Css("color", "red").Text("Failed - OK : " + ok + "/" + (ok + ko)).InsertBefore(table);
                 title.Text("Failed - " + title.Text()); ;
             }
         }

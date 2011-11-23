@@ -66,6 +66,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnonymousObjectAttribute.cs" />
+    <Compile Include="Equivalents\NotSupportedException.cs" />
+    <Compile Include="Equivalents\Threading\Thread.cs" />
     <Compile Include="ExportedAttribute.cs" />
     <Compile Include="Equivalents\Collections\Generic\DefaultEqualityComparer.cs" />
     <Compile Include="Equivalents\Collections\Generic\Dictionary.cs" />
@@ -101,10 +103,22 @@
     <Compile Include="Runtime\FieldRef.cs" />
     <Compile Include="Runtime\SerializationHelper.cs" />
     <Compile Include="Runtime\Variable.cs" />
+    <Compile Include="Script\HTML\IIFrameElement.cs" />
+    <Compile Include="Script\HTML\IHTMLAttribute.cs" />
+    <Compile Include="Script\HTML\IHTMLAttributeCollection.cs" />
+    <Compile Include="Script\HTML\IHTMLDocument.cs" />
+    <Compile Include="Script\HTML\IHTMLDocumentFragment.cs" />
+    <Compile Include="Script\HTML\IHTMLElement.cs" />
+    <Compile Include="Script\HTML\IHTMLElementCollection.cs" />
+    <Compile Include="Script\HTML\IHTMLImplementation.cs" />
+    <Compile Include="Script\HTML\ICSSStyle.cs" />
     <Compile Include="Script\Global.cs" />
+    <Compile Include="Script\HTML\ILocation.cs" />
+    <Compile Include="Script\HTML\ISelection.cs" />
+    <Compile Include="Script\HTML\IWindow.cs" />
     <Compile Include="Script\JSRegExp.cs" />
     <Compile Include="Script\JSString.cs" />
-    <Compile Include="Script\Window.cs" />
+    <Compile Include="Script\HTML\Window.cs" />
     <Compile Include="Script\Xml\Impl\NXmlAttribute.cs" />
     <Compile Include="Script\Xml\Impl\NXmlDocument.cs" />
     <Compile Include="Script\Xml\Impl\NXmlElement.cs" />
@@ -129,9 +143,7 @@
     <Compile Include="Equivalents\Exception.cs" />
     <Compile Include="GlobalsAttribute.cs" />
     <Compile Include="ImportedAttribute.cs" />
-    <Compile Include="Script\DOMElement.cs" />
     <Compile Include="Script\JQuery.cs" />
-    <Compile Include="Script\JQueryAjax.cs" />
     <Compile Include="Script\XMLHttpRequest.cs" />
     <Compile Include="IntrinsicPropertyAttribute.cs" />
     <Compile Include="ForceScriptAvailableAttribute.cs" />
@@ -175,6 +187,7 @@
       <Name>NetWebScript.Metadata</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

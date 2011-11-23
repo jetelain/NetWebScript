@@ -1,8 +1,7 @@
-﻿using System;
-
+﻿
 namespace NetWebScript.Script.Xml
 {
-    //FIXME:[Imported, IgnoreNamespace, NumericValues]
+    [ScriptAvailable]
     public enum XmlNodeType
     {
         Attribute = 2,

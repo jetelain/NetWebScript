@@ -201,6 +201,15 @@ namespace NetWebScript.CompilerCLI
                 CoreRuntime.WriteRuntime(writer, compiler.Debuggable);
                 writer.WriteLine("NWS.$RegMod('{0}','0.0.0.0','{0}.js');", options.name);
                 compiler.Write(writer);
+                if (compiler.Debuggable)
+                {
+                    writer.WriteLine("$(document).ready(function(){");
+                    if (compiler.Debuggable)
+                    {
+                        writer.WriteLine("$dbgStart();");
+                    }
+                    writer.WriteLine("});");
+                }
             }
 
             using (var writer = new StreamWriter(new FileStream(Path.Combine(options.path.FullName, options.name + ".js.xml"), FileMode.Create, FileAccess.Write)))
@@ -262,10 +271,6 @@ namespace NetWebScript.CompilerCLI
             writer.WriteLine("<script type=\"text/javascript\" src=\"{0}.js\"></script>", name);
             writer.WriteLine("<script type=\"text/javascript\">");
             writer.WriteLine("$(document).ready(function(){");
-            if (compiler.Debuggable)
-            {
-                writer.WriteLine("$dbgStart();");
-            }
             if (factory != null)
             {
                 var page = factory.CreatePage();

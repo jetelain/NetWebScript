@@ -16,7 +16,7 @@ namespace NetWebScript.Remoting
             request.Parameters = parameters;
             request.Target = target;
 
-            var ajaxRequest = new JQueryAjax();
+            var ajaxRequest = new JQueryAjaxSettings();
             ajaxRequest.Type = "POST";
             ajaxRequest.Data = XmlSerializer.Serialize(request);
             ajaxRequest.Async = false;
