@@ -191,6 +191,8 @@ namespace NetWebScript.CompilerCLI
                 return 3;
             }
 
+            
+
             using (var writer = new StreamWriter(new FileStream(Path.Combine(options.path.FullName, CoreRuntime.JQueryFilename), FileMode.Create, FileAccess.Write)))
             {
                 CoreRuntime.WriteJQuery(writer);
@@ -199,7 +201,7 @@ namespace NetWebScript.CompilerCLI
             using (var writer = new StreamWriter(new FileStream(Path.Combine(options.path.FullName, options.name + ".js"), FileMode.Create, FileAccess.Write)))
             {
                 CoreRuntime.WriteRuntime(writer, compiler.Debuggable);
-                writer.WriteLine("NWS.$RegMod('{0}','0.0.0.0','{0}.js');", options.name);
+                writer.WriteLine("NWS.$RegMod('{0}','0.0.0.0','{0}.js','{1}');", options.name, compiler.Metadata.Timestamp);
                 compiler.Write(writer);
                 if (compiler.Debuggable)
                 {

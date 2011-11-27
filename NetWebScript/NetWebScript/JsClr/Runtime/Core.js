@@ -28,8 +28,8 @@ NWS.ToXml = function(doc) {
 
 NWS.$Modules = [];
 
-NWS.$RegMod = function(name, version, filename) {
-    var module = { Name: name, Version: version, Filename: filename };
+NWS.$RegMod = function(name, version, filename, timestamp) {
+    var module = { Name: name, Version: version, Filename: filename, Timestamp: timestamp };
     NWS.$Modules.push(module);
     return module;
 }

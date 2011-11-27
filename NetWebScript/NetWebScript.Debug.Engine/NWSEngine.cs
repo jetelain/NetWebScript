@@ -322,5 +322,26 @@ namespace NetWebScript.Debug.Engine
                 }
             }
         }
+
+        internal void RemovePendingBreakpoint(PendingBreakpoint pendingBreakpoint)
+        {
+            lock (pendings)
+            {
+                pendings.Remove(pendingBreakpoint);
+            }
+        }
+
+        internal void OnModuleUpdate(ScriptProgram scriptProgram, ScriptModule scriptModule)
+        {
+            Trace.TraceInformation("NWSEngine.OnNewModule");
+            //callback.SendModuleLoaded(scriptProgram, scriptModule);
+            lock (pendings)
+            {
+                foreach (var bp in pendings)
+                {
+                    bp.OnModuleUpdate(scriptProgram, scriptModule);
+                }
+            }
+        }
     }
 }

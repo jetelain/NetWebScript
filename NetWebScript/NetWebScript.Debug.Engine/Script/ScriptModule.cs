@@ -30,6 +30,7 @@ namespace NetWebScript.Debug.Engine.Script
         public ScriptModule(ModuleInfo module)
         {
             this.ModuleFile = module.Uri.ToString();
+            this.Uri = module.Uri;
             String symbols = ModuleFile + ".xml";
             try
             {
@@ -232,6 +233,28 @@ namespace NetWebScript.Debug.Engine.Script
         internal IEnumerable<DocumentContext> Points
         {
             get { return points; }
+        }
+
+        internal Uri Uri { get; set; }
+
+        internal void UpdateMetadata(ModuleInfo module)
+        {
+            // TODO: This ModuleUpdate approach is not really thread safe, it's a temporary solution to avoid VS restart 
+            // after each module compilation...
+
+            metadata = null;
+            points.Clear();
+
+            string symbols = ModuleFile + ".xml";
+            try
+            {
+                LoadPoints(symbols);
+                SymbolsFile = symbols;
+            }
+            catch (Exception e)
+            {
+                Trace.TraceWarning("Unable to load symbols from {0} : {1}", symbols, e.ToString());
+            }
         }
     }
 }

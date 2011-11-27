@@ -5,15 +5,15 @@ using System.Diagnostics;
 namespace NetWebScript.Debug.Server
 {
     public enum JSThreadState
-	{
-		Running,
-		Breaked,
-		Stopped
-	}
-	
-	internal class JSThread : IJSThread
-	{
-		private readonly JSProgram prog;
+    {
+        Running,
+        Breaked,
+        Stopped
+    }
+    
+    internal class JSThread : IJSThread
+    {
+        private readonly JSProgram prog;
         private readonly Queue<String> messages = new Queue<String>();
         private readonly HashSet<String> ackedBreakPoints = new HashSet<String>();
 
@@ -28,12 +28,12 @@ namespace NetWebScript.Debug.Server
         private readonly int id;
         private readonly String uid;
 
-		public JSThread (int id, JSProgram prog)
-		{
+        public JSThread (int id, JSProgram prog)
+        {
             this.prog = prog;
             this.id = id;
             this.uid = prog.Id + "/" + id;
-		}
+        }
 
         public int Id
         {
@@ -45,10 +45,10 @@ namespace NetWebScript.Debug.Server
             get { return uid; }
         }
 
-		public void NotifyNewBreakPoint ( String uid )
-		{
-			SendMessage("addbp:"+uid);	
-		}
+        public void NotifyNewBreakPoint ( String uid )
+        {
+            SendMessage("addbp:"+uid);	
+        }
 
         public void NotifyRemoveBreakPoint(String uid)
         {
@@ -59,11 +59,11 @@ namespace NetWebScript.Debug.Server
         {
             SendMessage("detach");
         }
-		
-		public void StepOver ( )
-		{
+        
+        public void StepOver ( )
+        {
             SendMessage("step:eq");
-		}
+        }
 
         public void StepOut()
         {
@@ -74,11 +74,11 @@ namespace NetWebScript.Debug.Server
         {
             SendMessage("step:dw");
         }
-		
-		public void Continue()
-		{
-			SendMessage("continue");
-		}
+        
+        public void Continue()
+        {
+            SendMessage("continue");
+        }
 
         public JSThreadState State
         {
@@ -89,15 +89,15 @@ namespace NetWebScript.Debug.Server
         {
             get { return currentPoint; }
         }
-		
-		public event EventHandler BreakPointReady;
-	
-		private void Stopped ( )
-		{
-			lock ( this )
-			{
-				state = JSThreadState.Stopped;	
-			}
+        
+        public event EventHandler BreakPointReady;
+    
+        private void Stopped ( )
+        {
+            lock ( this )
+            {
+                state = JSThreadState.Stopped;	
+            }
             lock (callbacks)
             {
                 foreach (IJSThreadCallback callback in callbacks)
@@ -105,15 +105,15 @@ namespace NetWebScript.Debug.Server
                     callback.OnStopped();
                 }
             }
-		}
-		
-		private void ReachedPoint ( String uid, String stackXml )
-		{
-			lock ( this )
-			{
-				state = JSThreadState.Breaked;
+        }
+        
+        private void ReachedPoint ( String uid, String stackXml )
+        {
+            lock ( this )
+            {
+                state = JSThreadState.Breaked;
                 currentPoint = uid;
-			}
+            }
             lock (callbacks)
             {
                 foreach (IJSThreadCallback callback in callbacks)
@@ -121,7 +121,7 @@ namespace NetWebScript.Debug.Server
                     callback.OnBreakpoint(uid, stackXml);
                 }
             }
-		}
+        }
 
         private void StepedPoint(String uid, String stackXml)
         {
@@ -139,127 +139,127 @@ namespace NetWebScript.Debug.Server
             }
         }
 
-		private void ContinueAck()
-		{
-			lock ( this )
-			{
-				state = JSThreadState.Running;
+        private void ContinueAck()
+        {
+            lock ( this )
+            {
+                state = JSThreadState.Running;
                 currentPoint = null;
-			}
+            }
             //if (StateChanged != null)
             //{
             //    StateChanged(this, EventArgs.Empty);
             //}
-		}
-		
-		private void BreakPointAck(String[] uids)
-		{
+        }
+        
+        private void BreakPointAck(String[] uids)
+        {
             lock (this)
             {
                 ackedBreakPoints.UnionWith(uids);
             }
-		}
-		
-		private Semaphore semaphore = new Semaphore(1,1);
-		
-		private void SendMessage ( String message )
-		{
-			lock ( this )
-			{
-				messages.Enqueue(message);
-				if ( waiting )
-				{
-					semaphore.Release();	
-				}
-			}
-		}
+        }
+        
+        private Semaphore semaphore = new Semaphore(1,1);
+        
+        private void SendMessage ( String message )
+        {
+            lock ( this )
+            {
+                messages.Enqueue(message);
+                if ( waiting )
+                {
+                    semaphore.Release();	
+                }
+            }
+        }
 
-		internal String GetBlockingMessage()
-		{
-			lock ( this )
-			{
-				if ( messages.Count > 0 )
-				{
-					return messages.Dequeue();
-				}
-				waiting = true;
-			}
+        internal String GetBlockingMessage()
+        {
+            lock ( this )
+            {
+                if ( messages.Count > 0 )
+                {
+                    return messages.Dequeue();
+                }
+                waiting = true;
+            }
             semaphore.WaitOne(2000);
-			lock(this)
-			{
-				waiting = false;
-				if ( messages.Count > 0 )
-				{
-					return messages.Dequeue();
-				}
-			}
-			return "wait";
-		}
-		
-		internal String GetNonBlockingMessage()
-		{
-			lock ( this )
-			{
-				if ( messages.Count > 0 )
-				{
-					return messages.Dequeue();
-				}
-			}
-			return "nop";
-		}
+            lock(this)
+            {
+                waiting = false;
+                if ( messages.Count > 0 )
+                {
+                    return messages.Dequeue();
+                }
+            }
+            return "wait";
+        }
+        
+        internal String GetNonBlockingMessage()
+        {
+            lock ( this )
+            {
+                if ( messages.Count > 0 )
+                {
+                    return messages.Dequeue();
+                }
+            }
+            return "nop";
+        }
 
         internal String InitMessage()
         {
             return UId+":" + String.Join(",", prog.BreakPoints.ToArray());	
         }
 
-		internal String Query ( String cmd, String data, String postData, bool blocking )
-		{
+        internal String Query ( String cmd, String data, String postData, bool blocking )
+        {
 
-			lastActivity = DateTime.Now;
-			
-			// Commandes spéciales : ne renvoie pas de message (requetes "asynchrones")
-			if ( cmd == "status" )
-			{
-				lock ( this )
-				{
-					return messages.Count == 0 ? "false" : "true";	
-				}
-			}
-			
-			if ( cmd == "stop" )
-			{
-				Stopped();
-				return String.Empty;	
-			}
-			
-			// Commandes classiques (requetes synchrone)
-			if (cmd == "continueACK" )
-			{
-				ContinueAck();
-			}
-			else if ( cmd == "bpACK" )
-			{
-				BreakPointAck(data.Split(','));
-			}
-			else if ( cmd == "reached" )
-			{
+            lastActivity = DateTime.Now;
+            
+            // Commandes spéciales : ne renvoie pas de message (requetes "asynchrones")
+            if ( cmd == "status" )
+            {
+                lock ( this )
+                {
+                    return messages.Count == 0 ? "false" : "true";	
+                }
+            }
+            
+            if ( cmd == "stop" )
+            {
+                Stopped();
+                return String.Empty;	
+            }
+            
+            // Commandes classiques (requetes synchrone)
+            if (cmd == "continueACK" )
+            {
+                ContinueAck();
+            }
+            else if ( cmd == "bpACK" )
+            {
+                BreakPointAck(data.Split(','));
+            }
+            else if ( cmd == "reached" )
+            {
                 ReachedPoint(data, postData);
-			}
+            }
             else if (cmd == "steped")
             {
                 StepedPoint(data, postData);
             }
 
-			if ( blocking )
-			{
-				return GetBlockingMessage();
-			}
-			else
-			{			
-				return GetNonBlockingMessage();
-			}
-		}
+            if ( blocking )
+            {
+                return GetBlockingMessage();
+            }
+            else
+            {			
+                return GetNonBlockingMessage();
+            }
+        }
 
         public void RegisterCallback(IJSThreadCallback callback)
         {

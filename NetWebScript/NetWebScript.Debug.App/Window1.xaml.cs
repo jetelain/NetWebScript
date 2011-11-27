@@ -141,5 +141,9 @@ namespace NetWebScript.Debug.App
 
         #endregion
 
+        public void OnModuleUpdate(ModuleInfo module)
+        {
+
+        }
     }
 }

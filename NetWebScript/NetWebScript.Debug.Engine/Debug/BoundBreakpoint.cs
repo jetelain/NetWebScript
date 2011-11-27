@@ -153,5 +153,7 @@ namespace NetWebScript.Debug.Engine.Debug
         }
 
         #endregion
+
+        internal ScriptModule Module { get { return doc.Module; } }
     }
 }

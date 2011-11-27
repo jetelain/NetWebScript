@@ -12,5 +12,10 @@ namespace NetWebScript.Debug.Server
 
         void OnNewModule(ModuleInfo module);
 
+        /// <summary>
+        /// Called when module is updated (new code and metadata)
+        /// </summary>
+        /// <param name="module"></param>
+        void OnModuleUpdate(ModuleInfo module);
     }
 }

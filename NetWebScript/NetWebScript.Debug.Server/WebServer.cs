@@ -99,11 +99,12 @@ namespace NetWebScript.Debug.Server
             var modules = new List<ModuleInfo>();
             foreach (XmlElement element in document.DocumentElement.SelectNodes("Module"))
             {
-                String name = element.GetAttribute("Name");
-                String version = element.GetAttribute("Version");
-                String relpath = element.GetAttribute("Filename");
+                string name = element.GetAttribute("Name");
+                string version = element.GetAttribute("Version");
+                string timestamp = element.GetAttribute("Timestamp");
+                string relpath = element.GetAttribute("Filename");
                 Uri moduleUri = new Uri(pageUri, relpath);
-                modules.Add(new ModuleInfo() { Name = name, Version = version, Uri = moduleUri });
+                modules.Add(new ModuleInfo() { Name = name, Version = version, Uri = moduleUri, Timestamp = timestamp });
             }
 
             var program = GetOrCreateProgram(pageUri, modules);

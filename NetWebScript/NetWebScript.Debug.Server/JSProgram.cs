@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace NetWebScript.Debug.Server
 {
     internal sealed class JSProgram : IJSProgram
-	{
-		private readonly Dictionary<String,JSThread> threadsDict = new Dictionary<String, JSThread>();
-		private readonly List<String> breakPoints = new List<String>();
+    {
+        private readonly Dictionary<String,JSThread> threadsDict = new Dictionary<String, JSThread>();
+        private readonly List<String> breakPoints = new List<String>();
         private readonly int id;
         private readonly WebServer server;
         
@@ -18,8 +18,8 @@ namespace NetWebScript.Debug.Server
         private readonly ProgramIdentity identity;
         private readonly Uri uri;
 
-		public JSProgram (WebServer server, int id, Uri uri, IEnumerable<ModuleInfo> initialModules)
-		{
+        public JSProgram (WebServer server, int id, Uri uri, IEnumerable<ModuleInfo> initialModules)
+        {
             this.server = server;
             this.id = id;
             this.uri = uri;
@@ -28,7 +28,7 @@ namespace NetWebScript.Debug.Server
                 modules.AddRange(initialModules);
             }
             identity = new ProgramIdentity(uri);
-		}
+        }
 
         public int Id
         {
@@ -50,25 +50,25 @@ namespace NetWebScript.Debug.Server
             return identity.IsPartOfProgram(uri);
         }
 
-		public List<String> BreakPoints
-		{
-			get { return breakPoints; }	
-		}
+        public List<String> BreakPoints
+        {
+            get { return breakPoints; }	
+        }
 
-		public void AddBreakPoint ( String uid )
-		{
-			lock (this)
-			{
-				if ( !breakPoints.Contains(uid) )
-				{
-					breakPoints.Add(uid);
-					foreach ( JSThread thread in threadsDict.Values )
-					{
-						thread.NotifyNewBreakPoint(uid);
-					}
-				}
-			}
-		}
+        public void AddBreakPoint ( String uid )
+        {
+            lock (this)
+            {
+                if ( !breakPoints.Contains(uid) )
+                {
+                    breakPoints.Add(uid);
+                    foreach ( JSThread thread in threadsDict.Values )
+                    {
+                        thread.NotifyNewBreakPoint(uid);
+                    }
+                }
+            }
+        }
 
         public void RemoveBreakPoint(String uid)
         {
@@ -117,11 +117,11 @@ namespace NetWebScript.Debug.Server
             return thread;
         }
 
-		/*public JSThread GetThread ( String t )
-		{
-			JSThread thread;
-			if( !threadsDict.TryGetValue(t, out thread) )
-			{
+        /*public JSThread GetThread ( String t )
+        {
+            JSThread thread;
+            if( !threadsDict.TryGetValue(t, out thread) )
+            {
                 lock (this)
                 {
                     if (!threadsDict.TryGetValue(t, out thread))
@@ -137,9 +137,9 @@ namespace NetWebScript.Debug.Server
                         }
                     }
                 }
-			}	
-			return thread;
-		}*/
+            }	
+            return thread;
+        }*/
 
         public ICollection<IJSThread> Threads
         {
@@ -182,17 +182,48 @@ namespace NetWebScript.Debug.Server
             }
         }
 
-
-        internal void MergeModules(List<ModuleInfo> newModules)
+        private void ModuleUpdate(ModuleInfo existing, ModuleInfo newModule)
         {
-            foreach (ModuleInfo newModule in newModules)
+            lock (existing)
             {
-                if (modules.FirstOrDefault(m => m.Uri == newModule.Uri) == null)
+                existing.Timestamp = newModule.Timestamp;
+                existing.Version = newModule.Version;
+            }
+
+            lock (callbacks)
+            {
+                lock (callbacks)
                 {
-                    AddModule(newModule);
+                    foreach (IJSProgramCallback callback in callbacks)
+                    {
+                        callback.OnModuleUpdate(existing);
+                    }
                 }
             }
         }
+
+
+        internal void MergeModules(List<ModuleInfo> newModules)
+        {
+            // FIXME: Due to browser 'cache', multiple version of a same module may be connected to debugger at the same time.
+            // Module should be attached to 'thread' and not to 'program' to avoid problems.
+
+            foreach (ModuleInfo newModule in newModules)
+            {
+                var existing = modules.FirstOrDefault(m => m.Uri == newModule.Uri);
+
+                if (existing == null)
+                {
+                    AddModule(newModule);
+                }
+                else if (existing.Timestamp != newModule.Timestamp)
+                {
+                    ModuleUpdate(existing, newModule);
+                }
+            }
+        }
+
+
     }
 }
 

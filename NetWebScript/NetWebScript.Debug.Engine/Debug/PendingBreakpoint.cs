@@ -193,6 +193,8 @@ namespace NetWebScript.Debug.Engine.Debug
                 }
             }
 
+            m_engine.RemovePendingBreakpoint(this);
+
             return Constants.S_OK;
         }
 
@@ -326,6 +328,24 @@ namespace NetWebScript.Debug.Engine.Debug
                 }
             }
             // XXX: Events to rise ?
+        }
+
+        internal void OnModuleUpdate(ScriptProgram scriptProgram, ScriptModule scriptModule)
+        {
+            // TODO: This ModuleUpdate approach is not really thread safe, it's a temporary solution to avoid VS restart 
+            // after each module compilation...
+
+            // Remove all bound breakpoints to module
+            lock (m_boundBreakpoints)
+            {
+                var toClear = m_boundBreakpoints.Where(bp => bp.Module == scriptModule).ToList();
+                foreach (var point in toClear)
+                {
+                    point.Delete();
+                }
+            }
+            // Bound all new points
+            OnNewModule(scriptProgram, scriptModule);
         }
     }
 }

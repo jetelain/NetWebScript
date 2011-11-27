@@ -44,5 +44,8 @@ namespace NetWebScript.Metadata
             }
             return doc;
         }
+
+        [XmlAttribute]
+        public string Timestamp { get; set; }
     }
 }

@@ -298,6 +298,7 @@ var Debugger = {
             element.setAttribute("Name", mod.Name);
             element.setAttribute("Version", mod.Version);
             element.setAttribute("Filename", mod.Filename);
+            element.setAttribute("Timestamp", mod.Timestamp);
             doc.documentElement.appendChild(element);
         }
         return NWS.ToXml(doc);

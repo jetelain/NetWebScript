@@ -59,7 +59,7 @@ namespace NetWebScript.JsClr.Compiler
         {
             this.system = system;
             runtimeFilter = new RuntimeAstFilter(system, messages);
-            Metadata = new ModuleMetadata();
+            Metadata = new ModuleMetadata() { Timestamp = DateTime.Now.ToString("yyyyMMddHHmmss") };
 
             AddAssemblyPrivate(typeof(TypeSystemHelper).Assembly);
             AddEntryPoint(typeof(TypeSystemHelper));

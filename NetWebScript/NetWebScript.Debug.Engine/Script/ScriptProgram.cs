@@ -519,5 +519,27 @@ namespace NetWebScript.Debug.Engine.Script
         
         
         }
+
+        public void OnModuleUpdate(ModuleInfo module)
+        {
+            // TODO: This ModuleUpdate approach is not really thread safe, it's a temporary solution to avoid VS restart 
+            // after each module compilation...
+
+            var scriptModule = modules.FirstOrDefault(m => m.Uri == module.Uri);
+            if (scriptModule == null)
+            {
+                OnNewModule(module);
+            }
+            else
+            {
+                scriptModule.UpdateMetadata(module);
+                if (attached != null)
+                {
+                    // If attached, notifies the Debug Engine,
+                    // that will do all required operations
+                    attached.OnModuleUpdate(this, scriptModule);
+                }
+            }
+        }
     }
 }

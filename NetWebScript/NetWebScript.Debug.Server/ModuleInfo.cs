@@ -8,11 +8,12 @@ namespace NetWebScript.Debug.Server
     [Serializable]
     public class ModuleInfo
     {
-        public String Name { get; set; }
+        public string Name { get; set; }
 
-        public String Version { get; set; }
+        public string Version { get; set; }
 
         public Uri Uri { get; set; }
 
+        public string Timestamp { get; set; }
     }
 }
