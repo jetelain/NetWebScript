@@ -16,5 +16,13 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
         {
             return "Block "+(Block.Index+1);
         }
+
+        public override int LowestStack
+        {
+            get
+            {
+                return Block.LowestStack;
+            }
+        }
     }
 }

@@ -379,17 +379,17 @@ namespace NetWebScript.Test.Material.Tests
         //}
 
 
-        //[TestMethod]
-        //public void NullCoalesceExpression()
-        //{
-        //    String a = "value";
-        //    String b = null;
-        //    b = a ?? "badvalue";
-        //    Assert.AreEqual("value", b);
-        //    a = null;
-        //    b = a ?? "newvalue";
-        //    Assert.AreEqual("newvalue", b);
-        //}
+        [TestMethod]
+        public void NullCoalesceExpression()
+        {
+            String a = "value";
+            String b = null;
+            b = a ?? "badvalue";
+            Assert.AreEqual("value", b);
+            a = null;
+            b = a ?? "newvalue";
+            Assert.AreEqual("newvalue", b);
+        }
         
 
 	}

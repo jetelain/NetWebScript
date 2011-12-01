@@ -13,10 +13,10 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
 
         static readonly InstructionBlock[] NoSuccessors = new InstructionBlock[0];
 
-        int index;
-        Instruction first;
-        Instruction last;
-        InstructionBlock[] successors = NoSuccessors;
+        private int index;
+        private readonly Instruction first;
+        private Instruction last;
+        private InstructionBlock[] successors = NoSuccessors;
 
         public int Index
         {
@@ -27,13 +27,12 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
         public Instruction First
         {
             get { return first; }
-            //internal set { first = value; }
         }
 
         public Instruction Last
         {
             get { return last; }
-            internal set { last = value; }
+            internal set { last = value; lowestStack = -1; }
 
         }
 
@@ -81,29 +80,32 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
             return GetEnumerator();
         }
 
-        //private static void RangeTo(InstructionBlock current, InstructionBlock target, List<InstructionBlock> range)
-        //{
-        //    if (current == target || range.Contains(current))
-        //    {
-        //        return;
-        //    }
-        //    range.Add(current);
-        //    foreach (InstructionBlock sucessor in current.Successors)
-        //    {
-        //        RangeTo(sucessor, target, range);
-        //    }
-        //}
-
-        //public List<InstructionBlock> RangeTo(InstructionBlock target)
-        //{
-        //    List<InstructionBlock> list = new List<InstructionBlock>();
-        //    RangeTo(this, target, list);
-        //    return list;
-        //}
-
+        /// <summary>
+        /// Stack size before first instruction of block
+        /// </summary>
         public int StackBefore { get { return first.StackBefore; } }
 
+        /// <summary>
+        /// Stack size after last instruction of block
+        /// </summary>
         public int StackAfter { get { return last.StackAfter; } }
+
+        private int lowestStack = -1;
+
+        /// <summary>
+        /// Smallest stack before or after any instruction of block
+        /// </summary>
+        public int LowestStack 
+        { 
+            get 
+            {
+                if (lowestStack == -1)
+                {
+                    lowestStack = this.Min(i => Math.Min(i.StackAfter, i.StackBefore));
+                }
+                return lowestStack;
+            } 
+        }
 
     }
 }

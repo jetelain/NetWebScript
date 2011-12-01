@@ -71,6 +71,7 @@
     <Compile Include="AstBuilder\FlowTree\SimpleTree.cs" />
     <Compile Include="AstBuilder\StatementBuilder\Arithmetic.cs" />
     <Compile Include="AstBuilder\StatementBuilder\Comparaison.cs" />
+    <Compile Include="AstBuilder\StatementBuilder\Condition.cs" />
     <Compile Include="AstBuilder\StatementBuilder\Dup.cs" />
     <Compile Include="AstBuilder\StatementBuilder\ExecOrder.cs" />
     <Compile Include="AstBuilder\StatementBuilder\Literal.cs" />

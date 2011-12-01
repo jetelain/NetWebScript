@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using NetWebScript.JsClr.AstBuilder.FlowGraph;
+using System;
+using System.Linq;
 
 namespace NetWebScript.JsClr.AstBuilder.Flow
 {
@@ -16,6 +18,37 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
         internal List<Sequence> Jump;
 
         internal int StackAfter;
+
+
+        public int ContentLowestStack
+        {
+            get
+            {
+                var min = int.MaxValue;
+                if (Jump != null)
+                {
+                    min = Math.Min(min, Jump.Min(b => b.LowestStack));
+                }
+                if (NoJump != null)
+                {
+                    min = Math.Min(min, NoJump.Min(b => b.LowestStack));
+                }
+                return min;
+            }
+        }
+
+        public override int LowestStack
+        {
+            get
+            {
+                var min = Block.LowestStack;
+                if (min != 0)
+                {
+                    min = Math.Min(min, ContentLowestStack);
+                }
+                return min;
+            }
+        }
 
         public override string ToString()
         {

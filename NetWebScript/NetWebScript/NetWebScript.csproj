@@ -81,6 +81,7 @@
     <Compile Include="JsClr\AstBuilder\AstFilter\LiteralsTypeFix.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\LogicOperations.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\NullTest.cs" />
+    <Compile Include="JsClr\AstBuilder\ExpressionBuilderBase.cs" />
     <Compile Include="JsClr\AstBuilder\FlowGraph\CatchHandlerData.cs" />
     <Compile Include="JsClr\AstBuilder\FlowGraph\ProtectedRegionData.cs" />
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\InlineBlock.cs" />

@@ -7,5 +7,14 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
         {
             return "Break";
         }
+
+        public override int LowestStack
+        {
+            get
+            {
+                // this element is stack neutral
+                return int.MaxValue;
+            }
+        }
     }
 }

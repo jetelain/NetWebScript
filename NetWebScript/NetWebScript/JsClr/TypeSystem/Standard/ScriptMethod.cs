@@ -27,7 +27,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                     {
                         vslot = exportedName;
                     }
-                    else
+                    else //if ( !method.IsFinal )
                     {
                         vslot = system.CreateSplotId();
                     }

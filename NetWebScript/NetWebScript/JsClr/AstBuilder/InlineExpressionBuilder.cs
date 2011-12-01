@@ -41,9 +41,9 @@ namespace NetWebScript.JsClr.AstBuilder
             current = sequence as SingleBlock;
             if (current != null)
             {
-                if (current is PreLoop || current is Switch/* || current is PostLoop*/)
+                if (current.GetType() != typeof(SingleBlock) && current.GetType() != typeof(Condition))
                 {
-                    throw new NotImplementedException();
+                    throw new NotImplementedException(current.GetType().FullName);
                 }
                 foreach (Instruction instruction in current.Block)
                 {
@@ -82,10 +82,6 @@ namespace NetWebScript.JsClr.AstBuilder
                         Expression @else = Transform(builder, cond.NoJump);
                         // Transformation en ternaire
                         builder.Push(new ConditionExpression(instruction.Offset, condition, @then, @else));
-                        if (enumerator.MoveNext())
-                        {
-                            Process(enumerator.Current);
-                        }
                         return;
                     }
                 }
