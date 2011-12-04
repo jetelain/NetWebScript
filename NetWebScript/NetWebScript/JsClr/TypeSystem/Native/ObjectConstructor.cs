@@ -51,7 +51,7 @@ namespace NetWebScript.JsClr.TypeSystem.Native
 
         #region IObjectCreationInvoker Members
 
-        public JsToken WriteObjectCreation(IScriptConstructor ctor, Ast.ObjectCreationExpression creationExpression, IRootInvoker converter)
+        public JsToken WriteObjectCreation(IScriptConstructor ctor, ScriptAst.ScriptObjectCreationExpression creationExpression, IRootInvoker converter)
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.Write("new Object()");
@@ -62,7 +62,7 @@ namespace NetWebScript.JsClr.TypeSystem.Native
 
         #region IMethodInvoker Members
 
-        public JsToken WriteMethod(IScriptMethodBase method, Ast.MethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsToken WriteMethod(IScriptMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             return null;
         }

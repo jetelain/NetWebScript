@@ -47,7 +47,7 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
 
         #region IFieldInvoker Members
 
-        public JsToken WriteField(IScriptField field, Ast.FieldReferenceExpression fieldExpression, IRootInvoker converter)
+        public JsToken WriteField(IScriptField field, ScriptAst.ScriptFieldReferenceExpression fieldExpression, IRootInvoker converter)
         {
             return helper.Invoker.WriteField(helper, fieldExpression, converter);
         }

@@ -56,7 +56,7 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
 
         #region IMethodInvoker Members
 
-        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase method, Ast.MethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             return helper.Invoker.WriteMethod(helper, methodExpression, converter);
         }
@@ -70,7 +70,7 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
 
         #region IObjectCreationInvoker Members
 
-        public JsBuilder.JsSyntax.JsToken WriteObjectCreation(IScriptConstructor ctor, Ast.ObjectCreationExpression creationExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteObjectCreation(IScriptConstructor ctor, ScriptAst.ScriptObjectCreationExpression creationExpression, IRootInvoker converter)
         {
             return helper.CreationInvoker.WriteObjectCreation(helper, creationExpression, converter);
         }

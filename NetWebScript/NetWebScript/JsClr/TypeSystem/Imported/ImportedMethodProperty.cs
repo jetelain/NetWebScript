@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
-using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
+using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Imported
 {
@@ -50,7 +47,7 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             get { return this; }
         }
 
-        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase methodBase, Ast.MethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase methodBase, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             JsToken token;
             int setArg = 0;

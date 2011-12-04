@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
+using NetWebScript.JsClr.ScriptAst;
 using NetWebScript.JsClr.TypeSystem.Invoker;
-using NetWebScript.JsClr.Ast;
 
 namespace NetWebScript.JsClr.TypeSystem.Native
 {
@@ -66,13 +64,13 @@ namespace NetWebScript.JsClr.TypeSystem.Native
 
         #endregion
 
-        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase method, Ast.MethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
-            var arguments = new List<Expression>();
+            var arguments = new List<ScriptExpression>();
             arguments.Add(methodExpression.Target);
             arguments.AddRange(methodExpression.Arguments);
 
-            var methdoExpressionProxy = new MethodInvocationExpression(methodExpression.IlOffset, false, helper.Method, null, arguments);
+            var methdoExpressionProxy = new ScriptMethodInvocationExpression(methodExpression.IlOffset, false, helper, null, arguments);
             return helper.Invoker.WriteMethod(helper, methdoExpressionProxy, converter);
         }
 

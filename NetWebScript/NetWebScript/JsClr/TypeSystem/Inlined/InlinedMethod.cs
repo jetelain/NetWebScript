@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NetWebScript.JsClr.TypeSystem.Invoker;
 using System.Reflection;
-using NetWebScript.JsClr.JsBuilder.Pattern;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
+using NetWebScript.JsClr.JsBuilder.Pattern;
+using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Inlined
 {
@@ -57,7 +55,7 @@ namespace NetWebScript.JsClr.TypeSystem.Inlined
 
         #region IMethodInvoker Members
 
-        public JsToken WriteMethod(IScriptMethodBase method, Ast.MethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsToken WriteMethod(IScriptMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             var locals = new Dictionary<string, JsToken>();
             if (methodExpression.Target != null)

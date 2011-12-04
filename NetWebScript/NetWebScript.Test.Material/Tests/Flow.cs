@@ -286,6 +286,55 @@ namespace NetWebScript.Test.Material.Tests
         }
 
         [TestMethod]
+        public void TryCatch_CatchSpecific()
+        {
+            int ok = 0, ko = 0;
+            try
+            {
+                ok++;
+                throw new InvalidOperationException();
+            }
+            catch (InvalidOperationException)
+            {
+                ok++;
+            }
+            catch
+            {
+                ko++;
+            }
+            Assert.AreEqual(2, ok);
+            Assert.AreEqual(0, ko);
+
+            try
+            {
+                ok++;
+                throw new NotImplementedException();
+            }
+            catch (InvalidOperationException)
+            {
+                ko++;
+            }
+            catch
+            {
+                ok++;
+            }
+            Assert.AreEqual(4, ok);
+            Assert.AreEqual(0, ko);
+
+            try
+            {
+                ok++;
+                throw new NotImplementedException();
+            }
+            catch (InvalidOperationException)
+            {
+                ko++;
+            }
+            Assert.AreEqual(5, ok);
+            Assert.AreEqual(0, ko);
+        }
+
+        [TestMethod]
         public void TryCatchFinally()
         {
             int ok = 0, ko = 0;

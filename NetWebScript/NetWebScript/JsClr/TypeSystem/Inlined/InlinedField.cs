@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NetWebScript.JsClr.TypeSystem.Invoker;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using NetWebScript.JsClr.JsBuilder.Pattern;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
+using NetWebScript.JsClr.JsBuilder.Pattern;
+using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Inlined
 {
@@ -49,7 +46,7 @@ namespace NetWebScript.JsClr.TypeSystem.Inlined
 
         #region IFieldInvoker Members
 
-        public JsBuilder.JsSyntax.JsToken WriteField(IScriptField field, Ast.FieldReferenceExpression fieldExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteField(IScriptField field, ScriptAst.ScriptFieldReferenceExpression fieldExpression, IRootInvoker converter)
         {
             var locals = new Dictionary<string, JsToken>();
             if (fieldExpression.Target != null)

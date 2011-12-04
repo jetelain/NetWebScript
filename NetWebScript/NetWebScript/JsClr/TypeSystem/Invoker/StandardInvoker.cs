@@ -10,7 +10,7 @@ namespace NetWebScript.JsClr.TypeSystem.Invoker
     {
         public static readonly StandardInvoker Instance = new StandardInvoker();
 
-        public JsToken WriteField(IScriptField field, Ast.FieldReferenceExpression fieldExpression, IRootInvoker converter)
+        public JsToken WriteField(IScriptField field, ScriptAst.ScriptFieldReferenceExpression fieldExpression, IRootInvoker converter)
         {
             if (field.Field.IsStatic)
             {
@@ -19,7 +19,7 @@ namespace NetWebScript.JsClr.TypeSystem.Invoker
             return JsToken.Member(fieldExpression.Target.Accept(converter), field.SlodId);
         }
 
-        public JsToken WriteMethod(IScriptMethodBase method, Ast.MethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsToken WriteMethod(IScriptMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             var writer = new JsTokenWriter();
             var explicitCall = methodExpression.IsExplicit;
@@ -44,7 +44,7 @@ namespace NetWebScript.JsClr.TypeSystem.Invoker
             return writer.ToToken(JsPrecedence.FunctionCall);
         }
 
-        public JsToken WriteObjectCreation(IScriptConstructor ctor, Ast.ObjectCreationExpression creationExpression, IRootInvoker converter)
+        public JsToken WriteObjectCreation(IScriptConstructor ctor, ScriptAst.ScriptObjectCreationExpression creationExpression, IRootInvoker converter)
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.Write("new ");

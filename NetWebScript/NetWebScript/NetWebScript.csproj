@@ -136,6 +136,38 @@
     <Compile Include="JsClr\Compiler\ModuleWriter.cs" />
     <Compile Include="JsClr\JsBuilder\Pattern\InlineFragment.cs" />
     <Compile Include="JsClr\Runtime\CoreRuntime.cs" />
+    <Compile Include="JsClr\ScriptAst\IScriptStatementVisitor.cs" />
+    <Compile Include="JsClr\ScriptAst\MethodScriptAst.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptArgumentReferenceExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptArrayCreationExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptArrayIndexerExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptAssignableExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptAssignExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptBinaryExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptBinaryOperator.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptBreakStatement.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptCase.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptConditionExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptContinueStatement.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptCurrentExceptionExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptDebugPointExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptDoWhileStatement.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptFieldReferenceExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptIfStatement.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptLiteralExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptMethodInvocationExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptObjectCreationExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptReturnStatement.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptStatement.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptSwitchStatement.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptThisReferenceExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptThrowStatement.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptTryCatchStatement.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptUnaryExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptUnaryOperator.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptVariableReferenceExpression.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptWhileStatement.cs" />
     <Compile Include="JsClr\TypeSystem\IdentifierGenerator.cs" />
     <Compile Include="JsClr\TypeSystem\Anonymous\AnonymousConstructor.cs" />
     <Compile Include="JsClr\TypeSystem\Anonymous\AnonymousField.cs" />
@@ -266,6 +298,7 @@
   <ItemGroup>
     <EmbeddedResource Include="JsClr\Runtime\jquery-1.6.4.min.js" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnonymousObjectAttribute.cs" />
+    <Compile Include="Equivalents\InvalidOperationException.cs" />
     <Compile Include="Equivalents\NotSupportedException.cs" />
     <Compile Include="Equivalents\Threading\Thread.cs" />
     <Compile Include="ExportedAttribute.cs" />

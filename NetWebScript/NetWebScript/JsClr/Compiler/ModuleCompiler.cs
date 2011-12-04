@@ -129,8 +129,8 @@ namespace NetWebScript.JsClr.Compiler
             {
                 try
                 {
-                    method.Ast = system.GetMethodAst(method, method.Method);
-                    runtimeFilter.Visit(method.Ast);
+                    var netAst = system.GetMethodAst(method, method.Method);
+                    method.Ast = runtimeFilter.Visit(netAst);
                 }
                 catch (AstBuilderException e)
                 {

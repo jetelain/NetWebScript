@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using NetWebScript.JsClr.TypeSystem.Invoker;
-using NetWebScript.JsClr.JsBuilder.JsSyntax;
-using NetWebScript.JsClr.Ast;
 using System.Reflection;
+using NetWebScript.JsClr.JsBuilder.JsSyntax;
+using NetWebScript.JsClr.ScriptAst;
+using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Native
 {
@@ -20,7 +18,7 @@ namespace NetWebScript.JsClr.TypeSystem.Native
             this.method = method;
         }
 
-        public JsToken WriteMethod(IScriptMethodBase method, MethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsToken WriteMethod(IScriptMethodBase method, ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             var writer = new JsTokenWriter();
             writer.WriteLeft(JsPrecedence.FunctionCall, methodExpression.Target.Accept(converter));

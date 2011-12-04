@@ -1,52 +1,52 @@
 ﻿using System;
-using NetWebScript.JsClr.Ast;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.JsBuilder.JsSyntax
 {
     internal static class JsOperators
     {
-        internal static string ToString(UnaryOperator op)
+        internal static string ToString(ScriptUnaryOperator op)
         {
             switch (op)
             {
-                case UnaryOperator.BitwiseNot:
+                case ScriptUnaryOperator.BitwiseNot:
                     return "~";
-                case UnaryOperator.LogicalNot:
+                case ScriptUnaryOperator.LogicalNot:
                     return "!";
-                case UnaryOperator.Negate:
+                case ScriptUnaryOperator.Negate:
                     return "-";
-                case UnaryOperator.PostDecrement:
-                case UnaryOperator.PreDecrement:
+                case ScriptUnaryOperator.PostDecrement:
+                case ScriptUnaryOperator.PreDecrement:
                     return "--";
-                case UnaryOperator.PostIncrement:
-                case UnaryOperator.PreIncrement:
+                case ScriptUnaryOperator.PostIncrement:
+                case ScriptUnaryOperator.PreIncrement:
                     return "++";
                 default: throw new ArgumentException();
             }
         }
 
-        internal static string ToString(BinaryOperator op)
+        internal static string ToString(ScriptBinaryOperator op)
         {
             switch (op)
             {
-                case BinaryOperator.Add: return "+";
-                case BinaryOperator.BitwiseAnd: return "&";
-                case BinaryOperator.BitwiseOr: return "|";
-                case BinaryOperator.BitwiseXor: return "^";
-                case BinaryOperator.Divide: return "/";
-                case BinaryOperator.GreaterThan: return ">";
-                case BinaryOperator.GreaterThanOrEqual: return ">=";
-                case BinaryOperator.LeftShift: return "<<";
-                case BinaryOperator.LessThan: return "<";
-                case BinaryOperator.LessThanOrEqual: return "<=";
-                case BinaryOperator.LogicalAnd: return "&&";
-                case BinaryOperator.LogicalOr: return "||";
-                case BinaryOperator.Modulo: return "%";
-                case BinaryOperator.Multiply: return "*";
-                case BinaryOperator.RightShift: return ">>";
-                case BinaryOperator.Subtract: return "-";
-                case BinaryOperator.ValueEquality: return "===";
-                case BinaryOperator.ValueInequality: return "!==";
+                case ScriptBinaryOperator.Add: return "+";
+                case ScriptBinaryOperator.BitwiseAnd: return "&";
+                case ScriptBinaryOperator.BitwiseOr: return "|";
+                case ScriptBinaryOperator.BitwiseXor: return "^";
+                case ScriptBinaryOperator.Divide: return "/";
+                case ScriptBinaryOperator.GreaterThan: return ">";
+                case ScriptBinaryOperator.GreaterThanOrEqual: return ">=";
+                case ScriptBinaryOperator.LeftShift: return "<<";
+                case ScriptBinaryOperator.LessThan: return "<";
+                case ScriptBinaryOperator.LessThanOrEqual: return "<=";
+                case ScriptBinaryOperator.LogicalAnd: return "&&";
+                case ScriptBinaryOperator.LogicalOr: return "||";
+                case ScriptBinaryOperator.Modulo: return "%";
+                case ScriptBinaryOperator.Multiply: return "*";
+                case ScriptBinaryOperator.RightShift: return ">>";
+                case ScriptBinaryOperator.Subtract: return "-";
+                case ScriptBinaryOperator.ValueEquality: return "===";
+                case ScriptBinaryOperator.ValueInequality: return "!==";
                 default: throw new ArgumentException();
             }
         }
@@ -92,55 +92,55 @@ namespace NetWebScript.JsClr.JsBuilder.JsSyntax
             }
         }
 
-        internal static JsPrecedence GetPrecedence(BinaryOperator operationtype)
+        internal static JsPrecedence GetPrecedence(ScriptBinaryOperator operationtype)
         {
             switch (operationtype)
             {
-                case BinaryOperator.Multiply:
-                case BinaryOperator.Divide:
-                case BinaryOperator.Modulo:
+                case ScriptBinaryOperator.Multiply:
+                case ScriptBinaryOperator.Divide:
+                case ScriptBinaryOperator.Modulo:
                     return JsPrecedence.MultiplyDivideModulo;
-                case BinaryOperator.Add:
-                case BinaryOperator.Subtract:
+                case ScriptBinaryOperator.Add:
+                case ScriptBinaryOperator.Subtract:
                     return JsPrecedence.AddSubtract;
-                case BinaryOperator.RightShift:
-                case BinaryOperator.LeftShift:
+                case ScriptBinaryOperator.RightShift:
+                case ScriptBinaryOperator.LeftShift:
                     return JsPrecedence.Shift;
-                case BinaryOperator.LessThan:
-                case BinaryOperator.LessThanOrEqual:
-                case BinaryOperator.GreaterThan:
-                case BinaryOperator.GreaterThanOrEqual:
+                case ScriptBinaryOperator.LessThan:
+                case ScriptBinaryOperator.LessThanOrEqual:
+                case ScriptBinaryOperator.GreaterThan:
+                case ScriptBinaryOperator.GreaterThanOrEqual:
                     return JsPrecedence.Relational;
-                case BinaryOperator.ValueEquality:
-                case BinaryOperator.ValueInequality:
+                case ScriptBinaryOperator.ValueEquality:
+                case ScriptBinaryOperator.ValueInequality:
                     return JsPrecedence.EqualityInequality;
-                case BinaryOperator.BitwiseAnd:
+                case ScriptBinaryOperator.BitwiseAnd:
                     return JsPrecedence.BitwiseAnd;
-                case BinaryOperator.BitwiseXor:
+                case ScriptBinaryOperator.BitwiseXor:
                     return JsPrecedence.BitwiseXor;
-                case BinaryOperator.BitwiseOr:
+                case ScriptBinaryOperator.BitwiseOr:
                     return JsPrecedence.BitwiseOr;
-                case BinaryOperator.LogicalAnd:
+                case ScriptBinaryOperator.LogicalAnd:
                     return JsPrecedence.LogicalAnd;
-                case BinaryOperator.LogicalOr:
+                case ScriptBinaryOperator.LogicalOr:
                     return JsPrecedence.LogicalOr;
                 default:
                     throw new NotImplementedException(operationtype.ToString());
             }
         }
 
-        internal static JsPrecedence GetPrecedence(UnaryOperator operationtype)
+        internal static JsPrecedence GetPrecedence(ScriptUnaryOperator operationtype)
         {
             switch (operationtype)
             {
-                case UnaryOperator.Negate:
-                case UnaryOperator.LogicalNot:
-                case UnaryOperator.BitwiseNot:
+                case ScriptUnaryOperator.Negate:
+                case ScriptUnaryOperator.LogicalNot:
+                case ScriptUnaryOperator.BitwiseNot:
                     return JsPrecedence.NegateNot;
-                case UnaryOperator.PostDecrement:
-                case UnaryOperator.PostIncrement:
-                case UnaryOperator.PreDecrement:
-                case UnaryOperator.PreIncrement:
+                case ScriptUnaryOperator.PostDecrement:
+                case ScriptUnaryOperator.PostIncrement:
+                case ScriptUnaryOperator.PreDecrement:
+                case ScriptUnaryOperator.PreIncrement:
                     return JsPrecedence.PostPreIncrementDecrement;
                 default:
                     throw new NotImplementedException(operationtype.ToString());

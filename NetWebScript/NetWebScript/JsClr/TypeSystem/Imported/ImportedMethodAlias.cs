@@ -46,7 +46,7 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             get { return this; }
         }
 
-        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase method, Ast.MethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             var writer = new JsTokenWriter();
             writer.Write(name);

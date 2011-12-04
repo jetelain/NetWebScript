@@ -54,7 +54,7 @@ namespace NetWebScript.JsClr.TypeSystem.Anonymous
 
         #region IObjectCreationInvoker Members
 
-        public JsToken WriteObjectCreation(IScriptConstructor ctor, Ast.ObjectCreationExpression creationExpression, IRootInvoker converter)
+        public JsToken WriteObjectCreation(IScriptConstructor ctor, ScriptAst.ScriptObjectCreationExpression creationExpression, IRootInvoker converter)
         {
             return JsToken.Name("{}");
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NetWebScript.JsClr.Ast;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.JsBuilder.JsSyntax
 {
@@ -74,17 +75,17 @@ namespace NetWebScript.JsClr.JsBuilder.JsSyntax
             return new JsToken(JsOperators.GetBinaryPrecedence(op), a, op, b);
         }
 
-        public static JsToken Combine(JsToken a, BinaryOperator op, JsToken b)
+        public static JsToken Combine(JsToken a, ScriptBinaryOperator op, JsToken b)
         {
             return new JsToken(JsOperators.GetPrecedence(op), a, JsOperators.ToString(op), b);
         }
 
-        private static bool IsPostUnaryOperator(UnaryOperator op)
+        private static bool IsPostUnaryOperator(ScriptUnaryOperator op)
         {
             switch (op)
             {
-                case UnaryOperator.PostIncrement:
-                case UnaryOperator.PostDecrement:
+                case ScriptUnaryOperator.PostIncrement:
+                case ScriptUnaryOperator.PostDecrement:
                     return true;
                 default:
                     return false;
@@ -101,7 +102,7 @@ namespace NetWebScript.JsClr.JsBuilder.JsSyntax
             return new JsToken(JsOperators.GetUnaryPrecedence(op), v, op);
         }
 
-        public static JsToken Combine(JsToken v, UnaryOperator op)
+        public static JsToken Combine(JsToken v, ScriptUnaryOperator op)
         {
             if (IsPostUnaryOperator(op))
             {

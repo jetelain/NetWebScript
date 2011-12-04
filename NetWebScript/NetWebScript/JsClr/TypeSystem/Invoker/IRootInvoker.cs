@@ -1,9 +1,9 @@
-﻿using NetWebScript.JsClr.Ast;
+﻿using NetWebScript.JsClr.ScriptAst;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
 
 namespace NetWebScript.JsClr.TypeSystem.Invoker
 {
-    public interface IRootInvoker : IStatementVisitor<JsToken>
+    public interface IRootInvoker : IScriptStatementVisitor<JsToken>
     {
     }
 }

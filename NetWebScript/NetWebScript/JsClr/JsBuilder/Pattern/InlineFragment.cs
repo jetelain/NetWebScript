@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using NetWebScript.JsClr.JsBuilder.JsSyntax;
 using Jint;
 using Jint.Expressions;
+using NetWebScript.JsClr.JsBuilder.JsSyntax;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.JsBuilder.Pattern
 {
@@ -71,7 +72,7 @@ namespace NetWebScript.JsClr.JsBuilder.Pattern
                 expression.Expression.Accept(this);
                 var target = result;
 
-                Ast.UnaryOperator op = Ast.UnaryOperator.BitwiseNot;
+                ScriptUnaryOperator op = ScriptUnaryOperator.BitwiseNot;
                 string strOp = null;
 
                 var left = result;
@@ -81,25 +82,25 @@ namespace NetWebScript.JsClr.JsBuilder.Pattern
                         strOp = "delete ";
                         break;
                     case UnaryExpressionType.Inv:
-                        op = Ast.UnaryOperator.BitwiseNot;
+                        op = ScriptUnaryOperator.BitwiseNot;
                         break;
                     case UnaryExpressionType.Negate:
-                        op = Ast.UnaryOperator.Negate;
+                        op = ScriptUnaryOperator.Negate;
                         break;
                     case UnaryExpressionType.Not:
-                        op = Ast.UnaryOperator.LogicalNot;
+                        op = ScriptUnaryOperator.LogicalNot;
                         break;
                     case UnaryExpressionType.PostfixMinusMinus:
-                        op = Ast.UnaryOperator.PostDecrement;
+                        op = ScriptUnaryOperator.PostDecrement;
                         break;
                     case UnaryExpressionType.PostfixPlusPlus:
-                        op = Ast.UnaryOperator.PostIncrement;
+                        op = ScriptUnaryOperator.PostIncrement;
                         break;
                     case UnaryExpressionType.PrefixMinusMinus:
-                        op = Ast.UnaryOperator.PreDecrement;
+                        op = ScriptUnaryOperator.PreDecrement;
                         break;
                     case UnaryExpressionType.PrefixPlusPlus:
-                        op = Ast.UnaryOperator.PreIncrement;
+                        op = ScriptUnaryOperator.PreIncrement;
                         break;
                     case UnaryExpressionType.TypeOf:
                         strOp = "typeof ";
@@ -144,72 +145,72 @@ namespace NetWebScript.JsClr.JsBuilder.Pattern
                 expression.RightExpression.Accept(this);
                 var right = result;
 
-                Ast.BinaryOperator op = Ast.BinaryOperator.Add;
+                ScriptAst.ScriptBinaryOperator op = ScriptAst.ScriptBinaryOperator.Add;
                 string strOp = null;
 
                 switch (expression.Type)
                 {
                     case BinaryExpressionType.And:
-                        op = Ast.BinaryOperator.LogicalAnd;
+                        op = ScriptAst.ScriptBinaryOperator.LogicalAnd;
                         break;
                     case BinaryExpressionType.BitwiseAnd:
-                        op = Ast.BinaryOperator.BitwiseAnd;
+                        op = ScriptAst.ScriptBinaryOperator.BitwiseAnd;
                         break;
                     case BinaryExpressionType.BitwiseOr:
-                        op = Ast.BinaryOperator.BitwiseOr;
+                        op = ScriptAst.ScriptBinaryOperator.BitwiseOr;
                         break;
                     case BinaryExpressionType.BitwiseXOr:
-                        op = Ast.BinaryOperator.BitwiseXor;
+                        op = ScriptAst.ScriptBinaryOperator.BitwiseXor;
                         break;
                     case BinaryExpressionType.Div:
-                        op = Ast.BinaryOperator.Divide;
+                        op = ScriptAst.ScriptBinaryOperator.Divide;
                         break;
                     case BinaryExpressionType.Equal:
                         strOp = "==";
                         break;
                     case BinaryExpressionType.Greater:
-                        op = Ast.BinaryOperator.GreaterThan;
+                        op = ScriptAst.ScriptBinaryOperator.GreaterThan;
                         break;
                     case BinaryExpressionType.GreaterOrEqual:
-                        op = Ast.BinaryOperator.GreaterThanOrEqual;
+                        op = ScriptAst.ScriptBinaryOperator.GreaterThanOrEqual;
                         break;
                     case BinaryExpressionType.LeftShift:
-                        op = Ast.BinaryOperator.LeftShift;
+                        op = ScriptAst.ScriptBinaryOperator.LeftShift;
                         break;
                     case BinaryExpressionType.Lesser:
-                        op = Ast.BinaryOperator.LessThan;
+                        op = ScriptAst.ScriptBinaryOperator.LessThan;
                         break;
                     case BinaryExpressionType.LesserOrEqual:
-                        op = Ast.BinaryOperator.LessThanOrEqual;
+                        op = ScriptAst.ScriptBinaryOperator.LessThanOrEqual;
                         break;
                     case BinaryExpressionType.Minus:
-                        op = Ast.BinaryOperator.Subtract;
+                        op = ScriptAst.ScriptBinaryOperator.Subtract;
                         break;
                     case BinaryExpressionType.Modulo:
-                        op = Ast.BinaryOperator.Modulo;
+                        op = ScriptAst.ScriptBinaryOperator.Modulo;
                         break;
                     case BinaryExpressionType.NotEqual:
                         strOp = "!=";
                         break;
                     case BinaryExpressionType.NotSame:
-                        op = Ast.BinaryOperator.ValueInequality;
+                        op = ScriptAst.ScriptBinaryOperator.ValueInequality;
                         break;
                     case BinaryExpressionType.Or:
-                        op = Ast.BinaryOperator.LogicalOr;
+                        op = ScriptAst.ScriptBinaryOperator.LogicalOr;
                         break;
                     case BinaryExpressionType.Plus:
-                        op = Ast.BinaryOperator.Add;
+                        op = ScriptAst.ScriptBinaryOperator.Add;
                         break;
                     case BinaryExpressionType.Pow:
                         break;
                     case BinaryExpressionType.RightShift:
-                        op = Ast.BinaryOperator.RightShift;
+                        op = ScriptAst.ScriptBinaryOperator.RightShift;
                         break;
                     case BinaryExpressionType.Same:
-                        op = Ast.BinaryOperator.ValueEquality;
+                        op = ScriptAst.ScriptBinaryOperator.ValueEquality;
                         break;
                     case BinaryExpressionType.Times:
-                        op = Ast.BinaryOperator.Multiply;
+                        op = ScriptAst.ScriptBinaryOperator.Multiply;
                         break;
                     case BinaryExpressionType.InstanceOf:
                         strOp = " instanceof ";

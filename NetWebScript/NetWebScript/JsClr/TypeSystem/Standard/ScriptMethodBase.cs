@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
+﻿using System.Reflection;
+using NetWebScript.JsClr.ScriptAst;
 using NetWebScript.JsClr.TypeSystem.Invoker;
-using NetWebScript.JsClr.AstBuilder;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
@@ -48,7 +44,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             get { return invoker; } 
         }
 
-        public MethodAst Ast
+        public MethodScriptAst Ast
         {
             get;
             set;

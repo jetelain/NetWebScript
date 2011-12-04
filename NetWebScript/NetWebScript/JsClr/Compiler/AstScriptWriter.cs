@@ -3,26 +3,25 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using NetWebScript.JsClr.Ast;
-using NetWebScript.JsClr.AstBuilder;
 using NetWebScript.JsClr.AstBuilder.Cil;
 using NetWebScript.JsClr.AstBuilder.PdbInfo;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
+using NetWebScript.JsClr.ScriptAst;
 using NetWebScript.JsClr.TypeSystem;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.Metadata;
 
 namespace NetWebScript.JsClr.Compiler
 {
-    internal class AstScriptWriter : IStatementVisitor<JsToken>, IRootInvoker
+    internal class AstScriptWriter : IScriptStatementVisitor<JsToken>, IRootInvoker
 	{
         private readonly ScriptSystem system;
         private readonly MethodBaseMetadata methodMetadata;
-        private readonly MethodAst method;
+        private readonly MethodScriptAst method;
         private readonly bool isctor;
         private readonly bool pretty;
 
-        public AstScriptWriter(ScriptSystem system, MethodAst method, MethodBaseMetadata methodMetadata, bool pretty)
+        public AstScriptWriter(ScriptSystem system, MethodScriptAst method, MethodBaseMetadata methodMetadata, bool pretty)
 		{
             this.system = system;
             this.pretty = pretty;
@@ -71,24 +70,24 @@ namespace NetWebScript.JsClr.Compiler
             return ArgumentName(variable);
         }
 
-        public JsToken Visit(ArgumentReferenceExpression node)
+        public JsToken Visit(ScriptArgumentReferenceExpression node)
         {
             return JsToken.Name(ArgumentReference(node.Argument));
         }
 
-        public JsToken Visit(ArrayCreationExpression arrayCreationExpression)
+        public JsToken Visit(ScriptArrayCreationExpression arrayCreationExpression)
         {
             JsTokenWriter writer = new JsTokenWriter();
             if (arrayCreationExpression.Initialize != null)
             {
-                LiteralExpression literal = arrayCreationExpression.Size as LiteralExpression;
+                ScriptLiteralExpression literal = arrayCreationExpression.Size as ScriptLiteralExpression;
                 if (literal == null || (int)literal.Value != arrayCreationExpression.Initialize.Count)
                 {
                     throw new InvalidOperationException();
                 }
                 writer.Write("[");
                 bool first = true;
-                foreach (Expression expr in arrayCreationExpression.Initialize)
+                foreach (ScriptExpression expr in arrayCreationExpression.Initialize)
                 {
                     if (first)
                     {
@@ -112,21 +111,21 @@ namespace NetWebScript.JsClr.Compiler
             return writer.ToToken(JsPrecedence.FunctionCall);
         }
 
-        public JsToken Visit(ArrayIndexerExpression arrayIndexerExpression)
+        public JsToken Visit(ScriptArrayIndexerExpression arrayIndexerExpression)
         {
             return JsToken.Indexer(
                 arrayIndexerExpression.Target.Accept(this), 
                 arrayIndexerExpression.Index.Accept(this));
         }
 
-        public JsToken Visit(AssignExpression assignExpression)
+        public JsToken Visit(ScriptAssignExpression assignExpression)
         {
             return JsToken.Assign(
                 assignExpression.Target.Accept(this), 
                 assignExpression.Value.Accept(this));
         }
 
-        public JsToken Visit(BinaryExpression binaryExpression)
+        public JsToken Visit(ScriptBinaryExpression binaryExpression)
         {
             return JsToken.Combine(
                 binaryExpression.Left.Accept(this), 
@@ -134,27 +133,24 @@ namespace NetWebScript.JsClr.Compiler
                 binaryExpression.Right.Accept(this));
         }
 
-        public JsToken Visit(BreakStatement breakStatement)
+        public JsToken Visit(ScriptBreakStatement breakStatement)
         {
             return JsToken.Statement("break");
         }
 
-        public JsToken Visit(ContinueStatement continueStatement)
+        public JsToken Visit(ScriptContinueStatement continueStatement)
         {
             return JsToken.Statement("continue");
         }
 
-        public JsToken Visit(FieldReferenceExpression fieldReferenceExpression)
+        public JsToken Visit(ScriptFieldReferenceExpression fieldReferenceExpression)
         {
-            var field = system.GetScriptField(fieldReferenceExpression.Field);
-            if (field == null)
-            {
-                throw new InvalidOperationException(); // Error should have been rised by DependenciesFinder
-            }
+            var field = fieldReferenceExpression.Field;
+
             return field.Invoker.WriteField(field, fieldReferenceExpression, this);
         }
 
-        public JsToken Visit(IfStatement ifStatement)
+        public JsToken Visit(ScriptIfStatement ifStatement)
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.Write("if(");
@@ -170,24 +166,15 @@ namespace NetWebScript.JsClr.Compiler
             return writer.ToFullStatement();
         }
 
-        public JsToken Visit(TryCatchStatement tryCatchStatement)
+        public JsToken Visit(ScriptTryCatchStatement tryCatchStatement)
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.WriteLine("try");
             writer.WriteInBlock(pretty, tryCatchStatement.Body.Select(s => s.Accept(this)));
-            if (tryCatchStatement.CatchList != null)
+            if (tryCatchStatement.Catch != null)
             {
-                if (tryCatchStatement.CatchList.Count > 1)
-                {
-                    writer.WriteLine("catch($e)");
-                    writer.WriteLine("{}");
-                }
-                else
-                {
-                    Catch @catch = tryCatchStatement.CatchList[0];
-                    writer.WriteLine("catch($e)");
-                    writer.WriteInBlock(pretty, @catch.Body.Select(s => s.Accept(this)));
-                }
+                writer.WriteLine("catch($e)");
+                writer.WriteInBlock(pretty, tryCatchStatement.Catch.Select(s => s.Accept(this)));
             }
             if (tryCatchStatement.Finally != null)
             {
@@ -197,32 +184,24 @@ namespace NetWebScript.JsClr.Compiler
             return writer.ToFullStatement();
         }
 
-        public JsToken Visit(LiteralExpression literalExpression)
+        public JsToken Visit(ScriptLiteralExpression literalExpression)
         {
-            return Literal(literalExpression.GetExpressionType(), literalExpression.Value);
+            return Literal(literalExpression.Type, literalExpression.Value);
         }
 
-        public JsToken Visit(MethodInvocationExpression methodInvocationExpression)
+        public JsToken Visit(ScriptMethodInvocationExpression methodInvocationExpression)
         {
-            var method = system.GetScriptMethodBase(methodInvocationExpression.Method);
-            if (method == null)
-            {
-                throw new InvalidOperationException(); // Error should have been rised by DependenciesFinder
-            }
+            var method = methodInvocationExpression.Method;
             return method.Invoker.WriteMethod(method, methodInvocationExpression, this);
         }
         
-        public JsToken Visit(ObjectCreationExpression objectCreationExpression)
+        public JsToken Visit(ScriptObjectCreationExpression objectCreationExpression)
         {
-            var ctor = system.GetScriptConstructor(objectCreationExpression.Constructor);
-            if (ctor == null)
-            {
-                throw new InvalidOperationException(); // Error should have been rised by DependenciesFinder
-            }
+            var ctor = objectCreationExpression.Constructor;
             return ctor.CreationInvoker.WriteObjectCreation(ctor, objectCreationExpression, this);
         }
 
-        public JsToken Visit(ReturnStatement returnStatement)
+        public JsToken Visit(ScriptReturnStatement returnStatement)
         {
             JsTokenWriter writer = new JsTokenWriter();
             if (returnStatement.Value == null)
@@ -257,7 +236,7 @@ namespace NetWebScript.JsClr.Compiler
             return writer.ToToken(JsPrecedence.Statement);
         }
 
-        public JsToken Visit(ThrowStatement throwStatement)
+        public JsToken Visit(ScriptThrowStatement throwStatement)
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.Write("throw ");
@@ -274,24 +253,24 @@ namespace NetWebScript.JsClr.Compiler
             return writer.ToToken(JsPrecedence.Statement);
         }
 
-        public JsToken Visit(SwitchStatement switchStatement)
+        public JsToken Visit(ScriptSwitchStatement switchStatement)
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.Write("switch(");
             writer.WriteCommaSeparated(switchStatement.Value.Accept(this));
             writer.WriteLine(")");
             writer.Write("{");
-            foreach (Case @case in switchStatement.Cases)
+            foreach (ScriptCase @case in switchStatement.Cases)
             {
                 writer.WriteLine();
-                if (@case.Value == Case.DefaultCase)
+                if (@case.Value == ScriptCase.DefaultCase)
                 {
                     writer.WriteLine("default:");
                 }
                 else
                 {
                     writer.Write("case ");
-                    writer.Write(Literal(null,@case.Value).Text);
+                    writer.Write(Literal(@case.Value).Text);
                     writer.WriteLine(":");
                 }
                 writer.WriteIndented(pretty, @case.Statements.Select(s => s.Accept(this)));
@@ -301,22 +280,22 @@ namespace NetWebScript.JsClr.Compiler
             return writer.ToFullStatement();
         }
 
-        public JsToken Visit(ThisReferenceExpression thisReferenceExpression)
+        public JsToken Visit(ScriptThisReferenceExpression thisReferenceExpression)
         {
             return JsToken.Name("this");
         }
 
-        public JsToken Visit(UnaryExpression unaryExpression)
+        public JsToken Visit(ScriptUnaryExpression unaryExpression)
         {
             return JsToken.Combine(unaryExpression.Operand.Accept(this), unaryExpression.Operator);
         }
 
-        public JsToken Visit(VariableReferenceExpression variableReferenceExpression)
+        public JsToken Visit(ScriptVariableReferenceExpression variableReferenceExpression)
         {
             return JsToken.Name(VariableReference(variableReferenceExpression.Variable));
         }
 
-        public JsToken Visit(WhileStatement whileStatement)
+        public JsToken Visit(ScriptWhileStatement whileStatement)
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.Write("while(");
@@ -325,7 +304,7 @@ namespace NetWebScript.JsClr.Compiler
             writer.WriteInBlock(pretty, whileStatement.Body.Select(s => s.Accept(this)));
             return writer.ToFullStatement();
         }
-        public JsToken Visit(DoWhileStatement whileStatement)
+        public JsToken Visit(ScriptDoWhileStatement whileStatement)
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.WriteLine("do");
@@ -335,7 +314,7 @@ namespace NetWebScript.JsClr.Compiler
             writer.WriteLine(")");
             return writer.ToFullStatement();
         }
-        public JsToken Visit(ConditionExpression conditionExpression)
+        public JsToken Visit(ScriptConditionExpression conditionExpression)
         {
             return JsToken.Condition(
                 conditionExpression.Condition.Accept(this), 
@@ -343,57 +322,32 @@ namespace NetWebScript.JsClr.Compiler
                 conditionExpression.Else.Accept(this));
         }
 
-        #region RuntimeAstFilter club
-
-        public JsToken Visit(CastExpression castExpression)
-        {
-            // Casting must have been transformed by RuntimeAstFilter
-            throw new InvalidOperationException();
-        }
-
-        public JsToken Visit(SafeCastExpression castExpression)
-        {
-            // Casting must have been transformed by RuntimeAstFilter
-            throw new InvalidOperationException();
-        }
-
-        public JsToken Visit(BoxExpression boxExpression)
-        {
-            // Boxing must have been transformed by RuntimeAstFilter
-            throw new InvalidOperationException();
-        }
-
-        public JsToken Visit(UnboxExpression unboxExpression)
-        {
-            // Unboxing must have been transformed by RuntimeAstFilter
-            throw new InvalidOperationException();
-        }
-
-        #endregion
-
-        internal JsToken Write(Expression expression)
+        internal JsToken Write(ScriptExpression expression)
         {
             return expression.Accept(this);
         }
 
-        internal JsToken Literal(Type type, object value)
+        private JsToken Literal(IScriptType scriptType, object value)
         {
             if (value == null)
             {
                 return JsToken.Name("null");
             }
-
-            if ( type == null && value != null )
-            {
-                type = value.GetType();
-            }
-
-            var scriptType = system.GetScriptType(type);
             if (scriptType == null || scriptType.Serializer == null)
             {
-                throw new InvalidOperationException(); // Error should have been rised by DependenciesFinder
+                throw new InvalidOperationException("Value => "+value); // Error should have been rised by DependenciesFinder
             }
             return scriptType.Serializer.LiteralValue(scriptType, value, this);
+        }
+
+        internal JsToken Literal(object value)
+        {
+            if (value == null)
+            {
+                return JsToken.Name("null");
+            }
+            var scriptType = system.GetScriptType(value.GetType());
+            return Literal(scriptType, value);
         }
 
         internal void WriteBody(TextWriter targetwriter)
@@ -467,7 +421,7 @@ namespace NetWebScript.JsClr.Compiler
             targetwriter.Write(writer.ToString());
         }
 
-        public JsToken Visit(DebugPointExpression point)
+        public JsToken Visit(ScriptDebugPointExpression point)
         {
             if (!IsDebug)
             {
@@ -506,7 +460,7 @@ namespace NetWebScript.JsClr.Compiler
             return builder.ToString();
         }
 
-        public JsToken Visit(CurrentExceptionExpression currentExceptionExpression)
+        public JsToken Visit(ScriptCurrentExceptionExpression currentExceptionExpression)
         {
             return JsToken.Name("$e");
         }
@@ -523,32 +477,6 @@ namespace NetWebScript.JsClr.Compiler
             meta.EndRow = point.EndRow;
             methodMetadata.Points.Add(meta);
             return meta;
-        }
-
-        public JsToken Visit(MakeByRefFieldExpression refExpression)
-        {
-            throw new NotImplementedException();
-        }
-
-        public JsToken Visit(ByRefSetExpression byRefSetExpression)
-        {
-            throw new NotImplementedException();
-        }
-
-        public JsToken Visit(MakeByRefVariableExpression makeByRefVariableExpression)
-        {
-            return JsToken.Name(VariableReference(makeByRefVariableExpression.Variable));
-        }
-
-
-        public JsToken Visit(ByRefGetExpression byRefGetExpression)
-        {
-            throw new NotImplementedException();
-        }
-
-        public JsToken Visit(MakeByRefArgumentExpression makeByRefArgumentExpression)
-        {
-            throw new NotImplementedException();
         }
     }
 }
