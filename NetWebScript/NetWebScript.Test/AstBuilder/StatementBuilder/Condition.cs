@@ -26,10 +26,27 @@ namespace NetWebScript.Test.AstBuilder.StatementBuilder
         {
             return 4;
         }
+
+        public static int E()
+        {
+            return 5;
+        }
+
+        public static int F()
+        {
+            return 6;
+        }
+
+        public static int G()
+        {
+            return 7;
+        }
         public static void Show2(int a, int b)
         {
         }
-
+        public static void Show4(int a, int b, int c, int d)
+        {
+        }
         [TestMethod]
         public void Condition_ConsumeStack()
         {
@@ -54,12 +71,46 @@ namespace NetWebScript.Test.AstBuilder.StatementBuilder
             Assert.AreEqual("t1 = Condition.B()", ast.Statements[1].ToString());
             Assert.AreEqual(@"if ( (Condition.C() ValueInequality 2) )
 {
-	t1;
 	t1 = Condition.D();
 }", ast.Statements[2].ToString());
             Assert.AreEqual("Condition.Show2(t0,t1)", ast.Statements[3].ToString());
         }
 
+        [TestMethod]
+        public void Condition_ConsumeStack2()
+        {
+            var tester = new SBTester(typeof(void));
+            var il = tester.Il;
+            il.Emit(OpCodes.Call, new Func<int>(A).Method);
+            il.Emit(OpCodes.Call, new Func<int>(B).Method);
+            il.Emit(OpCodes.Call, new Func<int>(C).Method);
+            il.Emit(OpCodes.Call, new Func<int>(D).Method);
+            il.Emit(OpCodes.Call, new Func<int>(E).Method);
+            il.Emit(OpCodes.Ldc_I4_2);
+            var lbl = il.DefineLabel();
+            il.Emit(OpCodes.Beq, lbl);
+            il.Emit(OpCodes.Pop);
+            il.Emit(OpCodes.Pop);
+            il.Emit(OpCodes.Call, new Func<int>(F).Method);
+            il.Emit(OpCodes.Call, new Func<int>(G).Method);
+            il.MarkLabel(lbl);
+            il.Emit(OpCodes.Call, new Action<int, int, int, int>(Show4).Method);
+            il.Emit(OpCodes.Ret);
+
+            var ast = tester.GetMethodAst();
+
+            Assert.AreEqual(6, ast.Statements.Count);
+            Assert.AreEqual("t0 = Condition.A()", ast.Statements[0].ToString());
+            Assert.AreEqual("t1 = Condition.B()", ast.Statements[1].ToString());
+            Assert.AreEqual("t2 = Condition.C()", ast.Statements[2].ToString());
+            Assert.AreEqual("t3 = Condition.D()", ast.Statements[3].ToString());
+            Assert.AreEqual(@"if ( (Condition.E() ValueInequality 2) )
+{
+	t2 = Condition.F();
+	t3 = Condition.G();
+}", ast.Statements[4].ToString());
+            Assert.AreEqual("Condition.Show4(t0,t1,t2,t3)", ast.Statements[5].ToString());
+        }
 
         [TestMethod]
         public void Condition_Ternary()

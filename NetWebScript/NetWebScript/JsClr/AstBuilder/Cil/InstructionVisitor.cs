@@ -41,22 +41,13 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
 
         public abstract void OnLdarg(Instruction instruction);
 
-        public virtual void OnLdarga(Instruction instruction)
-        {
-            Unsupported(instruction);
-        }
+        public abstract void OnLdarga(Instruction instruction);
 
-        public virtual void OnStarg(Instruction instruction)
-        {
-            Unsupported(instruction);
-        }
+        public abstract void OnStarg(Instruction instruction);
 
         public abstract void OnLdloc(Instruction instruction);
 
-        public virtual void OnLdloca(Instruction instruction)
-        {
-            Unsupported(instruction);
-        }
+        public abstract void OnLdloca(Instruction instruction);
 
         public abstract void OnStloc(Instruction instruction);
 

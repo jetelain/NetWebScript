@@ -41,5 +41,11 @@ namespace NetWebScript.JsClr.Ast
         {
             return new VariableReferenceExpression(IlOffset, Variable);
         }
+
+        public override bool HasSideEffect()
+        {
+            // Evaluating a variable has no side effect
+            return false;
+        }
     }
 }

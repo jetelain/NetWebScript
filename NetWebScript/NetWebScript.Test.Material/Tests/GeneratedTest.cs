@@ -114,6 +114,46 @@ namespace NetWebScript.Test.Material.Tests
         }
 
         [TestMethod]
+        public void Generated_Is()
+        {
+            object a = new A("");
+            object b = new B("");
+            object c = new C();
+
+            Assert.IsTrue(a is A);
+            Assert.IsTrue(b is A);
+            Assert.IsTrue(c is A);
+
+            Assert.IsFalse(a is B);
+            Assert.IsTrue(b is B);
+            Assert.IsTrue(c is B);
+
+            Assert.IsFalse(a is C);
+            Assert.IsFalse(b is C);
+            Assert.IsTrue(c is C);
+        }
+
+        [TestMethod]
+        public void Generated_As()
+        {
+            object a = new A("");
+            object b = new B("");
+            object c = new C();
+
+            Assert.AreEqual(a,a as A);
+            Assert.AreEqual(b,b as A);
+            Assert.AreEqual(c,c as A);
+
+            Assert.AreEqual(null,a as B);
+            Assert.AreEqual(b,b as B);
+            Assert.AreEqual(c,c as B);
+
+            Assert.AreEqual(null,a as C);
+            Assert.AreEqual(null,b as C);
+            Assert.AreEqual(c,c as C);
+        }
+
+        [TestMethod]
         public void GeneratedEnum()
         {
             Quality qual = Quality.Good;

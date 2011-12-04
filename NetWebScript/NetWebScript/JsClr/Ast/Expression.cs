@@ -41,6 +41,15 @@ namespace NetWebScript.JsClr.Ast
             return false;
         }
 
+        /// <summary>
+        /// Value have a side effect
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool HasSideEffect()
+        {
+            return true;
+        }
+
         public virtual Expression Clone()
         {
             throw new NotImplementedException();

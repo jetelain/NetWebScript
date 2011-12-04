@@ -104,15 +104,22 @@ namespace NetWebScript.JsClr.AstBuilder
         public override void OnLdarga(Instruction instruction)
         {
             int index = instruction.OperandArgumentIndex;
-            if (!body.Method.IsStatic)
+            if (!body.Method.IsStatic && index == 0)
             {
-                if (index == 0)
-                {
-                    Unsupported(instruction);
-                }
-                index--;
+                Unsupported(instruction);
             }
-            Push(new MakeByRefArgumentExpression(instruction.Offset, body.Arguments[index]));
+            Push(new MakeByRefArgumentExpression(instruction.Offset, body.Arguments[index - 1]));
+        }
+
+        public override void OnStarg(Instruction instruction)
+        {
+            int index = instruction.OperandArgumentIndex;
+            if (!body.Method.IsStatic && index == 0)
+            {
+                // "this" cannot be assigned
+                Unsupported(instruction);
+            }
+            Assign(instruction.Offset, new ArgumentReferenceExpression(instruction.Offset, body.Arguments[index - 1]), PopToAssign());
         }
 
         private Expression ArgumentReference(Instruction instruction, int index)
@@ -399,14 +406,20 @@ namespace NetWebScript.JsClr.AstBuilder
 
         public override void OnInitobj(Instruction instruction)
         {
-            if (!instruction.OperandSystemType.IsValueType)
+            Expression expr = Pop();
+            if (IsByRefValue(expr))
             {
-                Expression expr = Pop();
-                if (IsByRefValue(expr))
+                if (!instruction.OperandSystemType.IsValueType)
                 {
                     Exec(new ByRefSetExpression(instruction.Offset, expr, new LiteralExpression(instruction.Offset, null)));
                     return;
                 }
+                else if (instruction.OperandSystemType == typeof(int))
+                {
+                    Exec(new ByRefSetExpression(instruction.Offset, expr, new LiteralExpression(instruction.Offset, 0)));
+                    return;
+                }
+                // TODO: support default value of all primitives types
             }
             base.OnInitobj(instruction);
         }
@@ -879,8 +892,12 @@ namespace NetWebScript.JsClr.AstBuilder
 
         public override void OnPop(Instruction instruction)
         {
-            // TODO: Should ignore "pop" of expressions that have no side effect
-            Exec(Pop());
+            Expression value = Pop();
+            // => If value has no side effect, its execution is not required as the result is discarded
+            if (value.HasSideEffect())
+            {
+                Exec(value);
+            }
         }
 
         public override void OnVolatile(Instruction instruction)

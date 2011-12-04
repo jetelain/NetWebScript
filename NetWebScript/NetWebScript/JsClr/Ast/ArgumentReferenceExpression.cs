@@ -7,7 +7,7 @@ using System.Diagnostics.Contracts;
 
 namespace NetWebScript.JsClr.Ast
 {
-    public sealed class ArgumentReferenceExpression : Expression
+    public sealed class ArgumentReferenceExpression : AssignableExpression
     {
         public ArgumentReferenceExpression(int? ilOffset, ParameterInfo arg)
             : base(ilOffset)
@@ -38,14 +38,15 @@ namespace NetWebScript.JsClr.Ast
             return visitor.Visit(this);
         }
 
-        public override bool IsConstInMethod()
-        {
-            return true;
-        }
-
         public override Expression Clone()
         {
             return new ArgumentReferenceExpression(IlOffset, Argument);
+        }
+
+        public override bool HasSideEffect()
+        {
+            // Evaluating an argument has no side effect
+            return false;
         }
     }
 }

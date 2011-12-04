@@ -39,7 +39,7 @@ namespace NetWebScript.JsClr.Compiler
             get { return methodMetadata != null; }
         }
 
-        public String VariableName(LocalVariable variable)
+        internal string VariableName(LocalVariable variable)
         {
             if (variable.LocalIndex == -1)
             {
@@ -48,7 +48,7 @@ namespace NetWebScript.JsClr.Compiler
             return String.Format("v{0}", variable.LocalIndex);
         }
 
-        public String VariableReference(LocalVariable variable)
+        internal string VariableReference(LocalVariable variable)
         {
             if (IsDebug)
             {
@@ -57,18 +57,23 @@ namespace NetWebScript.JsClr.Compiler
             return VariableName(variable);
         }
 
-        public String ArgumentName(ParameterInfo param)
+        internal string ArgumentName(ParameterInfo param)
         {
-            //if (IsDebug && !string.IsNullOrEmpty(param.Name))
-            //{
-            //    return param.Name;
-            //}
             return string.Format("a{0}", param.Position);
+        }
+
+        internal string ArgumentReference(ParameterInfo variable)
+        {
+            if (IsDebug)
+            {
+                return "t." + ArgumentName(variable);
+            }
+            return ArgumentName(variable);
         }
 
         public JsToken Visit(ArgumentReferenceExpression node)
         {
-            return JsToken.Name(ArgumentName(node.Argument));
+            return JsToken.Name(ArgumentReference(node.Argument));
         }
 
         public JsToken Visit(ArrayCreationExpression arrayCreationExpression)
