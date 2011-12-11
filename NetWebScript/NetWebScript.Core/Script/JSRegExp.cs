@@ -88,5 +88,7 @@ namespace NetWebScript.Script
         {
             get { return regex; }
         }
+
+
     }
 }

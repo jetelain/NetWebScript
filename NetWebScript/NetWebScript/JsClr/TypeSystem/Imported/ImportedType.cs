@@ -197,5 +197,10 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
         {
             return new ScriptInterfaceMapping(system, this);
         }
+
+        internal void AddExtensions(IEnumerable<ScriptMethod> iEnumerable)
+        {
+            extensions.AddRange(iEnumerable);
+        }
     }
 }

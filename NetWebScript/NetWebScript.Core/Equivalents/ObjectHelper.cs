@@ -62,7 +62,7 @@ namespace NetWebScript.Equivalents
         {
             if (HasEquals(obj))
             {
-                return InvokeEquals(other, other);
+                return InvokeEquals(obj, other);
             }
             return DefaultEquals(obj, other);
         }

@@ -323,14 +323,22 @@ namespace NetWebScript.Test.Material.Tests
 
             try
             {
-                ok++;
-                throw new NotImplementedException();
-            }
-            catch (InvalidOperationException)
-            {
+                try
+                {
+                    ok++;
+                    throw new NotImplementedException();
+                }
+                catch (InvalidOperationException)
+                {
+                    ko++;
+                }
                 ko++;
             }
-            Assert.AreEqual(5, ok);
+            catch (NotImplementedException)
+            {
+                ok++;
+            }
+            Assert.AreEqual(6, ok);
             Assert.AreEqual(0, ko);
         }
 

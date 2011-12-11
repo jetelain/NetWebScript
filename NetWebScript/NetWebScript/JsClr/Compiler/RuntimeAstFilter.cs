@@ -498,8 +498,15 @@ namespace NetWebScript.JsClr.Compiler
                         {
                             statements.AddRange(Visit(@catch.Body));
                         }
+                        previousIf = null;
                     }
                 }
+
+                if (previousIf != null)
+                {
+                    previousIf.Else = new List<ScriptStatement>() { new ScriptThrowStatement(new ScriptCurrentExceptionExpression(typeof(object)) )};
+                }
+
                 return statements;
             }
             return null;

@@ -91,5 +91,35 @@ namespace NetWebScript.Test.Material.Tests
 			int b = a.Length;
 			Assert.AreEqual(6,b);
 		}
+
+        [TestMethod]
+        public void Trim()
+        {
+            Assert.AreEqual("abcd", "  abcd  ".Trim());
+            Assert.AreEqual("abcd", "  abcd".Trim());
+            Assert.AreEqual("abcd", "abcd  ".Trim());
+            Assert.AreEqual("abcd", "abcd".Trim());
+            Assert.AreEqual("", " ".Trim());
+        }
+
+        [TestMethod]
+        public void TrimStart()
+        {
+            Assert.AreEqual("abcd  ", "  abcd  ".TrimStart());
+            Assert.AreEqual("abcd", "  abcd".TrimStart());
+            Assert.AreEqual("abcd  ", "abcd  ".TrimStart());
+            Assert.AreEqual("abcd", "abcd".TrimStart());
+            Assert.AreEqual("", " ".TrimStart());
+        }
+
+        [TestMethod]
+        public void TrimEnd()
+        {
+            Assert.AreEqual("  abcd", "  abcd  ".TrimEnd());
+            Assert.AreEqual("  abcd", "  abcd".TrimEnd());
+            Assert.AreEqual("abcd", "abcd  ".TrimEnd());
+            Assert.AreEqual("abcd", "abcd".TrimEnd());
+            Assert.AreEqual("", " ".Trim());
+        }
 	}
 }

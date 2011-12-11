@@ -96,12 +96,12 @@ namespace NetWebScript.JsClr.Compiler
                 CreateMetadata(classMeta, field);
             }
 
-            foreach (var ctor in type.Methods.OfType<ScriptConstructor>())
+            foreach (var ctor in type.MethodsToWrite.OfType<ScriptConstructor>())
             {
                 WriteInstanceMethodBase(type, classMeta, ctor);
             }
 
-            foreach (var method in type.Methods.OfType<ScriptMethod>())
+            foreach (var method in type.MethodsToWrite.OfType<ScriptMethod>())
             {
                 if (!method.Method.IsAbstract)
                 {
@@ -357,7 +357,7 @@ namespace NetWebScript.JsClr.Compiler
             {
                 writer.Write("var ");
             }
-            var ctor = type.Methods.OfType<ScriptConstructor>().FirstOrDefault(c => c.Method.IsPublic);
+            var ctor = type.MethodsToWrite.OfType<ScriptConstructor>().FirstOrDefault(c => c.Method.IsPublic);
             if (ctor != null)
             {
                 var argsCount = ctor.Method.GetParameters().Length;
@@ -371,7 +371,7 @@ namespace NetWebScript.JsClr.Compiler
             {
                 writer.WriteLine("{0}={{}};", type.ExportName);
             }
-            foreach (var method in type.Methods.OfType<ScriptMethod>().Where(m => m.Method.IsStatic && m.Method.IsPublic))
+            foreach (var method in type.MethodsToWrite.OfType<ScriptMethod>().Where(m => m.Method.IsStatic && m.Method.IsPublic))
             {
                 if (!string.IsNullOrEmpty(type.ExportNamespace))
                 {

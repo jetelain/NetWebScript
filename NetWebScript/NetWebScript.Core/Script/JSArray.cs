@@ -84,7 +84,7 @@ namespace NetWebScript.Script
 
         public string Join()
         {
-            return string.Join(string.Empty, list);
+            return string.Join(",", list);
         }
 
         [IntrinsicProperty]
@@ -114,6 +114,29 @@ namespace NetWebScript.Script
         {
             return array.list.IndexOf(element);
         }
+
+        [ScriptBody(Inline = "array")]
+        public static implicit operator JSArray<T>(T[] array)
+        {
+            if (array != null)
+            {
+                var jsarray = new JSArray<T>();
+                jsarray.list.AddRange(array);
+                return jsarray;
+            }
+            return null;
+        }
+
+        [ScriptBody(Inline = "jsarray")]
+        public static implicit operator T[](JSArray<T> jsarray)
+        {
+            if (jsarray != null)
+            {
+                return jsarray.list.ToArray();
+            }
+            return null;
+        }
+
     }
 }
 

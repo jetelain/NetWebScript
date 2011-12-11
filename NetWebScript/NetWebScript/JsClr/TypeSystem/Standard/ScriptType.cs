@@ -209,6 +209,11 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             get { return methods.OfType<ScriptMethodBase>(); }
         }
 
+        internal virtual IEnumerable<ScriptMethodBase> MethodsToWrite
+        {
+            get { return Methods; }
+        }
+
         internal IEnumerable<ScriptField> Fields
         {
             get { return fields.OfType<ScriptField>(); }

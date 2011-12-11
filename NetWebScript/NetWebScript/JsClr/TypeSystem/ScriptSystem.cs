@@ -70,7 +70,7 @@ namespace NetWebScript.JsClr.TypeSystem
             {
                 return new CharType();
             }
-            if (type == typeof(int) || type == typeof(double) || type == typeof(float) || type == typeof(long) || type == typeof(short) || type == typeof(byte))
+            if (type == typeof(int) || type == typeof(double) || type == typeof(float) || type == typeof(long) || type == typeof(short) || type == typeof(ushort) || type == typeof(byte))
             {
                 return new NumberType(this, type);
             }
@@ -110,6 +110,13 @@ namespace NetWebScript.JsClr.TypeSystem
                     var scriptEnumType = new ScriptEnumType(this, type);
                     enumsToGenerate.Add(scriptEnumType);
                     return scriptEnumType;
+                }
+                var extender = (ImportedExtenderAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedExtenderAttribute));
+                if (extender != null)
+                {
+                    var scriptExtType = new ScriptExtenderType(this, type, extender.ExtendedType);
+                    typesToGenerate.Add(scriptExtType);
+                    return scriptExtType;
                 }
                 var scriptType = new ScriptType(this, type);
                 typesToGenerate.Add(scriptType);

@@ -246,6 +246,7 @@
     <Compile Include="JsClr\Compiler\RuntimeAstFilter.cs" />
     <Compile Include="JsClr\TypeSystem\Standard\ScriptConstructor.cs" />
     <Compile Include="JsClr\TypeSystem\Standard\ScriptEnumType.cs" />
+    <Compile Include="JsClr\TypeSystem\Standard\ScriptExtenderType.cs" />
     <Compile Include="JsClr\TypeSystem\Standard\ScriptField.cs" />
     <Compile Include="JsClr\TypeSystem\Standard\ScriptInterfaceMapping.cs" />
     <Compile Include="JsClr\TypeSystem\Standard\ScriptMethod.cs" />

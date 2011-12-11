@@ -9,9 +9,9 @@ namespace NetWebScript.JsClr.TypeSystem.Native
     class StringType : ScriptTypeHelped, IValueSerializer
     {
         public StringType(ScriptSystem system)
-            : base(system, typeof(String), typeof(Equivalents.StringHelper))
+            : base(system, typeof(String), typeof(Equivalents.StringEquiv))
         {
-            system.GetScriptType(typeof(NetWebScript.Script.JSString));
+            //system.GetScriptType(typeof(NetWebScript.Script.JSString));
         }
 
         public override IValueSerializer Serializer
