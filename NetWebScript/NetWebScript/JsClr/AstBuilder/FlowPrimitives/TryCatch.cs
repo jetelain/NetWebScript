@@ -8,6 +8,7 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
     {
         public Type Type;
         public List<Sequence> Body;
+        public bool IsFault;
     }
 
     class TryCatch : Sequence

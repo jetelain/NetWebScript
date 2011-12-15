@@ -88,12 +88,22 @@ namespace NetWebScript.JsClr.AstBuilder
             // 2 - Create control flow graph
             var graph = ControlFlowGraph.Create(il);
 
-            MethodAst ast;
+            List<Sequence> primitives;
             try
             {
                 // 3 - Transform graph using control flow primitives
-                var primitives = FlowTransform.Transform(graph);
+                primitives = FlowTransform.Transform(graph);
+            }
+            catch
+            {
+                // Trace debug informations
+                Trace.TraceInformation(graph.ToString());
+                throw;
+            }
 
+            MethodAst ast;
+            try
+            {
                 // 4 - Create statement froms IL and control flow primitives
                 ast = StatementBuilder.Transform(il, primitives);
             }
@@ -101,6 +111,7 @@ namespace NetWebScript.JsClr.AstBuilder
             {
                 // Trace debug informations
                 Trace.TraceInformation(graph.ToString());
+                Trace.TraceInformation(string.Join("\r\n", primitives));
                 throw;
             }
 

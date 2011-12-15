@@ -2,6 +2,44 @@
 
 namespace NetWebScript.Script
 {
+    [ScriptAvailable]
+    internal sealed class JSArrayEnumerator<T>: IEnumerator<T>
+    {
+        private readonly JSArray<T> array;
+        private int index = -1;
+
+        internal JSArrayEnumerator(JSArray<T> array)
+        {
+            this.array = array;
+        }
+
+        public T Current
+        {
+            get { return array[index]; }
+        }
+
+        public void Dispose()
+        {
+
+        }
+
+        object System.Collections.IEnumerator.Current
+        {
+            get { return Current; }
+        }
+
+        public bool MoveNext()
+        {
+            index++;
+            return index < array.Length;
+        }
+
+        public void Reset()
+        {
+            index = -1;
+        }
+    }
+
     /// <summary>
     /// JavaScript / ECMAScript Array.
     /// </summary>
@@ -11,7 +49,7 @@ namespace NetWebScript.Script
     /// </remarks>
     /// <typeparam name="T">Type of element</typeparam>
     [Imported(Name="Array", IgnoreNamespace=true)]
-    public sealed class JSArray<T>
+    public sealed class JSArray<T> : IEnumerable<T>
     {
         // This class is intend to have EXACTLY the same API as the native Array object as defined in ECMAScript
         // DO NOT ADD methods, properties of fields here.
@@ -137,6 +175,17 @@ namespace NetWebScript.Script
             return null;
         }
 
+        [ImportedExtension]
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new JSArrayEnumerator<T>(this);
+        }
+
+        [ImportedExtension]
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }
 

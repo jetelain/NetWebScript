@@ -522,12 +522,14 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
             switch (handler.Flags)
             {
                 case ExceptionHandlingClauseOptions.Clause:
-                    data.Catches.Add(new CatchHandlerData(handler.CatchType, start));
+                    data.Catches.Add(new CatchHandlerData(handler.CatchType, start, false));
                     break;
                 case ExceptionHandlingClauseOptions.Finally:
                     data.Finally = start;
                     break;
                 case ExceptionHandlingClauseOptions.Fault:
+                    data.Catches.Add(new CatchHandlerData(null, start, true));
+                    break;
                 case ExceptionHandlingClauseOptions.Filter:
                     throw new NotImplementedException(handler.Flags.ToString());
             }

@@ -238,8 +238,8 @@ namespace NetWebScript.Script
         }
 
     }
-    [Imported(Name = "$")]
-    public sealed class JQuery
+    [Imported(Name = "$", IgnoreNamespace=true)]
+    public sealed partial class JQuery
     {
         private JQuery() { }
         /// <summary>

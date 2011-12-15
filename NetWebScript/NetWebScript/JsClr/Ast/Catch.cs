@@ -11,5 +11,7 @@ namespace NetWebScript.JsClr.Ast
         public Type Type { get; internal set; }
         
         public List<Statement> Body { get; internal set; }
+
+        public bool IsFault { get; set; }
     }
 }

@@ -476,7 +476,7 @@ namespace NetWebScript.JsClr.Compiler
                         var condition = (new ScriptBinaryExpression(null, ScriptBinaryOperator.ValueInequality, currentAsRequest, new ScriptLiteralExpression(null, null, null)));
 
                         // if ( ($exception as Type) != null ) Body();
-                        var @if = new ScriptIfStatement(condition, Visit(@catch.Body), null);
+                        var @if = new ScriptIfStatement(condition, Visit(@catch), null);
 
                         if (previousIf != null)
                         {
@@ -492,11 +492,11 @@ namespace NetWebScript.JsClr.Compiler
                     {
                         if (previousIf != null)
                         {
-                            previousIf.Else = Visit(@catch.Body);
+                            previousIf.Else = Visit(@catch);
                         }
                         else
                         {
-                            statements.AddRange(Visit(@catch.Body));
+                            statements.AddRange(Visit(@catch));
                         }
                         previousIf = null;
                     }
@@ -510,6 +510,16 @@ namespace NetWebScript.JsClr.Compiler
                 return statements;
             }
             return null;
+        }
+
+        private List<ScriptStatement> Visit(Catch @catch)
+        {
+            var list = Visit(@catch.Body);
+            if (@catch.IsFault)
+            {
+                list.Add(new ScriptThrowStatement(new ScriptCurrentExceptionExpression(typeof(object))));
+            }
+            return list;
         }
 
         public ScriptStatement Visit(DebugPointExpression point)

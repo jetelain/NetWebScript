@@ -29,6 +29,12 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
                     case "op_Equality":
                         name = "==";
                         break;
+                    case "op_GreaterThan":
+                        name = ">";
+                        break;
+                    case "op_LowerThan":
+                        name = "<";
+                        break;
                     default:
                         throw new Exception(method.Name);
                 }

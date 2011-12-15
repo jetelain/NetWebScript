@@ -65,6 +65,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Equivalents\Linq\EnumerableEquiv.cs" />
+    <Compile Include="Script\JQueryExt.cs" />
+    <Compile Include="Script\JSMath.cs" />
     <Compile Include="TypeModel\AnonymousObjectAttribute.cs" />
     <Compile Include="Equivalents\StringEquiv.cs" />
     <Compile Include="Equivalents\InvalidOperationException.cs" />

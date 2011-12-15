@@ -142,7 +142,7 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
                         // Pour tout couple de paramètre leur type doit être égal ou 
                         // il doit exister un couple parmis les arguments génériques 
                         // qui corresponds à leur types respectifs
-                        if (paramsTuples.All(tparam => tparam.Item1 == tparam.Item2 || argsTuples.Any(targ => tparam.Item1 == targ.Item1 && tparam.Item2 == targ.Item2)))
+                        if (paramsTuples.All(tparam => IsSameType(tparam.Item1, tparam.Item2, argsTuples)))
                         {
                             return method;
                         }
@@ -150,6 +150,28 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
                 }
             }
             return null;
+        }
+
+        private static bool IsSameType(Type a, Type b, IEnumerable<Tuple<Type, Type>> equalities)
+        {
+            if (a == b)
+            {
+                return true;
+            }
+            if (equalities.Any(targ => a == targ.Item1 && b == targ.Item2))
+            {
+                return true;
+            }
+            if (a.IsGenericType && b.IsGenericType)
+            {
+                var defA = a.GetGenericTypeDefinition();
+                var defB = b.GetGenericTypeDefinition();
+                if (IsSameType(defA, defB, equalities))
+                {
+                    return defA.GetGenericArguments().Zip(defB.GetGenericArguments(), (subA, subB) => IsSameType(subA, subB, equalities)).All(i => i);
+                }
+            }
+            return false;
         }
 
         internal static ScriptMethodHelped CreateScriptMethodHelper(MethodInfo method, IScriptType owner, IScriptType helperType)
@@ -161,6 +183,10 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
                 if (genericHelperMethod != null)
                 {
                     helperMethod = genericHelperMethod.MakeGenericMethod(method.GetGenericArguments());
+                }
+                else
+                {
+
                 }
             }
             else

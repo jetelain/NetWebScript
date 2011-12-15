@@ -29,7 +29,12 @@ namespace NetWebScript.Metadata
             }
             else if (type.IsGenericType && !type.IsGenericTypeDefinition)
             {
-                if (!String.IsNullOrEmpty(type.Namespace))
+                if (type.DeclaringType != null)
+                {
+                    builder.AppendType(type.DeclaringType);
+                    builder.Append('.');
+                }
+                else if (!string.IsNullOrEmpty(type.Namespace))
                 {
                     builder.Append(type.Namespace);
                     builder.Append('.');
@@ -38,22 +43,26 @@ namespace NetWebScript.Metadata
                 if (i != -1)
                 {
                     builder.Append(type.Name.Substring(0, i));
-                    builder.Append('{');
-                    bool first = true;
-                    foreach (Type param in type.GetGenericArguments())
-                    {
-                        if (first)
-                        {
-                            first = false;
-                        }
-                        else
-                        {
-                            builder.Append(',');
-                        }
-                        AppendType(builder, param);
-                    }
-                    builder.Append('}');
                 }
+                else
+                {
+                    builder.Append(type.Name);
+                }
+                builder.Append('{');
+                bool first = true;
+                foreach (Type param in type.GetGenericArguments())
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        builder.Append(',');
+                    }
+                    AppendType(builder, param);
+                }
+                builder.Append('}');
             }
             else if (type.IsGenericParameter)
             {

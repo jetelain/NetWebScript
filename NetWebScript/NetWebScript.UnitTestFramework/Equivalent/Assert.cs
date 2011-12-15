@@ -15,7 +15,7 @@ namespace NetWebScript.UnitTestFramework.Equivalent
             var b = (object)actual;
             if (!object.Equals(a,b))
             {
-                throw new Exception("failed");
+                throw new Exception("failed. Exepected <"+expected+"> but was <"+actual+">");
             }
         }
 
@@ -23,7 +23,7 @@ namespace NetWebScript.UnitTestFramework.Equivalent
         {
             if (!object.Equals(expected, actual))
             {
-                throw new Exception("failed");
+                throw new Exception("failed. Exepected <" + expected + "> but was <" + actual + ">");
             }
         }
 
@@ -31,7 +31,7 @@ namespace NetWebScript.UnitTestFramework.Equivalent
         {
             if (expected != actual)
             {
-                throw new Exception("failed");
+                throw new Exception("failed. Exepected <" + expected + "> but was <" + actual + ">");
             }
         }
 
@@ -39,14 +39,14 @@ namespace NetWebScript.UnitTestFramework.Equivalent
         {
             if (value == null)
             {
-                throw new Exception("failed");
+                throw new Exception("failed. is null");
             }
         }
         public static void IsFalse(bool value)
         {
             if (value == true)
             {
-                throw new Exception("failed");
+                throw new Exception("failed. is true");
             }
         }
 
@@ -54,7 +54,7 @@ namespace NetWebScript.UnitTestFramework.Equivalent
         {
             if (value == false)
             {
-                throw new Exception("failed");
+                throw new Exception("failed. is false");
             }
         }
     }

@@ -21,7 +21,7 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             builder.AppendLine("\tBlock " + (Block.Index + 1));
             foreach( KeyValuePair<int, List<Sequence>> pair in Cases)
             {
-                builder.AppendLine("\t" + (pair.Key == -1 ? "default" : pair.Key.ToString()));
+                builder.AppendLine("\t" + (pair.Key == -1 ? "default" : "case "+pair.Key.ToString()));
                 builder.AppendLine("\t{");
                 foreach (Sequence seq in pair.Value)
                 {

@@ -85,7 +85,10 @@ namespace NetWebScript.Equivalents
 
         //public static int Compare(string strA, int indexA, string strB, int indexB, int length, CultureInfo culture, CompareOptions options);
 
-        //public static int CompareOrdinal(string strA, string strB);
+        public static int CompareOrdinal(string strA, string strB)
+        {
+            return ((strA == strB) ? 0 : (((JSString)strA > (JSString)strB) ? 1 : -1));
+        }
 
         //public static int CompareOrdinal(string strA, int indexA, string strB, int indexB, int length);
 

@@ -37,7 +37,7 @@ namespace NetWebScript.JsClr.AstBuilder
             builder.Reset(); // The reset operation should be useless TODO: remove if really useless
             // The problem may resides in "registers".
 
-            if (@catch != null)
+            if (@catch != null && @catch.Type != null)
             {
                 builder.Push(new CurrentExceptionExpression(@catch.Type));
             }
@@ -65,7 +65,7 @@ namespace NetWebScript.JsClr.AstBuilder
 
             if (builder.StackHeight != 0)
             {
-                throw new AstBuilderException(current.Block.Last.Offset, "Stack should be empty here");
+                throw new AstBuilderException(current.Block.Last.Offset, "Stack should be empty after " + sequences.LastOrDefault());
             }
         }
 
@@ -117,6 +117,7 @@ namespace NetWebScript.JsClr.AstBuilder
                         {
                             Catch catchstatement = new Catch();
                             catchstatement.Type = catchflow.Type;
+                            catchstatement.IsFault = catchflow.IsFault;
                             catchstatement.Body = TransformCatch(catchstatement, catchflow.Body);
                             statement.CatchList.Add(catchstatement);
                         }

@@ -131,10 +131,10 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             ProtectedRegionData region = graph.ExceptionData.FirstOrDefault(r => r.Try == block);
             if (region != null)
             {
-                if (count > 1)
-                {
-                    throw new NotImplementedException();
-                }
+                //if (count > 1)
+                //{
+                //    throw new NotImplementedException();
+                //}
                 if (region.TryEnd.Count > 1)
                 {
                     throw new NotImplementedException();
@@ -151,6 +151,7 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                     {
                         CatchFlow catchflow = new CatchFlow();
                         catchflow.Type = @catch.Type;
+                        catchflow.IsFault = @catch.IsFault;
                         catchflow.Body = CatchTransform(@catch.Block, end);
                         trycatch.CatchList.Add(catchflow);
                     }

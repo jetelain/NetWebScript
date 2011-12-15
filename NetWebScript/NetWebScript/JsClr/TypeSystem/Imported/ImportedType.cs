@@ -47,6 +47,11 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
                 this.name = typeName;
             }
 
+            // Look for interfaces
+            foreach (var itf in type.GetInterfaces())
+            {
+                system.GetScriptType(itf);
+            }
 
             foreach (var method in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
             {
