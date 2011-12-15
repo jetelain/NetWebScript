@@ -21,7 +21,9 @@ namespace NetWebScript.UnitTestFramework.Client
 
         public void OnLoad()
         {
+            var start = new Date();
             var results = new TestRunner().Execute(tests);
+            var duration = new Date() - start;
 
             int ok = 0, ko = 0;
             
@@ -29,17 +31,14 @@ namespace NetWebScript.UnitTestFramework.Client
             var table = JQuery.Query("<table></table>");
             body.Append(table);
 
-            for (int i = 0; i < results.Length; ++i)
+            foreach (var classResult in results)
             {
-                var classResult = results[i];
-
                 var classRow = JQuery.Query("<tr></tr>");
                 classRow.Append(JQuery.Query("<td></td>").Attr("colspan", "3").Css("font-weight", "bold").Css("background", "#c0c0c0").Text(classResult.name));
                 table.Append(classRow);
 
-                for (int j = 0; j < classResult.methods.Length; ++j)
+                foreach (var methodResult in classResult.methods)
                 {
-                    var methodResult = classResult.methods[j];
                     var methodRow = JQuery.Query("<tr></tr>");
 
                     methodRow.Append(JQuery.Query("<td></td>").Text(methodResult.name));
@@ -70,6 +69,7 @@ namespace NetWebScript.UnitTestFramework.Client
                 JQuery.Query("<h1></h1>").Css("color", "red").Text("Failed - OK : " + ok + "/" + (ok + ko)).InsertBefore(table);
                 title.Text("Failed - " + title.Text()); ;
             }
+            JQuery.Query("<p></p>").Text("Duration : " +duration+" msec").InsertBefore(table);
         }
 
 
