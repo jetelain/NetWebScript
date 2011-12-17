@@ -80,5 +80,35 @@ namespace NetWebScript.Test.Material.Tests.Linq
             Assert.IsTrue(tab1.Any());
             Assert.IsFalse(tab0.Any());
         }
+
+        [TestMethod]
+        public void FirstOrDefault()
+        {
+            int[] tab1 = new int[] { 5, 6, 7, 8 };
+            int[] tab0 = new int[] { };
+            Assert.AreEqual(5, tab1.FirstOrDefault());
+            Assert.AreEqual(0, tab0.FirstOrDefault());
+
+            string[] tabs1 = new string[] { "a", "b", "c", "d" };
+            string[] tabs0 = new string[] { };
+            Assert.AreEqual("a", tabs1.FirstOrDefault());
+            Assert.AreEqual(null, tabs0.FirstOrDefault());
+        }
+
+        [TestMethod]
+        public void FirstOrDefaultPredicate()
+        {
+            int[] tab1 = new int[] { 5, 6, 7, 8 };
+            int[] tab0 = new int[] { };
+            Assert.AreEqual(6, tab1.FirstOrDefault(i => i > 5));
+            Assert.AreEqual(5, tab1.FirstOrDefault(i => i > 4));
+            Assert.AreEqual(0, tab0.FirstOrDefault(i => i > 8));
+
+            string[] tabs1 = new string[] { "a", "b", "c", "d" };
+            string[] tabs0 = new string[] { };
+            Assert.AreEqual("a", tabs1.FirstOrDefault(s => s == "a"));
+            Assert.AreEqual("b", tabs1.FirstOrDefault(s => s == "b"));
+            Assert.AreEqual(null, tabs0.FirstOrDefault(s => s == "e"));
+        }
     }
 }

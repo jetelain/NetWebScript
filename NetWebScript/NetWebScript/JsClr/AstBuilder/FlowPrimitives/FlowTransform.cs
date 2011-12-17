@@ -145,11 +145,15 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                     var notReturns = region.TryEnd.Count(b => !IsReturnBlock(b));
                     if (notReturns > 1)
                     {
-                        throw new NotImplementedException();
+                        throw new NotImplementedException("Avoid returning a value in a try, or using statement.");
                     }
                     else if (notReturns == 1)
                     {
                         end = region.TryEnd.First(b => !IsReturnBlock(b));
+                    }
+                    else
+                    {
+                        end = region.TryEnd.Last();
                     }
                 }
                 else if (region.TryEnd.Count == 1)

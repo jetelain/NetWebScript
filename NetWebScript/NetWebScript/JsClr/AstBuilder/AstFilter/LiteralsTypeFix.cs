@@ -13,6 +13,10 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
 
         private void SetValueType(Expression expr, Type type)
         {
+            if (type == null)
+            {
+                return; // FIXME: This case should be avoided far earlier
+            }
             LiteralExpression literal = expr as LiteralExpression;
             if (literal != null)
             {

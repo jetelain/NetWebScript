@@ -39,12 +39,19 @@ namespace NetWebScript.Equivalents.Linq
             return array;
         }
 
+        public static List<TSource> ToList<TSource>(this IEnumerable<TSource> source)
+        {
+            return new List<TSource>(source);
+        }
+
         public static TSource First<TSource>(this IEnumerable<TSource> source)
         {
-            var enumerator = source.GetEnumerator();
-            if (enumerator.MoveNext())
+            using (var enumerator = source.GetEnumerator())
             {
-                return enumerator.Current;
+                if (enumerator.MoveNext())
+                {
+                    return enumerator.Current;
+                }
             }
             throw new System.Exception("source is empty");
         }
@@ -63,10 +70,12 @@ namespace NetWebScript.Equivalents.Linq
 
         public static TSource FirstOrDefault<TSource>(this IEnumerable<TSource> source)
         {
-            var enumerator = source.GetEnumerator();
-            if (enumerator.MoveNext())
+            using (var enumerator = source.GetEnumerator())
             {
-                return enumerator.Current;
+                if (enumerator.MoveNext())
+                {
+                    return enumerator.Current;
+                }
             }
             return default(TSource);
         }
@@ -85,10 +94,12 @@ namespace NetWebScript.Equivalents.Linq
 
         public static bool Any<TSource>(this IEnumerable<TSource> source)
         {
-            var enumerator = source.GetEnumerator();
-            if (enumerator.MoveNext())
+            using (var enumerator = source.GetEnumerator())
             {
-                return true;
+                if (enumerator.MoveNext())
+                {
+                    return true;
+                }
             }
             return false;
         }

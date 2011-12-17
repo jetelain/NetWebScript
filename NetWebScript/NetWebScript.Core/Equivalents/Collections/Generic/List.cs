@@ -10,6 +10,19 @@ namespace NetWebScript.Equivalents.Collections.Generic
     {
         private readonly Script.JSArray<T> data = new Script.JSArray<T>();
 
+        public List()
+        {
+
+        }
+
+        public List(IEnumerable<T> collection)
+        {
+            foreach (var item in collection)
+            {
+                data.Push(item);
+            }
+        }
+
         public void Add(T item)
         {
             data.Push(item);

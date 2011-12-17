@@ -76,7 +76,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)NetWebScript.CompilerCLI\bin\$(ConfigurationName)\nwsc.exe /pretty /path $(TargetDir)nws /name $(ProjectName) /add $(TargetDir)$(TargetFileName) /add $(TargetDir)NetWebScript.UnitTestFramework.dll /page NetWebScript.UnitTestFramework.Compiler.UnitTestPageFactory</PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)NetWebScript.CompilerCLI\bin\$(ConfigurationName)\nwsc.exe /pretty /path $(TargetDir)nws.pretty /name $(ProjectName) /add $(TargetDir)$(TargetFileName) /add $(TargetDir)NetWebScript.UnitTestFramework.dll /page NetWebScript.UnitTestFramework.Compiler.UnitTestPageFactory
+$(SolutionDir)NetWebScript.CompilerCLI\bin\$(ConfigurationName)\nwsc.exe /path $(TargetDir)nws.release /name $(ProjectName) /add $(TargetDir)$(TargetFileName) /add $(TargetDir)NetWebScript.UnitTestFramework.dll /page NetWebScript.UnitTestFramework.Compiler.UnitTestPageFactory</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -19,8 +19,10 @@ namespace NetWebScript.JsClr.Compiler
     internal class RuntimeAstFilter : IStatementVisitor<ScriptStatement>
     {
         private static readonly MethodInfo CreateDelegate = new Func<object, JSFunction, Delegate>(RuntimeHelper.CreateDelegate).Method;
-        private static readonly MethodInfo As = new Func<object, JSFunction, object>(RuntimeHelper.As).Method;
-        private static readonly MethodInfo Cast = new Func<object, JSFunction, object>(RuntimeHelper.Cast).Method;
+        private static readonly MethodInfo AsInterface = new Func<object, JSFunction, object>(RuntimeHelper.AsInterface).Method;
+        private static readonly MethodInfo AsClass = new Func<object, JSFunction, object>(RuntimeHelper.AsClass).Method;
+        private static readonly MethodInfo CastInterface = new Func<object, JSFunction, object>(RuntimeHelper.CastInterface).Method;
+        private static readonly MethodInfo CastClass = new Func<object, JSFunction, object>(RuntimeHelper.CastClass).Method;
         private static readonly MethodInfo GetTypeFromHandle = new Func<RuntimeTypeHandle, Type>(Type.GetTypeFromHandle).Method;
         private static readonly MethodInfo WrapException = new Func<object, Equivalents.Exception>(Equivalents.Exception.Convert).Method;
        
@@ -71,9 +73,13 @@ namespace NetWebScript.JsClr.Compiler
                 // Allow unverified cast
                 AddWarning(castExpression, string.Format("Cast to type '{0}' cannot be verified at runtime. It will never fail, even if object type mismatch.", castExpression.Type.FullName));
             }
+            else if (type.Type.IsInterface)
+            {
+                return new MethodInvocationExpression(castExpression.IlOffset, false, CastInterface, null, new List<Expression>() { castExpression.Value, new LiteralExpression(castExpression.Type) }).Accept(this);
+            }
             else
             {
-                return new MethodInvocationExpression(castExpression.IlOffset, false, Cast, null, new List<Expression>() {castExpression.Value, new LiteralExpression(castExpression.Type)}).Accept(this);
+                return new MethodInvocationExpression(castExpression.IlOffset, false, CastClass, null, new List<Expression>() {castExpression.Value, new LiteralExpression(castExpression.Type)}).Accept(this);
             }
             return castExpression.Value.Accept(this);
         }
@@ -90,8 +96,11 @@ namespace NetWebScript.JsClr.Compiler
                 // Safe cast cannot rely on an unverifiable cast
                 AddError(safeCastExpression, string.Format("Cast to type '{0}' cannot be verified at runtime. Operation will always fail.", safeCastExpression.Type.FullName));
             }
-            // SafeCast is implemented by RuntimeHelper.As
-            return new MethodInvocationExpression(safeCastExpression.IlOffset, false, As, null, new List<Expression>() { safeCastExpression.Value, new LiteralExpression(safeCastExpression.Type) }).Accept(this);
+            if (type.Type.IsInterface)
+            {
+                return new MethodInvocationExpression(safeCastExpression.IlOffset, false, AsInterface, null, new List<Expression>() { safeCastExpression.Value, new LiteralExpression(safeCastExpression.Type) }).Accept(this);
+            }
+            return new MethodInvocationExpression(safeCastExpression.IlOffset, false, AsClass, null, new List<Expression>() { safeCastExpression.Value, new LiteralExpression(safeCastExpression.Type) }).Accept(this);
         }
 
         public ScriptStatement Visit(FieldReferenceExpression fieldReferenceExpression)
@@ -470,7 +479,11 @@ namespace NetWebScript.JsClr.Compiler
                     if (@catch.Type != null && @catch.Type != typeof(object))
                     {
                         // $exception as Type
-                        var currentAsRequest = new ScriptMethodInvocationExpression(null, false, system.GetScriptMethod(As), null, new List<ScriptExpression>() { new ScriptCurrentExceptionExpression(typeof(object)), (ScriptExpression)Visit(new LiteralExpression(@catch.Type)) });
+                        if (@catch.Type.IsInterface)
+                        {
+                            throw new NotImplementedException();
+                        }
+                        var currentAsRequest = new ScriptMethodInvocationExpression(null, false, system.GetScriptMethod(AsClass), null, new List<ScriptExpression>() { new ScriptCurrentExceptionExpression(typeof(object)), (ScriptExpression)Visit(new LiteralExpression(@catch.Type)) });
 
                         // ($exception as Type) != null
                         var condition = (new ScriptBinaryExpression(null, ScriptBinaryOperator.ValueInequality, currentAsRequest, new ScriptLiteralExpression(null, null, null)));

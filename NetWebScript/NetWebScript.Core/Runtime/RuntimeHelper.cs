@@ -25,17 +25,13 @@ namespace NetWebScript.Script
         /// Operate a safe cast. Implements the "isinst" IL operation.
         /// </summary>
         /// <param name="obj">Value to cast</param>
-        /// <param name="type">Expected type</param>
+        /// <param name="type">Expected interface type</param>
         /// <returns>Value if it is of excepected type, null otherwise</returns>
         [DebuggerHidden]
-        public static object As(object obj, JSFunction type)
+        public static object AsInterface(object obj, JSFunction type)
         {
             if (obj != null) 
             {
-                if (JSObject.IsInstanceOf(obj, type)) 
-                {
-                    return obj;
-                }
                 var itfs = GetImplementedInterfaces(obj);
                 if (itfs != null) 
                 {
@@ -52,18 +48,37 @@ namespace NetWebScript.Script
         }
 
         /// <summary>
+        /// Operate a safe cast. Implements the "isinst" IL operation.
+        /// </summary>
+        /// <param name="obj">Value to cast</param>
+        /// <param name="type">Expected class type</param>
+        /// <returns>Value if it is of excepected type, null otherwise</returns>
+        [DebuggerHidden]
+        public static object AsClass(object obj, JSFunction type)
+        {
+            if (obj != null)
+            {
+                if (JSObject.IsInstanceOf(obj, type))
+                {
+                    return obj;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Operate a cast. Implements the "classcast" IL operation.
         /// Rise an exception if value is not of the expected type.
         /// </summary>
         /// <param name="obj">Value to cast</param>
-        /// <param name="type">Expected type</param>
+        /// <param name="type">Expected interface type</param>
         /// <returns>Value if it is of excepected type.</returns>
         [DebuggerHidden]
-        public static object Cast(object obj, JSFunction type)
+        public static object CastInterface(object obj, JSFunction type)
         {
             if (obj != null)
             {
-                object value = As(obj, type);
+                object value = AsInterface(obj, type);
                 if (value == null)
                 {
                     throw new Exception("Could not cast.");
@@ -73,6 +88,22 @@ namespace NetWebScript.Script
             return null;
         }
 
+        /// <summary>
+        /// Operate a cast. Implements the "classcast" IL operation.
+        /// Rise an exception if value is not of the expected type.
+        /// </summary>
+        /// <param name="obj">Value to cast</param>
+        /// <param name="type">Expected class type</param>
+        /// <returns>Value if it is of excepected type.</returns>
+        [DebuggerHidden]
+        public static object CastClass(object obj, JSFunction type)
+        {
+            if (obj != null && !JSObject.IsInstanceOf(obj, type))
+            {
+                throw new Exception("Could not cast.");
+            }
+            return obj;
+        }
         /// <summary>
         /// Initialize an array of a given size filled with an initial value.
         /// </summary>
