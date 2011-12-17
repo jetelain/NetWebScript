@@ -75,5 +75,26 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             builder.Remove(builder.Length - 2, 2);
             return builder.ToString();
         }
+
+        public override IEnumerable<Sequence> Children
+        {
+            get
+            {
+                if (NoJump != null)
+                {
+                    foreach (var item in NoJump)
+                    {
+                        yield return item;
+                    }
+                }
+                if (Jump != null)
+                {
+                    foreach (var item in Jump)
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
     }
 }

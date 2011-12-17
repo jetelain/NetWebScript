@@ -8,6 +8,21 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
 {
 	public sealed class Instruction
 	{
+        private static readonly OpCode[] neuralOpCodes = new[] { 
+        OpCodes.Ret,
+        OpCodes.Ldc_I4_0,
+        OpCodes.Ldc_I4_1
+        // FIXME: Be more exaustive
+        };
+        
+        public bool CanRiseException
+        {
+            get { return Array.IndexOf<OpCode>(neuralOpCodes, OpCode) == -1; }
+        }
+
+
+
+
         public Instruction Next { get; internal set; }
 
         public Instruction Previous { get; internal set; }

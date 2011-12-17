@@ -32,5 +32,19 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             builder.Remove(builder.Length - 1, 1);
             return builder.ToString();
         }
+
+        public override IEnumerable<Sequence> Children
+        {
+            get
+            {
+                foreach (var @case in Cases)
+                {
+                    foreach (var item in @case.Value)
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
     }
 }

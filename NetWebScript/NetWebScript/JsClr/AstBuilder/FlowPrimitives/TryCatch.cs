@@ -52,5 +52,33 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             return builder.ToString();
         }
 
+
+        public override IEnumerable<Sequence> Children
+        {
+            get 
+            {
+                foreach (var item in Body)
+                {
+                    yield return item;
+                }
+                if (CatchList != null)
+                {
+                    foreach (var @catch in CatchList)
+                    {
+                        foreach (var item in @catch.Body)
+                        {
+                            yield return item;
+                        }
+                    }
+                }
+                if (Finally != null)
+                {
+                    foreach (var item in Finally)
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
     }
 }

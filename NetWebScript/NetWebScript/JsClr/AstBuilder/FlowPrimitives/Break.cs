@@ -16,5 +16,10 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                 return int.MaxValue;
             }
         }
+
+        public override System.Collections.Generic.IEnumerable<Sequence> Children
+        {
+            get { yield break; }
+        }
     }
 }

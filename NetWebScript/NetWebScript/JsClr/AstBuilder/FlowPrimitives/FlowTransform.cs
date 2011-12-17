@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NetWebScript.JsClr.AstBuilder.Cil;
 using NetWebScript.JsClr.AstBuilder.FlowGraph;
+using System.Diagnostics.Contracts;
 
 namespace NetWebScript.JsClr.AstBuilder.Flow
 {
@@ -79,6 +80,8 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
 
         private List<Sequence> CondTransform(InstructionBlock body, InstructionBlock end)
         {
+            Contract.Requires(body != end);
+            Contract.Requires(body != null);
             if (body == loopStart)
             {
                 return new List<Sequence> { new Continue() };
@@ -124,6 +127,11 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             }
         }
 
+        private static bool IsReturnBlock(InstructionBlock block)
+        {
+            return block.All(b => !b.CanRiseException) && block.Last.OpCode == System.Reflection.Emit.OpCodes.Ret;
+        }
+
         private void Process(List<Sequence> sequences, InstructionBlock block)
         {
             int count = block.Successors.Length;
@@ -131,16 +139,23 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             ProtectedRegionData region = graph.ExceptionData.FirstOrDefault(r => r.Try == block);
             if (region != null)
             {
-                //if (count > 1)
-                //{
-                //    throw new NotImplementedException();
-                //}
+                InstructionBlock end = null;
                 if (region.TryEnd.Count > 1)
                 {
-                    throw new NotImplementedException();
+                    var notReturns = region.TryEnd.Count(b => !IsReturnBlock(b));
+                    if (notReturns > 1)
+                    {
+                        throw new NotImplementedException();
+                    }
+                    else if (notReturns == 1)
+                    {
+                        end = region.TryEnd.First(b => !IsReturnBlock(b));
+                    }
                 }
-                // TODO: vérifier que le try est bien contenu dans le sous-graph
-                var end = region.TryEnd.Count == 0 ? null : region.TryEnd.First();
+                else if (region.TryEnd.Count == 1)
+                {
+                    end = region.TryEnd.First();
+                }
 
                 TryCatch trycatch = new TryCatch();
                 trycatch.Body = TryTransform(region.Try, end, region);
@@ -253,6 +268,11 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                 {
                     throw new AstBuilderException(block.First.Offset, string.Format("Unsupported condition detected from block {0}", block.Index + 1));
                 }
+                if (common == null)
+                {
+                    common = graph.End;
+                }
+
                 // C'est une simple condition
                 if (common == sucA)
                 {
@@ -264,16 +284,11 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                     sequences.Add(new Condition(block) { Jump = CondTransform(sucA, common), StackAfter = common.StackBefore });
                     ProcessNext(sequences, common);
                 }
-                else if (common != null)
-                {
-                    sequences.Add(new Condition(block) { NoJump = CondTransform(sucB, common), Jump = CondTransform(sucA, common), StackAfter = common.StackBefore });
-                    ProcessNext(sequences, common);
-                }
                 else
                 {
-                    sequences.Add(new Condition(block) { NoJump = CondTransform(sucB, graph.End), Jump = CondTransform(sucA, graph.End), StackAfter = (graph.End == null ? 0 : graph.End.StackBefore) });
-                }
-                
+                    sequences.Add(new Condition(block) { NoJump = CondTransform(sucB, common), Jump = CondTransform(sucA, common), StackAfter = common == null ? 0 : common.StackBefore });
+                    ProcessNext(sequences, common);
+                } 
             }
             else
             {
@@ -307,10 +322,21 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             }
         }
 
-        private bool HasContinue(List<Sequence> list)
+        private bool HasContinue(IEnumerable<Sequence> list)
         {
-            // TODO: look for continue in list and childs
-            return false;
+            return list.Any(HasContinue);
+        }
+        private bool HasContinue(Sequence seq)
+        {
+            if (seq is PostLoop || seq is PreLoop)
+            {
+                return false; // Do not inspect nested loops
+            }
+            if (seq is Continue)
+            {
+                return true;
+            }
+            return HasContinue(seq.Children);
         }
     }
 }

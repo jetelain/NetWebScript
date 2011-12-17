@@ -49,5 +49,36 @@ namespace NetWebScript.Test.Material.Tests.Linq
             Assert.AreEqual(8, tab2[2]);
             Assert.AreEqual(9, tab2[3]);
         }
+
+        [TestMethod]
+        public void All()
+        {
+            int[] tab = new int[] { 1, 2, 3, 4 };
+            int[] tab0 = new int[] { };
+            Assert.IsTrue(tab.All(i => i < 5));
+            Assert.IsTrue(tab0.All(i => i != 2));
+            Assert.IsFalse(tab.All(i => i != 2));
+        }
+
+        [TestMethod]
+        public void AnyPredicate()
+        {
+            int[] tab = new int[] { 1, 2, 3, 4 };
+            int[] tab0 = new int[] { };
+            Assert.IsTrue(tab.Any(i => i < 5));
+            Assert.IsTrue(tab.Any(i => i != 1));
+            Assert.IsTrue(tab.Any(i => i == 1));
+            Assert.IsFalse(tab.Any(i => i > 5));
+            Assert.IsFalse(tab0.Any(i => i < 5));
+        }
+
+        [TestMethod]
+        public void Any()
+        {
+            int[] tab1 = new int[] { 1, 2, 3, 4 };
+            int[] tab0 = new int[] {};
+            Assert.IsTrue(tab1.Any());
+            Assert.IsFalse(tab0.Any());
+        }
     }
 }

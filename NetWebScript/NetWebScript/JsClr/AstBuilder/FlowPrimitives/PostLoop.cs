@@ -20,5 +20,16 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             builder.Append("} While "+Jump);
             return builder.ToString();
         }
+
+        public override IEnumerable<Sequence> Children
+        {
+            get
+            {
+                foreach (var item in Body)
+                {
+                    yield return item;
+                }
+            }
+        }
     }
 }

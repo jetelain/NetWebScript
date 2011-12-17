@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetWebScript.JsClr.AstBuilder;
+using NetWebScript.Equivalents.Linq;
 
 namespace NetWebScript.Test
 {
@@ -46,7 +47,7 @@ namespace NetWebScript.Test
         [TestMethod]
         public void TestMethod1()
         {
-            var ast = MethodAst.GetMethodAst(new Action(DoWhile).Method);
+            var ast = MethodAst.GetMethodAst(new Func<IEnumerable<object>,Func<object,bool>,bool>(EnumerableEquiv.Any<object>).Method);
         }
     }
 }

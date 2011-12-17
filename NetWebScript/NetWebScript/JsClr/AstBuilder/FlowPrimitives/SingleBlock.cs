@@ -24,5 +24,10 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                 return Block.LowestStack;
             }
         }
+
+        public override System.Collections.Generic.IEnumerable<Sequence> Children
+        {
+            get { yield break; }
+        }
     }
 }
