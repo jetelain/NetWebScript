@@ -561,5 +561,35 @@ namespace NetWebScript.JsClr.Compiler
         {
             throw new NotImplementedException();
         }
+
+        public ScriptStatement Visit(DefaultValueExpression defaultValueExpression)
+        {
+            IScriptType type = null;
+            if (defaultValueExpression.Type.IsValueType)
+            {
+                type = system.GetScriptType(defaultValueExpression.Type);
+                if (type == null)
+                {
+                    AddError(defaultValueExpression, string.Format("Type '{0}' is not script available. You can not use default value of that type.", defaultValueExpression.Type.FullName));
+                }
+                else if (type.Serializer != null)
+                {
+                    return new ScriptLiteralExpression(defaultValueExpression.IlOffset, Activator.CreateInstance(defaultValueExpression.Type), type);
+                }
+                else
+                {
+                    var defctor = type.DefaultConstructor;
+                    if (defctor == null)
+                    {
+                        AddError(defaultValueExpression, string.Format("Type '{0}' have no script default value.", defaultValueExpression.Type.FullName));
+                    }
+                    else
+                    {
+                        return new ScriptObjectCreationExpression(defaultValueExpression.IlOffset, defctor, new List<ScriptExpression>());
+                    }
+                }
+            }
+            return new ScriptLiteralExpression(defaultValueExpression.IlOffset, null, null);
+        }
     }
 }

@@ -46,5 +46,13 @@ namespace NetWebScript.JsClr.Ast
         {
             return new FieldReferenceExpression(IlOffset, Target, Field);
         }
+
+        public override bool IsMakeRefExpression
+        {
+            get
+            {
+                return true;
+            }
+        }
     }
 }

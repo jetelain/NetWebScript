@@ -74,5 +74,18 @@ namespace NetWebScript.JsClr.TypeSystem.Anonymous
         {
             get { return null; }
         }
+
+        public IScriptConstructor DefaultConstructor
+        {
+            get
+            {
+                var ctor = type.GetConstructor(Type.EmptyTypes);
+                if (ctor != null)
+                {
+                    return GetScriptConstructor(ctor);
+                }
+                return null;
+            }
+        }
     }
 }

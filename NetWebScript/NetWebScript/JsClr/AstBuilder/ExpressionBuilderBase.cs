@@ -74,6 +74,20 @@ namespace NetWebScript.JsClr.AstBuilder
             return type != null && type.IsByRef;
         }
 
+
+        protected void AssignByRef(int offset, Expression target, Expression value)
+        {
+            if (target.IsMakeRefExpression)
+            {
+                Push(value);
+                Assign(offset, (AssignableExpression)target.GetRefValue(), PopToAssign());
+            }
+            else
+            {
+                Exec(new ByRefSetExpression(offset, target, value));
+            }
+        }
+
         #region Arguments
 
         public override void OnLdarg(Instruction instruction)
@@ -409,17 +423,8 @@ namespace NetWebScript.JsClr.AstBuilder
             Expression expr = Pop();
             if (IsByRefValue(expr))
             {
-                if (!instruction.OperandSystemType.IsValueType)
-                {
-                    Exec(new ByRefSetExpression(instruction.Offset, expr, new LiteralExpression(instruction.Offset, null)));
-                    return;
-                }
-                else if (instruction.OperandSystemType == typeof(int))
-                {
-                    Exec(new ByRefSetExpression(instruction.Offset, expr, new LiteralExpression(instruction.Offset, 0)));
-                    return;
-                }
-                // TODO: support default value of all primitives types
+                AssignByRef(instruction.Offset, expr, new DefaultValueExpression(instruction.Offset, instruction.OperandSystemType));
+                return;
             }
             base.OnInitobj(instruction);
         }
@@ -562,7 +567,7 @@ namespace NetWebScript.JsClr.AstBuilder
             {
                 Unsupported(instruction);
             }
-            Exec(new ByRefSetExpression(instruction.Offset, target, value));
+            AssignByRef(instruction.Offset, target, value);
         }
 
         public override void OnStind_Ref(Instruction instruction)
@@ -573,7 +578,7 @@ namespace NetWebScript.JsClr.AstBuilder
             {
                 Unsupported(instruction);
             }
-            Exec(new ByRefSetExpression(instruction.Offset, target, value));
+            AssignByRef(instruction.Offset, target, value);
         }
 
         public override void OnLdind_Ref(Instruction instruction)

@@ -207,5 +207,18 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
         {
             extensions.AddRange(iEnumerable);
         }
+
+        public IScriptConstructor DefaultConstructor
+        {
+            get
+            {
+                var ctor = type.GetConstructor(Type.EmptyTypes);
+                if (ctor != null)
+                {
+                    return GetScriptConstructor(ctor);
+                }
+                return null;
+            }
+        }
     }
 }

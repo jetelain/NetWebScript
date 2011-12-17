@@ -41,5 +41,13 @@ namespace NetWebScript.JsClr.Ast
         {
             return new ArgumentReferenceExpression(IlOffset, Argument);
         }
+
+        public override bool IsMakeRefExpression
+        {
+            get
+            {
+                return true;
+            }
+        }
     }
 }

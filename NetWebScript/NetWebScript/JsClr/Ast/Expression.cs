@@ -59,8 +59,19 @@ namespace NetWebScript.JsClr.Ast
         {
             Contract.Requires(IlOffset != null);
             Contract.Requires(GetExpressionType() != null && GetExpressionType().IsByRef);
+            Contract.Ensures(Contract.Result<Expression>() is AssignableExpression || !IsMakeRefExpression);
+
             return new ByRefGetExpression(IlOffset.Value, this);
         }
+
+        public virtual bool IsMakeRefExpression
+        {
+            get 
+            { 
+                return false; 
+            }
+        }
+
     }
 
 }

@@ -28,5 +28,10 @@ namespace NetWebScript.JsClr.TypeSystem
         /// - <see cref="TypeId"/> is prototype of only of instance of <see cref="Type"/>.<br />
         /// </summary>
         bool HaveCastInformation { get; }
+
+        /// <summary>
+        /// Default constructor of type if any (may be null).
+        /// </summary>
+        IScriptConstructor DefaultConstructor { get; }
     }
 }

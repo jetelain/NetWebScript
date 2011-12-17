@@ -84,5 +84,10 @@ namespace NetWebScript.JsClr.Ast
         {
             return visitor.Visit(this);
         }
+
+        public override bool IsConstInMethod()
+        {
+            return true;
+        }
     }
 }

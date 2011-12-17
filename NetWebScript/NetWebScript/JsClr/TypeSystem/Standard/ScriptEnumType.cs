@@ -94,5 +94,11 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         }
 
         #endregion
+
+
+        public IScriptConstructor DefaultConstructor
+        {
+            get { return null; }
+        }
     }
 }

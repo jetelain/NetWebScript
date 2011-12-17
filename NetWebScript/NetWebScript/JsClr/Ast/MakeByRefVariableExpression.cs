@@ -41,5 +41,13 @@ namespace NetWebScript.JsClr.Ast
         {
             return new VariableReferenceExpression(IlOffset, Variable);
         }
+
+        public override bool IsMakeRefExpression
+        {
+            get
+            {
+                return true;
+            }
+        }
     }
 }

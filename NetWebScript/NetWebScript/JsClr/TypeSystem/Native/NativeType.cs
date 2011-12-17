@@ -67,5 +67,18 @@ namespace NetWebScript.JsClr.TypeSystem.Native
         }
 
         #endregion
+
+        public IScriptConstructor DefaultConstructor
+        {
+            get
+            {
+                var ctor = type.GetConstructor(Type.EmptyTypes);
+                if (ctor != null)
+                {
+                    return GetScriptConstructor(ctor);
+                }
+                return null;
+            }
+        }
     }
 }

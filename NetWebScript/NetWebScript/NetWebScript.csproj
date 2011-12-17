@@ -103,6 +103,7 @@
     <Compile Include="JsClr\Ast\ConditionExpression.cs" />
     <Compile Include="JsClr\Ast\ContinueStatement.cs" />
     <Compile Include="JsClr\Ast\ByRefGetExpression.cs" />
+    <Compile Include="JsClr\Ast\DefaultValueExpression.cs" />
     <Compile Include="JsClr\Ast\MakeByRefArgumentExpression.cs" />
     <Compile Include="JsClr\Ast\MakeByRefVariableExpression.cs" />
     <Compile Include="JsClr\Ast\MakeByRefFieldExpression.cs" />

@@ -244,5 +244,18 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
             get;
             set;
         }
+
+        public IScriptConstructor DefaultConstructor
+        {
+            get
+            {
+                var ctor = type.GetConstructor(Type.EmptyTypes);
+                if (ctor != null)
+                {
+                    return GetScriptConstructor(ctor);
+                }
+                return helper.DefaultConstructor;
+            }
+        }
     }
 }

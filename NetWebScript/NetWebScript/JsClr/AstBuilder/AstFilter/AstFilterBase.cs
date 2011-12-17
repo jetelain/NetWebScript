@@ -313,5 +313,10 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
         {
             throw new AstBuilderException(makeByRefArgumentExpression.IlOffset, "Unsupported operation");
         }
+
+        public virtual Statement Visit(DefaultValueExpression defaultValueExpression)
+        {
+            return defaultValueExpression;
+        }
     }
 }

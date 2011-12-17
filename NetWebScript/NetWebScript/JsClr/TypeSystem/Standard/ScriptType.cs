@@ -268,5 +268,19 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         {
             get { return exportCaseConvention; }
         }
+
+
+        public IScriptConstructor DefaultConstructor
+        {
+            get 
+            {
+                var ctor = type.GetConstructor(Type.EmptyTypes);
+                if (ctor != null)
+                {
+                    return GetScriptConstructor(ctor);
+                }
+                return null;
+            }
+        }
     }
 }
