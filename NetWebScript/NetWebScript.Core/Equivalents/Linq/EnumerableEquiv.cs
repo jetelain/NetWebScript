@@ -53,7 +53,7 @@ namespace NetWebScript.Equivalents.Linq
                     return enumerator.Current;
                 }
             }
-            throw new System.Exception("source is empty");
+            throw new System.InvalidOperationException("No elements in source");
         }
 
         public static TSource First<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -65,7 +65,7 @@ namespace NetWebScript.Equivalents.Linq
                     return item;
                 }
             }
-            throw new System.Exception("No element matched");
+            throw new System.InvalidOperationException("No elements matched");
         }
 
         public static TSource FirstOrDefault<TSource>(this IEnumerable<TSource> source)

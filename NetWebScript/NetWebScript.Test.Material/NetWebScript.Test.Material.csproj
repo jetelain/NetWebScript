@@ -61,6 +61,7 @@
     <Compile Include="Tests\GeneratedTest.cs" />
     <Compile Include="Tests\Linq\EnumerableTest.cs" />
     <Compile Include="Tests\Logic.cs" />
+    <Compile Include="Tests\MathTest.cs" />
     <Compile Include="Tests\ObjectTest.cs" />
     <Compile Include="Tests\StringTest.cs" />
   </ItemGroup>

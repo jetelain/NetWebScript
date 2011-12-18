@@ -4,6 +4,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
     [ImportedExtender(typeof(JSString))]
+    [ScriptEquivalent(typeof(System.String))]
     public sealed class StringEquiv
     {
         [ScriptBody(Inline="this")]

@@ -9,5 +9,11 @@ namespace NetWebScript.Equivalents
         {
 
         }
+
+        public InvalidOperationException(string message)
+            : base(message)
+        {
+
+        }
     }
 }

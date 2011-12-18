@@ -215,22 +215,63 @@ namespace NetWebScript.Equivalents
 
         //public static decimal Round(decimal d);
 
-        public static double Round(double a)
+        public static double Round(double value)
         {
-            return JSMath.Round(a);
+            if (value <= 0)
+            {
+                return JSMath.Round(value);
+            }
+            double integer = JSMath.Floor(value);
+            if (value - integer > 0.5)
+            {
+                return integer + 1;
+            }
+            return integer;
+        }
+
+        private static double RoundAwayFromZero(double value)
+        {
+            if (value >= 0)
+            {
+                return JSMath.Round(value);
+            }
+            double integer = JSMath.Ceil(value);
+            if (JSMath.Abs(value - integer) >= 0.5)
+            {
+                return integer - 1;
+            }
+            return integer;
         }
 
         //public static decimal Round(decimal d, int decimals);
 
         //public static decimal Round(decimal d, MidpointRounding mode);
 
-        //public static double Round(double value, int digits);
+        public static double Round(double value, int digits)
+        {
+            var f = JSMath.Pow(10, digits);
+            return Round(value * f) / f;
+        }
 
-        //public static double Round(double value, MidpointRounding mode);
+        public static double Round(double value, MidpointRounding mode)
+        {
+            if (mode == MidpointRounding.AwayFromZero)
+            {
+                return RoundAwayFromZero(value);
+            }
+            else
+            {
+                return Round(value);
+            }
+        }
 
         //public static decimal Round(decimal d, int decimals, MidpointRounding mode);
 
-        //public static double Round(double value, int digits, MidpointRounding mode);
+        public static double Round(double value, int digits, MidpointRounding mode)
+        {
+            var f = JSMath.Pow(10, digits);
+            return Round(value * f, mode) / f;
+        }
 
         //public static int Sign(decimal value);
 
@@ -333,6 +374,13 @@ namespace NetWebScript.Equivalents
 
         //public static decimal Truncate(decimal d);
 
-        public static double Truncate(double d);
+        public static double Truncate(double d)
+        {
+            if (JSNumber.IsNaN(d)) 
+            {
+                return JSNumber.NaN; 
+            }
+            return d < 0 ? JSMath.Ceil(d) : JSMath.Floor(d);
+        }
     }
 }

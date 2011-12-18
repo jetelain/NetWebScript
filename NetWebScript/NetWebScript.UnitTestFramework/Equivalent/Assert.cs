@@ -57,5 +57,11 @@ namespace NetWebScript.UnitTestFramework.Equivalent
                 throw new Exception("failed. is false");
             }
         }
+
+
+        public static void Fail()
+        {
+            throw new Exception("failed");
+        }
     }
 }

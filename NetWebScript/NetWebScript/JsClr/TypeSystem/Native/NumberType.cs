@@ -6,10 +6,11 @@ using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
 using System.Globalization;
 using NetWebScript.Script;
+using NetWebScript.JsClr.TypeSystem.Serializers;
 
 namespace NetWebScript.JsClr.TypeSystem.Native
 {
-    class NumberType : NativeType, IValueSerializer, ITypeBoxing
+    class NumberType : NativeType, ITypeBoxing
     {
         public NumberType(ScriptSystem system, Type type)
             : base("Number", type)
@@ -29,15 +30,10 @@ namespace NetWebScript.JsClr.TypeSystem.Native
         {
             get
             {
-                return this;
+                return NumberSerializer.Instance;
             }
         }
 
-
-        public JsToken LiteralValue(IScriptType type, object value, IRootInvoker converter)
-        {
-            return JsToken.Name(value.ToString());
-        }
 
         public Ast.Expression BoxValue(IScriptType type, Ast.BoxExpression boxExpression)
         {

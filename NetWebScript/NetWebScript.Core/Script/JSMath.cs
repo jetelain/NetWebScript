@@ -101,7 +101,11 @@ namespace NetWebScript.Script
 
         public static double Round(double a)
         {
-            return Math.Round(a);
+            if (a > 0)
+            {
+                return Math.Round(a, MidpointRounding.AwayFromZero);
+            }
+            return Math.Round(a, MidpointRounding.ToEven);
         }
     }
 }

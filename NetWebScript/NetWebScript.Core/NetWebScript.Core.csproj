@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Equivalents\Linq\EnumerableEquiv.cs" />
+    <Compile Include="Equivalents\MathEquiv.cs" />
     <Compile Include="Script\JQueryExt.cs" />
     <Compile Include="Script\JSMath.cs" />
     <Compile Include="TypeModel\AnonymousObjectAttribute.cs" />

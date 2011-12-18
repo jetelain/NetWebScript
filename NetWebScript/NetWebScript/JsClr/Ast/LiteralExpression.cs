@@ -47,17 +47,25 @@ namespace NetWebScript.JsClr.Ast
 
         public void SetExpressionType(Type type)
         {
-            this.type = type;
+            if (type.IsEnum)
+            {
+                this.type = Enum.GetUnderlyingType(type);
+            }
+            else
+            {
+                this.type = type;
+            }
+            
             if (Value != null && Value.GetType() != type)
             {
                 if (type == typeof(bool))
                 {
                     Value = ((int)Value == 0) ? false : true;
                 }
-                else
-                {
-                    throw new InvalidOperationException();
-                }
+                //else
+                //{
+                //    throw new InvalidOperationException();
+                //}
             }
         }
 

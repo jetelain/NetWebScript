@@ -5,6 +5,7 @@ using System.Text;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using System.Reflection;
 using System.Diagnostics.Contracts;
+using NetWebScript.JsClr.TypeSystem.Serializers;
 
 namespace NetWebScript.JsClr.TypeSystem.Helped
 {
@@ -24,7 +25,7 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
             {
                 throw new Exception(string.Format("Type '{0}' asked by '{1}' must be script available.", type.FullName, helperType.FullName));
             }
-            Serializer = helper.Serializer;
+            Serializer = DefaultSerializer.GetSerializer(system, type) ?? helper.Serializer;
         }
 
         #region IScriptType Members

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NetWebScript.JsClr.TypeSystem.Invoker;
 using System.Reflection;
-using NetWebScript.JsClr.JsBuilder.JsSyntax;
 using NetWebScript.JsClr.Ast;
+using NetWebScript.JsClr.TypeSystem.Invoker;
 using ScriptEnum = NetWebScript.Equivalents.Enum;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard

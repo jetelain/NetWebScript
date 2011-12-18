@@ -56,72 +56,94 @@ namespace NetWebScript.JsClr.TypeSystem
             return moduleId + "S" + slot.TakeOne();
         }
 
+        internal static bool IsNumberType ( Type type )
+        {
+            return 
+                type == typeof(double) ||
+                type == typeof(float) ||
+                type == typeof(long) ||
+                type == typeof(ulong) ||
+                type == typeof(int) ||
+                type == typeof(uint) ||
+                type == typeof(short) ||
+                type == typeof(ushort) || 
+                type == typeof(sbyte) ||
+                type == typeof(byte);
+        }
+
         protected virtual IScriptType CreateType(Type type)
         {
-            if (type == typeof(string))
+            if (type.IsArray)
             {
-                return new StringType(this);
-            }
-            if (type == typeof(object))
-            {
-                return new ObjectType(this);
-            }
-            if (type == typeof(char))
-            {
-                return new CharType();
-            }
-            if (type == typeof(int) || type == typeof(double) || type == typeof(float) || type == typeof(long) || type == typeof(short) || type == typeof(ushort) || type == typeof(byte))
-            {
-                return new NumberType(this, type);
-            }
-            if (type == typeof(bool))
-            {
-                return new BooleanType();
-            }
-            if (typeof(Delegate).IsAssignableFrom(type))
-            {
-                return new DelegateType(this, type);
-            }
-            if (typeof(Type).IsAssignableFrom(type)/* || typeof(MethodInfo).IsAssignableFrom(type)*/)
-            {
-                return new FunctionType(this, type);
-            }
-            if (typeof(MethodInfo).IsAssignableFrom(type))
-            {
-                var helped = new ScriptTypeHelped(this, type, typeof(Equivalents.Reflection.MethodInfo));
-                equivalents.Add(helped);
-                helped.Serializer = new FunctionType(this, type);
-                return helped;
-            }
-            var imported = (ImportedAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedAttribute), false);
-            if (imported != null)
-            {
-                return new ImportedType(this, type, imported);
-            }
-            var anonymous = (AnonymousObjectAttribute)Attribute.GetCustomAttribute(type, typeof(AnonymousObjectAttribute));
-            if (anonymous != null)
-            {
-                return new AnonymousType(type, anonymous.Convention);
-            }
-            if (IsScriptAvailable(type))
-            {
-                if (type.IsEnum)
+                if (GetScriptType(type.GetElementType()) != null)
                 {
-                    var scriptEnumType = new ScriptEnumType(this, type);
-                    enumsToGenerate.Add(scriptEnumType);
-                    return scriptEnumType;
+                    return new ArrayType(this, type);
                 }
-                var extender = (ImportedExtenderAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedExtenderAttribute));
-                if (extender != null)
-                {
-                    var scriptExtType = new ScriptExtenderType(this, type, extender.ExtendedType);
-                    typesToGenerate.Add(scriptExtType);
-                    return scriptExtType;
-                }
-                var scriptType = new ScriptType(this, type);
-                typesToGenerate.Add(scriptType);
-                return scriptType;
+                return null; // If element type is not script available, corresponding array is not available
             }
+
+            if (type.IsEnum) 
+            {
+                // All enums are automaticly script avaiblable
+                var scriptEnumType = new ScriptEnumType(this, type);
+                enumsToGenerate.Add(scriptEnumType);
+                return scriptEnumType;
+            }
+            else if (type.IsValueType)
+            {
+                // "Native" value types that are supported by runtime
+                if (type == typeof(char))
+                {
+                    return new CharType();
+                }
+                if (IsNumberType(type))
+                {
+                    return new NumberType(this, type);
+                }
+                if (type == typeof(bool))
+                {
+                    return new BooleanType();
+                }
+            }
+            else
+            {
+                if (type == typeof(object))
+                {
+                    return new ObjectType(this);
+                }
+                if (typeof(Delegate).IsAssignableFrom(type))
+                {
+                    return new DelegateType(this, type);
+                }
+                if (typeof(Type).IsAssignableFrom(type))
+                {
+                    return new FunctionType(this, type);
+                }
+                var imported = (ImportedAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedAttribute), false);
+                if (imported != null)
+                {
+                    return new ImportedType(this, type, imported);
+                }
+                var anonymous = (AnonymousObjectAttribute)Attribute.GetCustomAttribute(type, typeof(AnonymousObjectAttribute));
+                if (anonymous != null)
+                {
+                    return new AnonymousType(type, anonymous.Convention);
+                }
+                if (IsScriptAvailable(type))
+                {
+                    var extender = (ImportedExtenderAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedExtenderAttribute));
+                    if (extender != null)
+                    {
+                        var scriptExtType = new ScriptExtenderType(this, type, extender.ExtendedType);
+                        typesToGenerate.Add(scriptExtType);
+                        return scriptExtType;
+                    }
+                    var scriptType = new ScriptType(this, type);
+                    typesToGenerate.Add(scriptType);
+                    return scriptType;
+                }
+            }
+ 
             Type helperType = GetEquivalent(type);
             if (helperType != null)
             {
@@ -130,13 +152,7 @@ namespace NetWebScript.JsClr.TypeSystem
                 
                 return helped;
             }
-            if (type.IsArray)
-            {
-                if (GetScriptType(type.GetElementType()) != null)
-                {
-                    return new ArrayType(this, type);
-                }
-            }
+
             return null;
         }
 
@@ -168,6 +184,10 @@ namespace NetWebScript.JsClr.TypeSystem
                         return declaring.GetNestedType(type.Name);
                     }
                 }
+            }
+            if (typeof(MethodInfo).IsAssignableFrom(type) && type != typeof(MethodInfo))
+            {
+                return GetEquivalent(typeof(MethodInfo));
             }
             return null;
         }

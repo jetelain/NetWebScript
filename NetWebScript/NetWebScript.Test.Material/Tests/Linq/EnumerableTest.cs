@@ -110,5 +110,69 @@ namespace NetWebScript.Test.Material.Tests.Linq
             Assert.AreEqual("b", tabs1.FirstOrDefault(s => s == "b"));
             Assert.AreEqual(null, tabs0.FirstOrDefault(s => s == "e"));
         }
+
+        [TestMethod]
+        public void First()
+        {
+            int[] tab1 = new int[] { 5, 6, 7, 8 };
+            int[] tab0 = new int[] { };
+            Assert.AreEqual(5, tab1.First());
+            try
+            {
+                tab0.First();
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+
+            }
+
+            string[] tabs1 = new string[] { "a", "b", "c", "d" };
+            string[] tabs0 = new string[] { };
+            Assert.AreEqual("a", tabs1.First());
+            try
+            {
+                tabs0.First();
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+
+            }
+        }
+
+
+        [TestMethod]
+        public void FirstPredicate()
+        {
+            int[] tab1 = new int[] { 5, 6, 7, 8 };
+            int[] tab0 = new int[] { };
+            Assert.AreEqual(6, tab1.First(i => i > 5));
+            Assert.AreEqual(5, tab1.First(i => i > 4));
+            try
+            {
+                tab0.First(i => i > 8);
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+
+            }
+
+            string[] tabs1 = new string[] { "a", "b", "c", "d" };
+            string[] tabs0 = new string[] { };
+            Assert.AreEqual("a", tabs1.First(s => s == "a"));
+            Assert.AreEqual("b", tabs1.First(s => s == "b"));
+            try
+            {
+                tabs0.First(s => s == "e");
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+
+            }
+        }
+
     }
 }

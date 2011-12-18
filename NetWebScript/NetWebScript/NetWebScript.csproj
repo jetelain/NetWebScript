@@ -242,9 +242,12 @@
     <Compile Include="JsClr\TypeSystem\Native\NumberType.cs" />
     <Compile Include="JsClr\TypeSystem\Native\ObjectConstructor.cs" />
     <Compile Include="JsClr\TypeSystem\Native\ObjectType.cs" />
-    <Compile Include="JsClr\TypeSystem\Native\StringType.cs" />
     <Compile Include="JsClr\TypeSystem\RemotingScriptSystem.cs" />
     <Compile Include="JsClr\Compiler\RuntimeAstFilter.cs" />
+    <Compile Include="JsClr\TypeSystem\Serializers\MethodBaseSerializer.cs" />
+    <Compile Include="JsClr\TypeSystem\Serializers\NumberSerializer.cs" />
+    <Compile Include="JsClr\TypeSystem\Serializers\DefaultSerializer.cs" />
+    <Compile Include="JsClr\TypeSystem\Serializers\StringSerializer.cs" />
     <Compile Include="JsClr\TypeSystem\Standard\ScriptConstructor.cs" />
     <Compile Include="JsClr\TypeSystem\Standard\ScriptEnumType.cs" />
     <Compile Include="JsClr\TypeSystem\Standard\ScriptExtenderType.cs" />
