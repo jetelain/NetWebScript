@@ -24,9 +24,9 @@ namespace NetWebScript.Script
 			return new JSString(obj.ToString());
 		}
 
-		public char CharAt(int index)
+		public string CharAt(int index)
 		{
-			return data[index];
+			return data.Substring(index, 1);
 		}
 
 		public int CharCodeAt(int index)

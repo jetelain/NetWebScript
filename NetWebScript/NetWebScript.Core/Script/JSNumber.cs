@@ -48,7 +48,7 @@ namespace NetWebScript.Script
         [ScriptAlias("isFinite")]
         public static bool IsFinite(JSNumber n)
         {
-            return !double.IsInfinity(n.value);
+            return !double.IsInfinity(n.value) && !double.IsNaN(n.value);
         }
 
         [ScriptAlias("isNaN")]
@@ -161,6 +161,12 @@ namespace NetWebScript.Script
         public static implicit operator double(JSNumber num)
         {
             return num.value;
+        }
+
+        [ScriptBody(Inline = "num")]
+        public static implicit operator int(JSNumber num)
+        {
+            return (int)num.value;
         }
 
         public static bool operator ==(JSNumber s1, object s2)

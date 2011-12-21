@@ -9,6 +9,13 @@ namespace NetWebScript.JsClr.Ast
     {
         private Type type;
 
+        private LiteralExpression(int? ilOffset, object value, Type type)
+            : base(ilOffset)
+        {
+            this.type = type;
+            this.Value = value;
+        }
+
         public LiteralExpression(object value)
             : base(null)
         {
@@ -96,6 +103,11 @@ namespace NetWebScript.JsClr.Ast
         public override bool IsConstInMethod()
         {
             return true;
+        }
+
+        public override Expression Clone()
+        {
+            return new LiteralExpression(IlOffset, Value, type);
         }
     }
 }

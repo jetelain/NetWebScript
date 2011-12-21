@@ -49,3 +49,9 @@ using System.Collections.Generic;
 [assembly: ForceScriptAvailable(typeof(IEqualityComparer<>))]
 [assembly: ForceScriptAvailable(typeof(ICollection))]
 [assembly: ForceScriptAvailable(typeof(ICollection<>))]
+
+[assembly: ForceScriptAvailable(typeof(ICustomFormatter))]
+[assembly: ForceScriptAvailable(typeof(IFormatProvider))]
+[assembly: ForceScriptAvailable(typeof(IFormattable))]
+
+[assembly: InternalsVisibleTo("NetWebScript.Test.Material")]

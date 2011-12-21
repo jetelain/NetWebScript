@@ -1,5 +1,6 @@
 ﻿
 using NetWebScript.Script;
+using System;
 namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
@@ -183,15 +184,30 @@ namespace NetWebScript.Equivalents
 
         //public static bool Equals(string a, string b, StringComparison comparisonType);
 
-        //public static string Format(string format, object arg0);
+        public static string Format(string format, object arg0)
+        {
+            return StringFormat.Format(null, format, new [] { arg0 });
+        }
 
-        //public static string Format(string format, params object[] args);
+        public static string Format(string format, params object[] args)
+        {
+            return StringFormat.Format(null, format, args);
+        }
 
-        //public static string Format(IFormatProvider provider, string format, params object[] args);
+        public static string Format(IFormatProvider provider, string format, params object[] args)
+        {
+            return StringFormat.Format(provider, format, args);
+        }
 
-        //public static string Format(string format, object arg0, object arg1);
+        public static string Format(string format, object arg0, object arg1)
+        {
+            return StringFormat.Format(null, format, new [] { arg0, arg1 });
+        }
 
-        //public static string Format(string format, object arg0, object arg1, object arg2);
+        public static string Format(string format, object arg0, object arg1, object arg2)
+        {
+            return StringFormat.Format(null, format, new [] { arg0, arg1, arg2 });
+        }
 
         //public CharEnumerator GetEnumerator();
 

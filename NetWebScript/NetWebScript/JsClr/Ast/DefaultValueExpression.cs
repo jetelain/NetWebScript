@@ -41,6 +41,11 @@ namespace NetWebScript.JsClr.Ast
             return true;
         }
 
+        public override Expression Clone()
+        {
+            return new DefaultValueExpression(IlOffset.Value, type);
+        }
+
         public Type Type { get { return type; } }
 
     }

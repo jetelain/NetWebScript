@@ -121,5 +121,26 @@ namespace NetWebScript.Test.Material.Tests
             Assert.AreEqual("abcd", "abcd".TrimEnd());
             Assert.AreEqual("", " ".Trim());
         }
+
+        [TestMethod]
+        public void Format()
+        {
+            Assert.AreEqual("Hello world !", string.Format("Hello {0} !", "world"));
+            Assert.AreEqual("Hello world !", string.Format("{1} {0} !", "world", "Hello"));
+            Assert.AreEqual("Hello world !", string.Format("{1} {0} {2}", "world", "Hello", "!"));
+            Assert.AreEqual("Hello { world } !", string.Format("Hello {{ {0} }} !", "world"));
+            Assert.AreEqual("Hello } world { !", string.Format("Hello }} {0} {{ !", "world"));
+        }
+
+        [TestMethod]
+        public void Format_Alignement()
+        {
+            Assert.AreEqual("|  abcd|", string.Format("|{0,6}|", "abcd"));
+            Assert.AreEqual("|abcdef|", string.Format("|{0,6}|", "abcdef"));
+            Assert.AreEqual("|abcdefgh|", string.Format("|{0,6}|", "abcdefgh"));
+            Assert.AreEqual("|abcd  |", string.Format("|{0,-6}|", "abcd"));
+            Assert.AreEqual("|abcdef|", string.Format("|{0,-6}|", "abcdef"));
+            Assert.AreEqual("|abcdefgh|", string.Format("|{0,-6}|", "abcdefgh"));
+        }
 	}
 }
