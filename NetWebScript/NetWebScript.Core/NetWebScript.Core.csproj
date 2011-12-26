@@ -65,10 +65,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Equivalents\BooleanEquiv.cs" />
+    <Compile Include="Equivalents\CharEquiv.cs" />
+    <Compile Include="Equivalents\DoubleEquiv.cs" />
+    <Compile Include="Equivalents\SingleEquiv.cs" />
+    <Compile Include="Equivalents\Globalization\NumberFormatInfoEquiv.cs" />
+    <Compile Include="Equivalents\Int16Equiv.cs" />
+    <Compile Include="Equivalents\Int32Equiv.cs" />
+    <Compile Include="Equivalents\Int64Equiv.cs" />
+    <Compile Include="Equivalents\SByteEquiv.cs" />
     <Compile Include="Equivalents\Linq\EnumerableEquiv.cs" />
     <Compile Include="Equivalents\MathEquiv.cs" />
     <Compile Include="Equivalents\Globalization\NumberHelper.cs" />
     <Compile Include="Equivalents\StringFormat.cs" />
+    <Compile Include="Equivalents\UInt16Equiv.cs" />
+    <Compile Include="Equivalents\UInt32Equiv.cs" />
+    <Compile Include="Equivalents\UInt64Equiv.cs" />
+    <Compile Include="Equivalents\ByteEquiv.cs" />
     <Compile Include="Script\JQueryExt.cs" />
     <Compile Include="Script\JSMath.cs" />
     <Compile Include="TypeModel\AnonymousObjectAttribute.cs" />

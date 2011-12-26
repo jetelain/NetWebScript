@@ -26,6 +26,18 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
                 throw new Exception(string.Format("Type '{0}' asked by '{1}' must be script available.", type.FullName, helperType.FullName));
             }
             Serializer = DefaultSerializer.GetSerializer(system, type) ?? helper.Serializer;
+            if (type.IsValueType)
+            {
+                if (Serializer != null)
+                {
+                    Boxing = new TypeBoxing(helperType);
+                }
+                else
+                {
+                    Boxing = new NoneTypeBoxing();
+                }
+            }
+            
         }
 
         #region IScriptType Members
@@ -101,10 +113,7 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
             get { return helper.TypeId; }
         }
 
-        public virtual ITypeBoxing Boxing
-        {
-            get { return helper.Boxing; }
-        }
+        public virtual ITypeBoxing Boxing { get; set; }
 
         #endregion
 

@@ -591,5 +591,11 @@ namespace NetWebScript.JsClr.Compiler
             }
             return new ScriptLiteralExpression(defaultValueExpression.IlOffset, null, null);
         }
+
+        public ScriptStatement Visit(NumberConvertionExpression numberConvertion)
+        {
+            // FIXME: Make conversion with appropriate rules :)
+            return numberConvertion.Value.Accept(this);
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace NetWebScript.Remoting.Serialization
 
         public static MetadataProvider Current { get; set; }
 
+        [CLSCompliant(false)]
         public MetadataProvider(params ModuleMetadata[] newModules)
         {
             modules.AddRange(newModules);

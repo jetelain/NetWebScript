@@ -56,6 +56,12 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
             return castExpression;
         }
 
+        public virtual Statement Visit(NumberConvertionExpression castExpression)
+        {
+            castExpression.Value = (Expression)castExpression.Value.Accept(this);
+            return castExpression;
+        }
+
         public virtual Statement Visit(SafeCastExpression safeCastExpression)
         {
             safeCastExpression.Value = (Expression)safeCastExpression.Value.Accept(this);

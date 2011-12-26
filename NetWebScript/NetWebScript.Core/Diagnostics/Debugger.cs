@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using NetWebScript.Script;
 using NetWebScript.Script.Xml;
-using NetWebScript.Script;
 using System.Diagnostics;
 using NetWebScript.Script.HTML;
 
@@ -77,7 +76,7 @@ namespace NetWebScript.Diagnostics
 		{
 			//FIXME: $.support.cors = true;
 			var success = true;
-            var xhr = JQuery.Ajax(new JQueryAjaxSettings()
+			var xhr = JQuery.Ajax(new JQueryAjaxSettings()
 			{
 				Type = "POST",
 				Url = serverUrl + "?cmd=start",
@@ -122,7 +121,7 @@ namespace NetWebScript.Diagnostics
 		[DebuggerHidden]
 		private static void QueryStatus()
 		{
-            JQuery.Ajax(new JQueryAjaxSettings()
+			JQuery.Ajax(new JQueryAjaxSettings()
 			{
 				Url = serverUrl,
 				Data = new ToServerMessage { t = threadId, cmd = "status" },
@@ -218,7 +217,7 @@ namespace NetWebScript.Diagnostics
 			public bool Send(string cmd, string data)
 			{
 				bool success = true;
-                var xhr = JQuery.Ajax(new JQueryAjaxSettings()
+				var xhr = JQuery.Ajax(new JQueryAjaxSettings()
 				{
 					Url = serverUrl,
 					Data = new ToServerMessage() { t = threadId, cmd = cmd, data = data ?? "", mode = mode },
@@ -226,7 +225,7 @@ namespace NetWebScript.Diagnostics
 					Timeout = 2500,
 					Async = false,
 					Cache = false,
-                    Error = (a, b, c) => { success = false; }
+					Error = (a, b, c) => { success = false; }
 				});
 				if (success) Push(xhr.ResponseText);
 				return success;
@@ -235,7 +234,7 @@ namespace NetWebScript.Diagnostics
 			public bool SendPost(string cmd, string data, string postData)
 			{
 				bool success = true;
-                var xhr = JQuery.Ajax(new JQueryAjaxSettings()
+				var xhr = JQuery.Ajax(new JQueryAjaxSettings()
 				{
 					Type = "POST",
 					Url = serverUrl + "?" + JQuery.Param(new ToServerMessage() { t = threadId, cmd = cmd, data = data ?? "", mode = mode }),
@@ -244,7 +243,7 @@ namespace NetWebScript.Diagnostics
 					Timeout = 2500,
 					Async = false,
 					Cache = false,
-                    Error = (a, b, c) => { success = false; }
+					Error = (a, b, c) => { success = false; }
 				});
 				if (success) Push(xhr.ResponseText);
 				return success;

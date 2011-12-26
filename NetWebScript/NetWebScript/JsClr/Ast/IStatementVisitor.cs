@@ -80,6 +80,8 @@ namespace NetWebScript.JsClr.Ast
         void Visit(MakeByRefArgumentExpression makeByRefArgumentExpression);
 
         void Visit(DefaultValueExpression defaultValueExpression);
+
+        void Visit(NumberConvertionExpression numberConvertion);
     }
 
     public interface IStatementVisitor<TResult>
@@ -157,5 +159,7 @@ namespace NetWebScript.JsClr.Ast
         TResult Visit(MakeByRefArgumentExpression makeByRefArgumentExpression);
 
         TResult Visit(DefaultValueExpression defaultValueExpression);
+
+        TResult Visit(NumberConvertionExpression numberConvertion);
     }
 }

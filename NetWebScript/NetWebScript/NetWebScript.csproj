@@ -103,6 +103,7 @@
     <Compile Include="JsClr\Ast\ConditionExpression.cs" />
     <Compile Include="JsClr\Ast\ContinueStatement.cs" />
     <Compile Include="JsClr\Ast\ByRefGetExpression.cs" />
+    <Compile Include="JsClr\Ast\NumberConvertionExpression.cs" />
     <Compile Include="JsClr\Ast\DefaultValueExpression.cs" />
     <Compile Include="JsClr\Ast\MakeByRefArgumentExpression.cs" />
     <Compile Include="JsClr\Ast\MakeByRefVariableExpression.cs" />
@@ -169,6 +170,8 @@
     <Compile Include="JsClr\ScriptAst\ScriptUnaryOperator.cs" />
     <Compile Include="JsClr\ScriptAst\ScriptVariableReferenceExpression.cs" />
     <Compile Include="JsClr\ScriptAst\ScriptWhileStatement.cs" />
+    <Compile Include="JsClr\TypeSystem\Helped\NoneTypeBoxing.cs" />
+    <Compile Include="JsClr\TypeSystem\Helped\TypeBoxing.cs" />
     <Compile Include="JsClr\TypeSystem\IdentifierGenerator.cs" />
     <Compile Include="JsClr\TypeSystem\Anonymous\AnonymousConstructor.cs" />
     <Compile Include="JsClr\TypeSystem\Anonymous\AnonymousField.cs" />
@@ -244,6 +247,8 @@
     <Compile Include="JsClr\TypeSystem\Native\ObjectType.cs" />
     <Compile Include="JsClr\TypeSystem\RemotingScriptSystem.cs" />
     <Compile Include="JsClr\Compiler\RuntimeAstFilter.cs" />
+    <Compile Include="JsClr\TypeSystem\Serializers\CharSerializer.cs" />
+    <Compile Include="JsClr\TypeSystem\Serializers\BooleanSerializer.cs" />
     <Compile Include="JsClr\TypeSystem\Serializers\MethodBaseSerializer.cs" />
     <Compile Include="JsClr\TypeSystem\Serializers\NumberSerializer.cs" />
     <Compile Include="JsClr\TypeSystem\Serializers\DefaultSerializer.cs" />

@@ -19,6 +19,7 @@ namespace NetWebScript.Remoting.Serialization
         private readonly string copyMethod;
         private readonly Converter converter;
 
+        [CLSCompliant(false)]
         public SerializerCache(params ModuleMetadata[] modules)
         {
             scriptModules.AddRange(modules);
@@ -36,11 +37,13 @@ namespace NetWebScript.Remoting.Serialization
             converter = new Converter(this);
         }
 
+        [CLSCompliant(false)]
         public TypeMetadata GetTypeMetadataByScriptName(string name)
         {
             return scriptModules.SelectMany(m => m.Types.Where(t => t.Name == name)).FirstOrDefault();
         }
 
+        [CLSCompliant(false)]
         public TypeMetadata GetTypeMetadataByCRef(string cref)
         {
             return scriptModules.SelectMany(m => m.Types.Where(t => t.CRef == cref)).FirstOrDefault();

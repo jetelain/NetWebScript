@@ -66,7 +66,11 @@ namespace NetWebScript.Equivalents
             return (JSMath.Exp(value) + JSMath.Exp(-value)) / 2;
         }
 
-        //public static int DivRem(int a, int b, out int result);
+        public static int DivRem(int a, int b, out int result)
+        {
+            result = a % b;
+            return (a / b); 
+        }
 
         //public static long DivRem(long a, long b, out long result);
 

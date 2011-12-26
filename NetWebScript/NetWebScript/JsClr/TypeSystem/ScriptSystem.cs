@@ -89,23 +89,7 @@ namespace NetWebScript.JsClr.TypeSystem
                 enumsToGenerate.Add(scriptEnumType);
                 return scriptEnumType;
             }
-            else if (type.IsValueType)
-            {
-                // "Native" value types that are supported by runtime
-                if (type == typeof(char))
-                {
-                    return new CharType();
-                }
-                if (IsNumberType(type))
-                {
-                    return new NumberType(this, type);
-                }
-                if (type == typeof(bool))
-                {
-                    return new BooleanType();
-                }
-            }
-            else
+            else if (!type.IsValueType)
             {
                 if (type == typeof(object))
                 {

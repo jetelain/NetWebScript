@@ -128,12 +128,16 @@ namespace NetWebScript.JsClr.AstBuilder
         public override void OnStarg(Instruction instruction)
         {
             int index = instruction.OperandArgumentIndex;
-            if (!body.Method.IsStatic && index == 0)
+            if (!body.Method.IsStatic)
             {
-                // "this" cannot be assigned
-                Unsupported(instruction);
+                if (index == 0)
+                {
+                    // "this" cannot be assigned
+                    Unsupported(instruction);
+                }
+                index--;
             }
-            Assign(instruction.Offset, new ArgumentReferenceExpression(instruction.Offset, body.Arguments[index - 1]), PopToAssign());
+            Assign(instruction.Offset, new ArgumentReferenceExpression(instruction.Offset, body.Arguments[index]), PopToAssign());
         }
 
         private Expression ArgumentReference(Instruction instruction, int index)
@@ -457,7 +461,7 @@ namespace NetWebScript.JsClr.AstBuilder
             }
             else
             {
-                Push(new CastExpression(instruction.Offset, type, expr));
+                Push(new NumberConvertionExpression(instruction.Offset, type, expr));
             }
         }
 
@@ -876,7 +880,15 @@ namespace NetWebScript.JsClr.AstBuilder
                 Type type = target.GetExpressionType();
                 if (type != null && type.IsByRef)
                 {
-                    target = target.GetRefValue();
+                    var refType = type.GetElementType();
+                    if (refType.IsValueType)
+                    {
+                        target = new BoxExpression(instruction.Offset, refType, target.GetRefValue());
+                    }
+                    else
+                    {
+                        target = target.GetRefValue();
+                    }
                 }
             }
             Expression call = new MethodInvocationExpression(instruction.Offset, virt, method, target, arguments);
