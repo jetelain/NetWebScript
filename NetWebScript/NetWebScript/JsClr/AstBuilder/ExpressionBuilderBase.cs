@@ -585,6 +585,17 @@ namespace NetWebScript.JsClr.AstBuilder
             AssignByRef(instruction.Offset, target, value);
         }
 
+        public override void OnStind_I4(Instruction instruction)
+        {
+            var value = Pop();
+            var target = Pop();
+            if (!IsByRefValue(target))
+            {
+                Unsupported(instruction);
+            }
+            AssignByRef(instruction.Offset, target, value);
+        }
+
         public override void OnLdind_Ref(Instruction instruction)
         {
             var target = Pop();
