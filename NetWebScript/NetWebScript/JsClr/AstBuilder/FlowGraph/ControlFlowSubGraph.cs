@@ -315,5 +315,46 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
                 }
             }
         }
+
+        /// <summary>
+        /// Find in <paramref name="instructionBlock"/> and its sucessors, firsts blocks that have no path to <paramref name="block"/>.
+        /// </summary>
+        /// <param name="block"></param>
+        /// <param name="instructionBlock"></param>
+        /// <returns></returns>
+        internal List<InstructionBlock> FindBlocksNotGoingTo(InstructionBlock block, InstructionBlock[] instructionBlock)
+        {
+            var nonlooping = new List<InstructionBlock>();
+            var visited = new HashSet<InstructionBlock>();
+            foreach (var current in instructionBlock)
+            {
+                FindBlocksNotGoingTo(nonlooping, visited, block, current);
+            }
+            return nonlooping;
+        }
+
+        private void FindBlocksNotGoingTo(List<InstructionBlock> nonlooping, HashSet<InstructionBlock> visited, InstructionBlock block, InstructionBlock current)
+        {
+            if (visited.Contains(current) || current == block || last == current)
+            {
+                return;
+            }
+            visited.Add(current);
+
+            if (!DoesAllPathsGoToOrReturn(current, new [] { block }))
+            {
+                if (HasPathTo(current, block))
+                {
+                    foreach (var child in current.Successors)
+                    {
+                        FindBlocksNotGoingTo(nonlooping, visited, block, child);
+                    }
+                }
+                else
+                {
+                    nonlooping.Add(current);
+                }
+            }
+        }
     }
 }

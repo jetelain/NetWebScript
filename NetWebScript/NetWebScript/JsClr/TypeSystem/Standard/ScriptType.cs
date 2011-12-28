@@ -23,6 +23,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         private readonly bool isExported;
         private readonly string exportedName;
         private readonly string exportedNamespace;
+        private readonly ScriptConstructor staticConstructor;
 
         public ScriptType(ScriptSystem system, Type type)
         {
@@ -95,7 +96,13 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
 
             foreach (var ctor in type.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
             {
-                methods.Add(new ScriptConstructor(system, this, ctor));
+                var sctor = new ScriptConstructor(system, this, ctor);
+                methods.Add(sctor);
+
+                if (ctor.IsStatic)
+                {
+                    staticConstructor = sctor;
+                }
             }
 
             if (isExported)
@@ -281,6 +288,11 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                 }
                 return null;
             }
+        }
+
+        public IScriptConstructor StaticConstructor
+        {
+            get { return staticConstructor; }
         }
     }
 }

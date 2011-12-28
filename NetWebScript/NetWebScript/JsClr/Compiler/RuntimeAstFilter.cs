@@ -474,15 +474,17 @@ namespace NetWebScript.JsClr.Compiler
                 // XXX: list is assumed to be to more specific to less specific exception type
                 // XXX: exception that are not rised by NWS are assumed to be of type "Exception" (no Wrap on current exception before tests)
                 ScriptIfStatement previousIf = null;
+                bool hadGenericCatch = false;
                 foreach (var @catch in list)
                 {
-                    if (@catch.Type != null && @catch.Type != typeof(object))
+                    if (@catch.Type != null && @catch.Type != typeof(object) && @catch.Type != typeof(Exception))
                     {
                         // $exception as Type
                         if (@catch.Type.IsInterface)
                         {
                             throw new NotImplementedException();
                         }
+
                         var currentAsRequest = new ScriptMethodInvocationExpression(null, false, system.GetScriptMethod(AsClass), null, new List<ScriptExpression>() { new ScriptCurrentExceptionExpression(typeof(object)), (ScriptExpression)Visit(new LiteralExpression(@catch.Type)) });
 
                         // ($exception as Type) != null
@@ -503,6 +505,11 @@ namespace NetWebScript.JsClr.Compiler
                     }
                     else
                     {
+                        if (hadGenericCatch)
+                        {
+                            throw new AstBuilderException("A try/catch have more than one generic section (catchion Exception or object)");
+                        }
+                        hadGenericCatch = true;
                         if (previousIf != null)
                         {
                             previousIf.Else = Visit(@catch);

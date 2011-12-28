@@ -41,6 +41,12 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             return sequences;
         }
 
+        public List<Sequence> TransformIgnoreFirstSpecial()
+        {
+            List<Sequence> sequences = new List<Sequence>();
+            Process(sequences, graph.First);
+            return sequences;
+        }
         private List<Sequence> PreLoopTransform(InstructionBlock start, InstructionBlock body, InstructionBlock end)
         {
             if (body == loopStart)
@@ -76,7 +82,16 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             }
             return result;
         }
-        
+
+        private List<Sequence> InfiniteLoopTransform(InstructionBlock block, InstructionBlock end)
+        {
+            var result = new FlowTransform(graph.SubGraph(block, block), block, end).TransformIgnoreFirstSpecial();
+            if (result.Count > 0 && result[result.Count - 1] is Continue)
+            {
+                result.RemoveAt(result.Count - 1);
+            }
+            return result;
+        }
 
         private List<Sequence> CondTransform(InstructionBlock body, InstructionBlock end)
         {
@@ -249,6 +264,17 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                         return;
                     }
                 }
+                var nonLooping = graph.FindBlocksNotGoingTo(block, block.Successors);
+                if (nonLooping.Count <= 1)
+                {
+                    var end = nonLooping.FirstOrDefault();
+                    sequences.Add(new InfiniteLoop() { Body =  InfiniteLoopTransform(block, nonLooping.FirstOrDefault()) });
+                    if (end != null)
+                    {
+                        ProcessNext(sequences, end);
+                    }
+                    return;
+                }
                 // Loop cannot be transformed to either a pre-tested or a post-tested one
                 throw new AstBuilderException(block.First.Offset, string.Format("Unsupported loop detected from block {0}", block.Index + 1));
             }
@@ -326,13 +352,14 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             }
         }
 
+
         private bool HasContinue(IEnumerable<Sequence> list)
         {
             return list.Any(HasContinue);
         }
         private bool HasContinue(Sequence seq)
         {
-            if (seq is PostLoop || seq is PreLoop)
+            if (seq is PostLoop || seq is PreLoop || seq is InfiniteLoop)
             {
                 return false; // Do not inspect nested loops
             }

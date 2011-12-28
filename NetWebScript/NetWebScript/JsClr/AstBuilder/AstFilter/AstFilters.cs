@@ -10,6 +10,7 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
             new LiteralsTypeFix().Visit(method);
             new LogicOperations().Visit(method);
             new NullTest().Visit(method);
+            new SwitchCaseString().Visit(method);
             new VariableRef().Visit(method);
         }
     }

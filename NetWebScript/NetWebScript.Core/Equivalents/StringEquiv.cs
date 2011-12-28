@@ -1,6 +1,8 @@
 ﻿
 using NetWebScript.Script;
 using System;
+using System.Text;
+using NetWebScript.Equivalents.Text;
 namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
@@ -186,27 +188,27 @@ namespace NetWebScript.Equivalents
 
         public static string Format(string format, object arg0)
         {
-            return StringFormat.Format(null, format, new [] { arg0 });
+            return Format(null, format, new [] { arg0 });
         }
 
         public static string Format(string format, params object[] args)
         {
-            return StringFormat.Format(null, format, args);
+            return Format(null, format, args);
         }
 
         public static string Format(IFormatProvider provider, string format, params object[] args)
         {
-            return StringFormat.Format(provider, format, args);
+            return new StringBuilderEquiv().AppendFormat(provider, format, args).ToString();
         }
 
         public static string Format(string format, object arg0, object arg1)
         {
-            return StringFormat.Format(null, format, new [] { arg0, arg1 });
+            return Format(null, format, new [] { arg0, arg1 });
         }
 
         public static string Format(string format, object arg0, object arg1, object arg2)
         {
-            return StringFormat.Format(null, format, new [] { arg0, arg1, arg2 });
+            return Format(null, format, new [] { arg0, arg1, arg2 });
         }
 
         //public CharEnumerator GetEnumerator();
@@ -448,7 +450,7 @@ namespace NetWebScript.Equivalents
 
         public string ToLowerInvariant()
         {
-            return str.ToUpperCase();
+            return str.ToLowerCase();
         }
 
         public override string ToString()
@@ -480,11 +482,14 @@ namespace NetWebScript.Equivalents
             return TrimEnd(trimChars).TrimStart(trimChars);
         }
 
+        private static readonly JSRegExp RegexTrimEnd = new JSRegExp("\\s+$");
+        private static readonly JSRegExp RegexTrimStart = new JSRegExp("^\\s+");
+
         public string TrimEnd(params char[] trimChars)
         {
             if (trimChars == null || trimChars.Length == 0)
             {
-                return str.Replace(new JSRegExp("\\s+$"), "");
+                return str.Replace(RegexTrimEnd, "");
             }
             var chars = ((JSArray<char>)trimChars).Join("");
             return str.Replace(new JSRegExp(CharsRegexPatten(trimChars) + "+$"), "");
@@ -494,7 +499,7 @@ namespace NetWebScript.Equivalents
         {
             if (trimChars == null || trimChars.Length == 0)
             {
-                return str.Replace(new JSRegExp("^\\s+"), "");
+                return str.Replace(RegexTrimStart, "");
             }
             return str.Replace(new JSRegExp("^" + CharsRegexPatten(trimChars) + "+"), "");
         }

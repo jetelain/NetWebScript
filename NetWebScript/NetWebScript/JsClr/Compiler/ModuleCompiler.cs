@@ -12,6 +12,7 @@ using NetWebScript.Metadata;
 using NetWebScript.Remoting.Serialization;
 using NetWebScript.Script;
 using NetWebScript.Page;
+using System.Diagnostics;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -219,7 +220,21 @@ namespace NetWebScript.JsClr.Compiler
             }
 
             moduleWriter.WriteExports(system.TypesToGenerate.Where(t => t.IsExported));
-            
+
+            if (PrettyPrint)
+            {
+                writer.WriteLine("// ### Static constructors");
+            }
+            foreach (var type in system.TypesToGenerate.Where(t => t.StaticConstructor != null).ToArray())
+            {
+                if (PrettyPrint)
+                {
+                    writer.WriteLine("// {0}", type.Type.FullName);
+                }
+                var ctor = type.StaticConstructor;
+                writer.WriteLine("{0}.{1}();", type.TypeId, ctor.ImplId);
+            }
+
             foreach (var type in system.Equivalents)
             {
                 Metadata.Equivalents.Add(new EquivalentMetadata() { CRef = CRefToolkit.GetCRef(type.Type), EquivalentCRef = CRefToolkit.GetCRef(type.Equivalent.Type) });

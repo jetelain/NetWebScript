@@ -11,43 +11,33 @@ namespace NetWebScript.Test
     [TestClass]
     public class Dummy
     {
-        public static void DoWhile()
+        public static void SwitchString()
         {
-            //int a = 0, b = 0, c = 0;
-            //do
-            //{
-            //    a++;
-            //    if (a < 5)
-            //    {
-            //        b++;
-            //    }
-            //    else
-            //    {
-            //        b += 2;
-            //    }
-            //    c++;
-            //} while (a < 10);
-
-            //Assert.AreEqual(10, a);
-            //Assert.AreEqual(10, c);
-            //Assert.AreEqual(16, b);
-            int ok = 1;
-            do
+            int ok = 0;
+            int ko = 0;
+            String a = "1";
+            switch (a)
             {
-                ok++;
-            } while (ok < 1);
-            Assert.AreEqual(2, ok);
-            do
-            {
-                ok++;
-            } while (ok < 10);
-            Assert.AreEqual(10, ok);
+                case "0": ko++; break;
+                case "1": ok++; break;
+                case "2": ko++; break;
+                case "3": ko++; break;
+                case "4": ko++; break;
+                case "5": ko++; break;
+                case "6": ko++; break;
+                case "7": ko++; break;
+                case "8": ko++; break;
+                case "9": ko++; break;
+                case "10": ko++; break;
+                default: ko++; break;
+            }
         }
         
         [TestMethod]
         public void TestMethod1()
         {
-            var ast = MethodAst.GetMethodAst(new Func<IEnumerable<object>,Func<object,bool>,bool>(EnumerableEquiv.Any<object>).Method);
+            //var ast = MethodAst.GetMethodAst(new Action(SwitchString).Method);
+            var ast = MethodAst.GetMethodAst(new Func<NetWebScript.Script.JSString,System.Globalization.DateTimeFormatInfo,NetWebScript.Script.Date ,string>(NetWebScript.Equivalents.Globalization.DateTimeFormat.PartUTCTime).Method);
         }
     }
 }

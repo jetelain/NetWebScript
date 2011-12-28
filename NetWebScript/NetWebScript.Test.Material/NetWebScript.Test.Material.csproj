@@ -55,6 +55,7 @@
     <Compile Include="Tests\ByRef.cs" />
     <Compile Include="Tests\Collections.Generic\DictionaryTest.cs" />
     <Compile Include="Tests\Collections.Generic\ListTest.cs" />
+    <Compile Include="Tests\DateTimeTest.cs" />
     <Compile Include="Tests\Delegates.cs" />
     <Compile Include="Tests\ExportedTest.cs" />
     <Compile Include="Tests\Flow.cs" />

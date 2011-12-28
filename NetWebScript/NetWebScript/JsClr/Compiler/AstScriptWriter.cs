@@ -30,7 +30,7 @@ namespace NetWebScript.JsClr.Compiler
                 this.methodMetadata = methodMetadata;
             }
             this.method = method;
-            isctor = method.Method is ConstructorInfo;
+            isctor = method.Method is ConstructorInfo && !method.Method.IsStatic;
 		}
 
         public bool IsDebug

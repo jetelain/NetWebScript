@@ -88,6 +88,27 @@ namespace NetWebScript.Test.Material.Tests
 		}
 
         [TestMethod]
+        public void WhileTrue()
+        {
+            int ok = 0, ko = 0;
+            while (true)
+            {
+                if (ok < 10)
+                {
+                    ok++;
+                }
+                else
+                {
+                    ko = 0;
+                    break;
+                }
+                ko++;
+            }
+            Assert.AreEqual(10, ok);
+            Assert.AreEqual(0, ko);
+        }
+
+        [TestMethod]
         public void DoWhile2()
         {
             int ok = 1;
@@ -392,48 +413,64 @@ namespace NetWebScript.Test.Material.Tests
             Assert.AreEqual(0, ko);
         }
 
-        //[TestMethod]
-        //public void SwitchString()
-        //{
-        //    int ok = 0;
-        //    int ko = 0;
-        //    String a = "1";
-        //    switch (a)
-        //    {
-        //        case "0": ko++; break;
-        //        case "1": ok++; break;
-        //        case "2": ko++; break;
-        //        case "3": ko++; break;
-        //        case "4": ko++; break;
-        //        case "5": ko++; break;
-        //        case "6": ko++; break;
-        //        case "7": ko++; break;
-        //        case "8": ko++; break;
-        //        case "9": ko++; break;
-        //        case "10": ko++; break;
-        //        default: ko++; break;
-        //    }
-        //    a = "0";
-        //    switch (a)
-        //    {
-        //        case "0": ok += 2; break;
-        //        case "1": ko++; break;
-        //        case "2": ko++; break;
-        //        case "3": ko++; break;
-        //        default: ko++; break;
-        //    }
-        //    a = "33";
-        //    switch (a)
-        //    {
-        //        case "0": ko++; break;
-        //        case "1": ko++; break;
-        //        case "2": ko++; break;
-        //        case "3": ko++; break;
-        //        default: ok += 4; break;
-        //    }
-        //    Assert.AreEqual(7, ok);
-        //    Assert.AreEqual(0, ko);
-        //}
+        [TestMethod]
+        public void SwitchString()
+        {
+            int ok = 0;
+            int ko = 0;
+            String a = "1";
+            switch (a)
+            {
+                case "0": ko++; break;
+                case "1": ok++; break;
+                case "2": ko++; break;
+                case "3": ko++; break;
+                case "4": ko++; break;
+                case "5": ko++; break;
+                case "6": ko++; break;
+                case "7": ko++; break;
+                case "8": ko++; break;
+                case "9": ko++; break;
+                case "10": ko++; break;
+                default: ko++; break;
+            }
+            a = null;
+            switch (a)
+            {
+                case "0": ko++; break;
+                case "1": ko++; break;
+                case "2": ko++; break;
+                case "3": ko++; break;
+                case "4": ko++; break;
+                case "5": ko++; break;
+                case "6": ko++; break;
+                case "7": ko++; break;
+                case "8": ko++; break;
+                case "9": ko++; break;
+                case "10": ko++; break;
+                default: ok++; break;
+            }
+            a = "0";
+            switch (a)
+            {
+                case "0": ok += 2; break;
+                case "1": ko++; break;
+                case "2": ko++; break;
+                case "3": ko++; break;
+                default: ko++; break;
+            }
+            a = "33";
+            switch (a)
+            {
+                case "0": ko++; break;
+                case "1": ko++; break;
+                case "2": ko++; break;
+                case "3": ko++; break;
+                default: ok += 4; break;
+            }
+            Assert.AreEqual(8, ok);
+            Assert.AreEqual(0, ko);
+        }
 
 
         [TestMethod]

@@ -98,7 +98,14 @@ namespace NetWebScript.JsClr.Compiler
 
             foreach (var ctor in type.MethodsToWrite.OfType<ScriptConstructor>())
             {
-                WriteInstanceMethodBase(type, classMeta, ctor);
+                if (ctor.Method.IsStatic)
+                {
+                    WriteStaticMethod(type, classMeta, ctor);
+                }
+                else
+                {
+                    WriteInstanceMethodBase(type, classMeta, ctor);
+                }
             }
 
             foreach (var method in type.MethodsToWrite.OfType<ScriptMethod>())
@@ -175,7 +182,7 @@ namespace NetWebScript.JsClr.Compiler
             writer.WriteLine(';');
         }
 
-        private void WriteStaticMethod(ScriptType stype, TypeMetadata classMeta, ScriptMethod method)
+        private void WriteStaticMethod(ScriptType stype, TypeMetadata classMeta, ScriptMethodBase method)
         {
             if (pretty)
             {

@@ -57,3 +57,4 @@ using System.Collections.Generic;
 [assembly: ForceScriptAvailable(typeof(IFormattable))]
 
 [assembly: InternalsVisibleTo("NetWebScript.Test.Material")]
+[assembly: InternalsVisibleTo("NetWebScript.Test")]

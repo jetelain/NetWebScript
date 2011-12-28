@@ -1,27 +1,47 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using NetWebScript.Script;
 
-namespace NetWebScript.Equivalents
+namespace NetWebScript.Equivalents.Text
 {
-    /// <summary>
-    /// Implementation of string.Format and assimilated functions.
-    /// </summary>
     [ScriptAvailable]
-    internal static class StringFormat
+    [ScriptEquivalent(typeof(System.Text.StringBuilder))]
+    public sealed class StringBuilderEquiv
     {
-        internal static string Format(IFormatProvider provider, JSString format, object[] parameters)
+        private readonly JSArray<object> data = new JSArray<object>();
+
+        public StringBuilderEquiv Clear()
+        {
+            data.Splice(0, data.Length);
+            return this;
+        }
+
+        public StringBuilderEquiv Append(string value)
+        {
+            data.Push(value);
+            return this;
+        }
+
+        public StringBuilderEquiv AppendFormat(IFormatProvider provider, string format, params object[] args)
         {
             ICustomFormatter customFormatter = null;
             if (provider != null)
             {
                 customFormatter = (ICustomFormatter)provider.GetFormat(typeof(ICustomFormatter));
             }
-            return Format(customFormatter, provider, format, parameters);
+            Format(customFormatter, provider, format, args);
+            return this;
         }
-        
-        private static string Format(ICustomFormatter customFormatter, IFormatProvider provider, JSString format, object[] parameters)
+
+        public override string ToString()
         {
-            string result = "";
+            return data.Join("");
+        }
+
+        private void Format(ICustomFormatter customFormatter, IFormatProvider provider, JSString format, object[] parameters)
+        {
             int pos;
             int lastpos = 0;
             while (lastpos < format.Length)
@@ -36,7 +56,7 @@ namespace NetWebScript.Equivalents
                     int code = format.CharCodeAt(pos);
                     if (code == format.CharCodeAt(pos + 1))
                     {
-                        result += format.Substring(lastpos, pos+1);
+                        data.Push(format.Substring(lastpos, pos + 1));
                         lastpos = pos + 2;
                         continue;
                     }
@@ -44,7 +64,7 @@ namespace NetWebScript.Equivalents
                     {
                         throw new System.Exception("Invalid position of a '}'");
                     }
-                    result += format.Substring(lastpos, pos);
+                    data.Push(format.Substring(lastpos, pos));
                     pos++;
 
                     // Here we make a heavy simplification : we suppose that argument format does not contains escapped { or }
@@ -53,22 +73,21 @@ namespace NetWebScript.Equivalents
                     {
                         throw new System.Exception("No '}' found");
                     }
-                    result += Argument(customFormatter, provider, format, pos, end, parameters);
+                    data.Push(Argument(customFormatter, provider, format, pos, end, parameters));
                     lastpos = end + 1;
                 }
                 else
                 {
-                    result += format.Substring(lastpos, format.Length);
+                    data.Push(format.Substring(lastpos, format.Length));
                     lastpos = format.Length;
                 }
             }
-            return result;
         }
 
         private static string Argument(ICustomFormatter customFormatter, IFormatProvider provider, JSString format, int defStart, int defEnd, object[] parameters)
         {
             int numEnd = defEnd, alignEnd = -1;
-            
+
             int colon = format.IndexOf(":", defStart);
             if (colon > defEnd)
             {

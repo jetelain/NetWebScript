@@ -142,5 +142,33 @@ namespace NetWebScript.Test.Material.Tests
             Assert.AreEqual("|abcdef|", string.Format("|{0,-6}|", "abcdef"));
             Assert.AreEqual("|abcdefgh|", string.Format("|{0,-6}|", "abcdefgh"));
         }
+
+        private class SomeObject
+        {
+            public override string ToString()
+            {
+                return "SomeObject";
+            }
+        }
+
+        [TestMethod]
+        public void Concat_Objects()
+        {
+            object a = 32;
+            object b = "word";
+            object c = new SomeObject();
+
+            Assert.AreEqual("32", string.Concat(a));
+            //Assert.AreEqual("word", string.Concat(b));
+            Assert.AreEqual("SomeObject", string.Concat(c));
+            Assert.AreEqual("", string.Concat(arg0:null));
+
+            Assert.AreEqual("3232", string.Concat(a, a));
+            Assert.AreEqual("32word", string.Concat(a, b));
+            Assert.AreEqual("word32", string.Concat(b, a));
+            Assert.AreEqual("SomeObjectword", string.Concat(c, b));
+            Assert.AreEqual("word", string.Concat(null, b));
+            Assert.AreEqual("", string.Concat(null, null));
+        }
 	}
 }

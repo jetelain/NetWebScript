@@ -15,9 +15,10 @@ namespace NetWebScript.CompilerCLI
     {
         static int Main(string[] args)
         {
+            Options options = null;
             try
             {
-                Options options = new Options();
+                options = new Options();
                 if (!Parse(args, options))
                 {
                     return Usage();
@@ -28,8 +29,11 @@ namespace NetWebScript.CompilerCLI
             {
                 Console.Error.WriteLine("Error: Unexpected '{0}' : {1}", e.GetType().Name, e.Message);
 #if DEBUG
-                Console.Error.WriteLine(e.ToString());
-                Console.ReadKey();
+                if (options == null || options.interactive)
+                {
+                    Console.Error.WriteLine(e.ToString());
+                    Console.ReadKey();
+                }
 #endif
                 return 4;
             }
@@ -39,6 +43,9 @@ namespace NetWebScript.CompilerCLI
         {
             public bool debug = false;
             public bool pretty = false;
+#if DEBUG
+            public bool interactive = false;
+#endif
             public List<FileInfo> add = new List<FileInfo>();
             public string name = null;
             public DirectoryInfo path = null;
@@ -61,6 +68,12 @@ namespace NetWebScript.CompilerCLI
                 {
                     options.debug = true;
                 }
+#if DEBUG
+                else if (string.Equals(option, "/interactive", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.interactive = true;
+                }
+#endif
                 else if (string.Equals(option, "/pretty", StringComparison.OrdinalIgnoreCase))
                 {
                     options.pretty = true;
@@ -168,7 +181,10 @@ namespace NetWebScript.CompilerCLI
                 {
                     Console.Error.WriteLine("Error: Type '{0}' not found.", options.page);
 #if DEBUG
-                    Console.ReadKey();
+                    if (options.interactive)
+                    {
+                        Console.ReadKey();
+                    }
 #endif
                     return 5;
                 }
@@ -186,7 +202,10 @@ namespace NetWebScript.CompilerCLI
             if (ReportMessage(compiler.GetMessages()))
             {
 #if DEBUG
-                Console.ReadKey();
+                if (options.interactive)
+                {
+                    Console.ReadKey();
+                }
 #endif
                 return 3;
             }
@@ -228,7 +247,12 @@ namespace NetWebScript.CompilerCLI
             }
 
             Console.WriteLine("Success.");
-
+#if DEBUG
+            if (options.interactive)
+            {
+                Console.ReadKey();
+            }
+#endif
             return 0;
         }
 

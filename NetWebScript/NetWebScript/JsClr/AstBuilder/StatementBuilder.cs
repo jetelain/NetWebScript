@@ -130,8 +130,11 @@ namespace NetWebScript.JsClr.AstBuilder
                 }
                 else
                 {
-                    // Cas impossible
-                    throw new InvalidOperationException();
+                    InfiniteLoop infinite = (InfiniteLoop)sequence;
+                    WhileStatement @while = new WhileStatement();
+                    @while.Condition = new LiteralExpression(true);
+                    @while.Body = Transform(infinite.Body);
+                    statements.Add(@while);
                 }
             }
         }

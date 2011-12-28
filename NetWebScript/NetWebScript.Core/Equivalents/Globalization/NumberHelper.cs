@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Globalization;
+﻿using System.Globalization;
 using NetWebScript.Script;
 
 namespace NetWebScript.Equivalents.Globalization
@@ -71,7 +67,7 @@ namespace NetWebScript.Equivalents.Globalization
             return str;
         }
 
-        public static string FormatFloat(JSNumber value, string format, NumberFormatInfo info)
+        public static string FormatFloat(JSNumber value, JSString format, NumberFormatInfo info)
         {
             if (!JSNumber.IsFinite(value))
             {
@@ -87,14 +83,60 @@ namespace NetWebScript.Equivalents.Globalization
             }
             if (format == null || format == "g" || format == "G")
             {
-                if (info.NumberDecimalSeparator != ".")
+                if (NeedNormalizeDecimal(info))
                 {
-                    return value.ToString().Replace(".", info.NumberDecimalSeparator);
+                    return NormalizeDecimal(info, value.ToString());
                 }
                 return value.ToString();
             }
 
-            throw new System.NotImplementedException();
+            char formatChar = (char)format.CharCodeAt(0);
+            int precision = -1;
+            if (format.Length > 1)
+            {
+                precision = JSNumber.ParseInt(format.Substr(1));
+            }
+            string str;
+            switch (formatChar)
+            {
+                case 'e':
+                case 'E':
+                    if (precision == -1)
+                    {
+                        str = value.ToExponential();
+                    }
+                    else
+                    {
+                        str = value.ToExponential(precision);
+                    }
+                    if (formatChar == 'E')
+                    {
+                        str = str.ToUpperInvariant();
+                    }
+                    if (NeedNormalizeDecimal(info))
+                    {
+                        str = NormalizeDecimal(info, str);
+                    }
+                    break;
+                default:
+                    throw new System.NotImplementedException();
+            }
+            return str;
+        }
+
+        private static bool NeedNormalizeDecimal(NumberFormatInfo info)
+        {
+            return info.NumberDecimalSeparator != "." || info.NegativeSign != "-" || info.PositiveSign != "+";
+        }
+
+        private static JSString NormalizeDecimal(NumberFormatInfo info, JSString str)
+        {
+            return str.Replace(new JSRegExp(@"\.\-\+", "g"), s =>
+            {
+                if (s == ".") return info.NumberDecimalSeparator;
+                if (s == "-") return info.NegativeSign;
+                return info.PositiveSign;
+            });
         }
     }
 }

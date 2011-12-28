@@ -63,6 +63,5 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
                 Name = String.Format("v{0}", LocalIndex);
             }
         }
-
     }
 }

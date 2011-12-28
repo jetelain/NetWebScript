@@ -585,15 +585,39 @@ namespace NetWebScript.JsClr.AstBuilder
             AssignByRef(instruction.Offset, target, value);
         }
 
+        public override void OnStind_I(Instruction instruction)
+        {
+            OnStind_Ref(instruction);
+        }
+
+        public override void OnStind_I1(Instruction instruction)
+        {
+            OnStind_Ref(instruction);
+        }
+
+        public override void OnStind_I2(Instruction instruction)
+        {
+            OnStind_Ref(instruction);
+        }
+
         public override void OnStind_I4(Instruction instruction)
         {
-            var value = Pop();
-            var target = Pop();
-            if (!IsByRefValue(target))
-            {
-                Unsupported(instruction);
-            }
-            AssignByRef(instruction.Offset, target, value);
+            OnStind_Ref(instruction);
+        }
+
+        public override void OnStind_I8(Instruction instruction)
+        {
+            OnStind_Ref(instruction);
+        }
+
+        public override void OnStind_R4(Instruction instruction)
+        {
+            OnStind_Ref(instruction);
+        }
+
+        public override void OnStind_R8(Instruction instruction)
+        {
+            OnStind_Ref(instruction);
         }
 
         public override void OnLdind_Ref(Instruction instruction)
@@ -606,6 +630,55 @@ namespace NetWebScript.JsClr.AstBuilder
             Push(new ByRefGetExpression(instruction.Offset, target));
         }
 
+        public override void OnLdind_I(Instruction instruction)
+        {
+            OnLdind_Ref(instruction);
+        }
+
+        public override void OnLdind_I1(Instruction instruction)
+        {
+            OnLdind_Ref(instruction);
+        }
+
+        public override void OnLdind_I2(Instruction instruction)
+        {
+            OnLdind_Ref(instruction);
+        }
+
+        public override void OnLdind_I4(Instruction instruction)
+        {
+            OnLdind_Ref(instruction);
+        }
+
+        public override void OnLdind_I8(Instruction instruction)
+        {
+            OnLdind_Ref(instruction);
+        }
+
+        public override void OnLdind_R4(Instruction instruction)
+        {
+            OnLdind_Ref(instruction);
+        }
+
+        public override void OnLdind_R8(Instruction instruction)
+        {
+            OnLdind_Ref(instruction);
+        }
+
+        public override void OnLdind_U1(Instruction instruction)
+        {
+            OnLdind_Ref(instruction);
+        }
+
+        public override void OnLdind_U2(Instruction instruction)
+        {
+            OnLdind_Ref(instruction);
+        }
+
+        public override void OnLdind_U4(Instruction instruction)
+        {
+            OnLdind_Ref(instruction);
+        }
         #endregion
 
         #region Object creation

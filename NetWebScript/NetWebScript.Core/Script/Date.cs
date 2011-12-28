@@ -56,6 +56,11 @@ namespace NetWebScript.Script
             datetime = new DateTime(year, month, date, hours, minutes, seconds, milliseconds, DateTimeKind.Local);
         }
 
+        public double Now()
+        {
+            return GetTime(DateTime.Now);
+        }
+
         public int GetDate()
         {
             return datetime.Day;
@@ -88,7 +93,7 @@ namespace NetWebScript.Script
 
         public int GetMonth()
         {
-            return datetime.Month;
+            return datetime.Month-1;
         }
 
         public int GetSeconds()
@@ -138,7 +143,7 @@ namespace NetWebScript.Script
 
         public int GetUTCMonth()
         {
-            return datetime.ToUniversalTime().Month;
+            return datetime.ToUniversalTime().Month-1;
         }
 
         public int GetUTCSeconds()

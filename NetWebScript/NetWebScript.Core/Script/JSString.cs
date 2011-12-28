@@ -18,6 +18,11 @@ namespace NetWebScript.Script
 			this.data = data;
 		}
 
+        public JSString(object value)
+        {
+            this.data = value == null ? string.Empty : value.ToString();
+        }
+
 		[ScriptAlias("String")]
 		public static JSString ToString(object obj)
 		{
@@ -91,7 +96,8 @@ namespace NetWebScript.Script
 
 		public string[] Match(JSRegExp regex)
 		{
-			return regex.Exec(data);
+            throw new NotImplementedException();
+			//return regex.Exec(data);
 		}
 
 		public static bool operator ==(JSString s1, JSString s2)
@@ -261,7 +267,7 @@ namespace NetWebScript.Script
 		[ImportedExtension]
 		public override bool Equals(object obj)
 		{
-			return this == obj;
+            return this == obj;
 		}
 
 		public override string ToString()

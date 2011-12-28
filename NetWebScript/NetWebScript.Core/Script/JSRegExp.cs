@@ -38,14 +38,71 @@ namespace NetWebScript.Script
             regex = new Regex(pattern, options);
         }
 
-        public string[] Exec(string s)
+        public ExecResult Exec(string s)
         {
-            return regex.Matches(s).Cast<Match>().Select(m => m.Value).ToArray();
+            Match match = regex.Match(s, LastIndex);
+            if (match.Success)
+            {
+                if (isGlobal)
+                {
+                    LastIndex = match.Index+match.Length;
+                }
+                return new ExecResult(match);
+            }
+            return null;
+        }
+
+        [Imported]
+        public sealed class ExecResult
+        {
+            private readonly Match match;
+
+            internal ExecResult(Match match)
+            {
+                this.match = match;
+            }
+
+            [IntrinsicProperty]
+            public int Index
+            {
+                get
+                {
+                    return match.Index;
+                }
+            }
+
+            [IntrinsicProperty]
+            public int Length
+            {
+                get
+                {
+                    return match.Groups.Count;
+                }
+            }
+
+            [IntrinsicProperty]
+            public string this[int index]
+            {
+                get
+                {
+                    return match.Groups[index].Value;
+                }
+            }
+
         }
 
         public bool Test(string s)
         {
-            return regex.IsMatch(s);
+            Match match = regex.Match(s, LastIndex);
+            if (match.Success)
+            {
+                if (isGlobal)
+                {
+                    LastIndex = match.Index + match.Length;
+                }
+                return true;
+            }
+            return false;
         }
 
         [IntrinsicProperty]
@@ -90,5 +147,11 @@ namespace NetWebScript.Script
         }
 
 
+        [IntrinsicProperty]
+        public int LastIndex
+        {
+            get;
+            set;
+        }
     }
 }
