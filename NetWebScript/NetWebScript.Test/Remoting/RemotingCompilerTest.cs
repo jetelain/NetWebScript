@@ -24,21 +24,22 @@ namespace NetWebScript.Test.Remoting
             var metaWriter = new StringWriter();
             compiler.WriteMetadata(metaWriter);
 
-            StringAssert.StartsWith(writer.ToString(), @"aIa=function (n, b, i) {
-var t = function () { }
-t.$n = n;
-if (b) { t.$b = b; t.prototype = new b; t.prototype.constructor = t; }
-if (i) { t.prototype.$itfs = i; } 
-return t;
-};
-aTb=aIa('aTb');
-aTb.prototype.aIc=function(){
+            var typeMetadata = compiler.Metadata.Types.First(t => t.CRef == "T:NetWebScript.Test.Remoting.RemoteA");
+            var ctor = typeMetadata.Methods.First(m => m.CRef == "M:NetWebScript.Test.Remoting.RemoteA.#ctor");
+            var method = typeMetadata.Methods.First(m => m.CRef == "M:NetWebScript.Test.Remoting.RemoteA.Remote(NetWebScript.Test.Remoting.ClassA,System.String)");
+
+            var invokerMetadata = compiler.Metadata.Types.First(t => t.CRef == "T:NetWebScript.Remoting.RemoteInvoker");
+            var invoke = invokerMetadata.Methods.First(m => m.CRef == "M:NetWebScript.Remoting.RemoteInvoker.Invoke(System.String,System.String,System.Object,System.Object[])");
+            
+
+            StringAssert.Contains(writer.ToString(), string.Format(@"{0}=aIa('{0}');
+{0}.prototype.{1}=function(){{
 return this;
-};
-aTb.prototype.aIb=function(a0,a1){
-aTe.aIf(""aTb"",""aIb"",this,[a0,a1]);
-};
-");
+}};
+{0}.prototype.{2}=function(a0,a1){{
+{3}.{4}(""{0}"",""{2}"",this,[a0,a1]);
+}};", typeMetadata.Name, ctor.Name, method.Name, invokerMetadata.Name, invoke.Name));
+
         }
     }
 }

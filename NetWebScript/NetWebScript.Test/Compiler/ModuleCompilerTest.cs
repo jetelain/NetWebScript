@@ -55,34 +55,18 @@ namespace NetWebScript.Test.Compiler
             var metaWriter = new StringWriter();
             compiler.WriteMetadata(metaWriter);
 
-            Assert.AreEqual(@"aIa=function (n, b, i) {
-var t = function () { }
-t.$n = n;
-if (b) { t.$b = b; t.prototype = new b; t.prototype.constructor = t; }
-if (i) { t.prototype.$itfs = i; } 
-return t;
-};
-aTb=aIa('aTb');
-aTb.prototype.aIc=function(){
-return this;
-};
-aTb.prototype.aIb=function(a0){
-return a0+1;
-};
-", writer.ToString());
+            var typeMetadata = compiler.Metadata.Types.First(t => t.CRef == "T:" + type.Name);
+            var ctor = typeMetadata.Methods.First(m => m.CRef == "M:" + type.Name + @".#ctor");
+            var method = typeMetadata.Methods.First(m => m.CRef == "M:" + type.Name + @".Test01(System.Int32)");
 
-            Assert.AreEqual(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<Module xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" Name=""a"" xmlns=""http://codeplex.com/nws"">
-  <Assembly>NetWebScript.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
-  <Assembly>Tester, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
-  <Type Name=""aTa"" BaseTypeName=""Object"" CRef=""T:NetWebScript.Script.TypeSystemHelper"">
-    <Method Name=""aIa"" CRef=""M:NetWebScript.Script.TypeSystemHelper.CreateType(System.String,System.Type,System.Type[])"" />
-  </Type>
-  <Type Name=""aTb"" BaseTypeName=""Object"" CRef=""T:" + type.Name + @""">
-    <Method Name=""aIc"" CRef=""M:" + type.Name + @".#ctor"" />
-    <Method Name=""aIb"" CRef=""M:" + type.Name + @".Test01(System.Int32)"" />
-  </Type>
-</Module>", metaWriter.ToString());
+            StringAssert.Contains(writer.ToString(), string.Format(@"{0}=aIa('{0}');
+{0}.prototype.{1}=function(){{
+return this;
+}};
+{0}.prototype.{2}=function(a0){{
+return a0+1;
+}};", typeMetadata.Name, ctor.Name, method.Name));
+
         }
 
         [ScriptAvailable]
@@ -102,7 +86,6 @@ return a0+1;
         public void Compile_ScriptBody()
         {
             var compiler = new ModuleCompiler();
-            var type = CreateSimpleClass();
             compiler.AddEntryPoint(typeof(BodyTest));
 
             var writer = new StringWriter();
@@ -111,34 +94,18 @@ return a0+1;
             var metaWriter = new StringWriter();
             compiler.WriteMetadata(metaWriter);
 
-            Assert.AreEqual(@"aIa=function (n, b, i) {
-var t = function () { }
-t.$n = n;
-if (b) { t.$b = b; t.prototype = new b; t.prototype.constructor = t; }
-if (i) { t.prototype.$itfs = i; } 
-return t;
-};
-aTb=aIa('aTb');
-aTb.prototype.aId=function(){
-return this;
-};
-aTb.prototype.aIb=function(){/*A*/};
-aTb.aIc=function(){/*B*/};
-", writer.ToString());
+            var typeMetadata = compiler.Metadata.Types.First(t => t.CRef == "T:NetWebScript.Test.Compiler.ModuleCompilerTest.BodyTest");
+            var ctor = typeMetadata.Methods.First(m => m.CRef == "M:NetWebScript.Test.Compiler.ModuleCompilerTest.BodyTest.#ctor");
+            var methodA = typeMetadata.Methods.First(m => m.CRef == "M:NetWebScript.Test.Compiler.ModuleCompilerTest.BodyTest.A");
+            var methodB = typeMetadata.Methods.First(m => m.CRef == "M:NetWebScript.Test.Compiler.ModuleCompilerTest.BodyTest.B");
 
-            Assert.AreEqual(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<Module xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" Name=""a"" xmlns=""http://codeplex.com/nws"">
-  <Assembly>NetWebScript.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
-  <Assembly>NetWebScript.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
-  <Type Name=""aTa"" BaseTypeName=""Object"" CRef=""T:NetWebScript.Script.TypeSystemHelper"">
-    <Method Name=""aIa"" CRef=""M:NetWebScript.Script.TypeSystemHelper.CreateType(System.String,System.Type,System.Type[])"" />
-  </Type>
-  <Type Name=""aTb"" BaseTypeName=""Object"" CRef=""T:NetWebScript.Test.Compiler.ModuleCompilerTest.BodyTest"">
-    <Method Name=""aId"" CRef=""M:NetWebScript.Test.Compiler.ModuleCompilerTest.BodyTest.#ctor"" />
-    <Method Name=""aIb"" CRef=""M:NetWebScript.Test.Compiler.ModuleCompilerTest.BodyTest.A"" />
-    <Method Name=""aIc"" CRef=""M:NetWebScript.Test.Compiler.ModuleCompilerTest.BodyTest.B"" />
-  </Type>
-</Module>", metaWriter.ToString());
+            StringAssert.Contains(writer.ToString(), string.Format(@"{0}=aIa('{0}');
+{0}.prototype.{1}=function(){{
+return this;
+}};
+{0}.prototype.{2}=function(){{/*A*/}};
+{0}.{3}=function(){{/*B*/}};", typeMetadata.Name, ctor.Name, methodA.Name, methodB.Name));
+
         }
     }
 }

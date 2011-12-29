@@ -11,12 +11,21 @@ namespace NetWebScript.Equivalents.Globalization
     internal static class DateTimeFormat
     {
 
-        internal static string FormatDate(JSString format, DateTimeFormatInfo dtf, Date date, bool localDate)
+        internal static string FormatDate(JSString format, DateTimeFormatInfo dtf, Date date, DateTimeKind kind)
         {
-            if (format.Length == 1)
+            if (format == null)
+            {
+                format = dtf.ShortDatePattern + " " + dtf.LongTimePattern;
+            }
+            else if (format.Length == 1)
             {
                 format = ExpandFormat((char)format.CharCodeAt(0), dtf);
             }
+            else if (format.Length > 0 && format.CharCodeAt(0) == (int)'%')
+            {
+                format = format.Substr(1);
+            }
+            bool localDate = kind != DateTimeKind.Utc;
 
             var re = new JSRegExp(@"'.*?[^\\]'|dddd|ddd|dd|d|MMMM|MMM|MM|M|yyyy|yy|y|hh|h|HH|H|mm|m|ss|s|tt|t|fff|ff|f|zzz|zz|z", "g");
             var sb = new StringBuilder();
@@ -136,11 +145,10 @@ namespace NetWebScript.Equivalents.Globalization
                     return ((z >= 0) ? "-" : "+") + JSMath.Floor(JSMath.Abs(z)).ToString();
                 case "zz":
                 case "zzz":
-                    var zz = dt.GetTimezoneOffset() / 60;
-                    var res = ((zz >= 0) ? '-' : '+') + JSMath.Floor(JSMath.Abs(zz)).ToString().PadLeft(2, '0');
+                    var res = "+00";
                     if (fs == "zzz")
                     {
-                        res += dtf.TimeSeparator + Math.Abs(dt.GetTimezoneOffset() % 60).ToString().PadLeft(2, '0');
+                        res += dtf.TimeSeparator + "00";
                     }
                     return res;
                 default:

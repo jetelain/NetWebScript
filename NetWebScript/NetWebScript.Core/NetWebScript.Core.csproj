@@ -87,6 +87,7 @@
     <Compile Include="Equivalents\UInt32Equiv.cs" />
     <Compile Include="Equivalents\UInt64Equiv.cs" />
     <Compile Include="Equivalents\ByteEquiv.cs" />
+    <Compile Include="Runtime\Culture.cs" />
     <Compile Include="Script\JQueryExt.cs" />
     <Compile Include="Script\JSMath.cs" />
     <Compile Include="TypeModel\AnonymousObjectAttribute.cs" />

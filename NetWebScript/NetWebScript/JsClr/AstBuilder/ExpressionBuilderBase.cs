@@ -967,7 +967,14 @@ namespace NetWebScript.JsClr.AstBuilder
                     var refType = type.GetElementType();
                     if (refType.IsValueType)
                     {
-                        target = new BoxExpression(instruction.Offset, refType, target.GetRefValue());
+                        var targetRef = target.GetRefValue();
+                        if (method is ConstructorInfo && targetRef is AssignableExpression)
+                        {
+                            Exec(new AssignExpression(instruction.Offset, (AssignableExpression)targetRef,
+                                new ObjectCreationExpression(instruction.Offset, (ConstructorInfo)method, arguments)));
+                            return;
+                        }
+                        target = new BoxExpression(instruction.Offset, refType, targetRef);
                     }
                     else
                     {

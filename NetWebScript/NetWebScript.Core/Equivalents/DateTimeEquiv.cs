@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NetWebScript.Script;
 using NetWebScript.Equivalents.Globalization;
+using System.Globalization;
 
 namespace NetWebScript.Equivalents
 {
@@ -22,7 +23,7 @@ namespace NetWebScript.Equivalents
 
 		public DateTimeEquiv(int year, int month, int day)
 		{
-			this.date = new Date(year, month, day);
+			this.date = new Date(year, month - 1, day);
 			this.kind = DateTimeKind.Unspecified;
 		}
 
@@ -35,11 +36,11 @@ namespace NetWebScript.Equivalents
 		{
 			if (kind != DateTimeKind.Utc)
 			{
-				this.date = new Date(year, month, day, hour, minute, second);
+				this.date = new Date(year, month-1, day, hour, minute, second);
 			}
 			else
 			{
-				this.date = new Date(Script.Date.UTC(year, month, day, hour, minute, second));
+				this.date = new Date(Script.Date.UTC(year, month - 1, day, hour, minute, second));
 			}
 			this.kind = kind;
 		}
@@ -53,11 +54,11 @@ namespace NetWebScript.Equivalents
 		{
 			if (kind != DateTimeKind.Utc)
 			{
-				this.date = new Date(year, month, day, hour, minute, second, milisecond);
+				this.date = new Date(year, month - 1, day, hour, minute, second, milisecond);
 			}
 			else
 			{
-				this.date = new Date(Script.Date.UTC(year, month, day, hour, minute, second, milisecond));
+				this.date = new Date(Script.Date.UTC(year, month - 1, day, hour, minute, second, milisecond));
 			}
 			this.kind = kind;
 		}
@@ -72,10 +73,10 @@ namespace NetWebScript.Equivalents
 			get { return new DateTimeEquiv(new Date(), DateTimeKind.Local); }
 		}
 
-        public DateTimeEquiv Date
-        {
-            get { return new DateTimeEquiv(new Date(Script.Date.UTC(date.GetUTCFullYear(), date.GetUTCMonth(), date.GetUTCDate())), kind); }
-        }
+		public DateTimeEquiv Date
+		{
+			get { return new DateTimeEquiv(new Date(Script.Date.UTC(date.GetUTCFullYear(), date.GetUTCMonth(), date.GetUTCDate())), kind); }
+		}
 
 		public int Day
 		{
@@ -186,10 +187,10 @@ namespace NetWebScript.Equivalents
 			return new DateTimeEquiv(date, DateTimeKind.Utc);
 		}
 
-        public DateTimeEquiv ToLocalTime()
-        {
-            return new DateTimeEquiv(date, DateTimeKind.Local);
-        }
+		public DateTimeEquiv ToLocalTime()
+		{
+			return new DateTimeEquiv(date, DateTimeKind.Local);
+		}
 
 		public DateTimeEquiv AddDays(double value)
 		{
@@ -225,35 +226,90 @@ namespace NetWebScript.Equivalents
 		{
 			int newMonth = date.GetUTCMonth() + (value % 12);
 			int newYear = date.GetUTCFullYear() + (int)Math.Truncate(value / 12.0);
-            int newDay = date.GetUTCDate();
+			int newDay = date.GetUTCDate();
 
-            int daysInMonth = DaysInMonth(newYear, newMonth + 1);
-            if (newDay > daysInMonth)
-            {
-                newDay = daysInMonth;
-            }
-            return new DateTimeEquiv(new Date(Script.Date.UTC(newYear, newMonth, newDay, date.GetUTCHours(), date.GetUTCMinutes(), date.GetUTCSeconds(), date.GetUTCMilliseconds())), kind);
+			int daysInMonth = DaysInMonth(newYear, newMonth + 1);
+			if (newDay > daysInMonth)
+			{
+				newDay = daysInMonth;
+			}
+			return new DateTimeEquiv(new Date(Script.Date.UTC(newYear, newMonth, newDay, date.GetUTCHours(), date.GetUTCMinutes(), date.GetUTCSeconds(), date.GetUTCMilliseconds())), kind);
 		}
 
 		public DateTimeEquiv AddYears(int value)
 		{
-            return AddMonths(value * 12);
+			return AddMonths(value * 12);
 		}
 
-        public static int DaysInMonth(int year, int month)
-        {
-            // We ask day '0' of following month (as javascript month is 0 based) wich is the
-            // last day of month
-            return new Date(year, month, 0).GetDate(); 
-        }
+		public static int DaysInMonth(int year, int month)
+		{
+			// We ask day '0' of following month (as javascript month is 0 based) wich is the
+			// last day of month
+			return new Date(year, month, 0).GetDate(); 
+		}
 
-        public string ToString(string format, IFormatProvider formatProvider)
-        {
-            return DateTimeFormat.FormatDate(
-                format,
-                (System.Globalization.DateTimeFormatInfo)formatProvider.GetFormat(typeof(System.Globalization.DateTimeFormatInfo)),
-                date,
-                kind != DateTimeKind.Utc);
-        }
-    }
+		public override string ToString()
+		{
+			return DateTimeFormat.FormatDate(null, DateTimeFormatInfo.CurrentInfo, date, kind);
+		}
+
+		public string ToString(string format)
+		{
+			return DateTimeFormat.FormatDate(format, DateTimeFormatInfo.CurrentInfo, date, kind);
+		}
+
+		public string ToString(IFormatProvider formatProvider)
+		{
+			return DateTimeFormat.FormatDate(null, DateTimeFormatInfo.GetInstance(formatProvider), date, kind);
+		}
+
+		public string ToString(string format, IFormatProvider formatProvider)
+		{
+			return DateTimeFormat.FormatDate(
+				format,
+				DateTimeFormatInfo.GetInstance(formatProvider),
+				date,
+				kind);
+		}
+
+		public bool Equals(DateTime other)
+		{
+			return EqualsPrivate(other); 
+		}
+
+		private bool EqualsPrivate(DateTimeEquiv other)
+		{
+			return other != null && other.kind == kind && other.date.GetTime() == date.GetTime(); 
+		}
+
+		public override bool Equals(object obj)
+		{
+			return EqualsPrivate(obj as DateTimeEquiv);
+		}
+
+		public override int GetHashCode()
+		{
+			return (int)date.GetTime();
+		}
+
+		[ScriptBody(Inline = "v")]
+		public static implicit operator DateTimeEquiv(DateTime v)
+		{
+			return new DateTimeEquiv(new Date(v), v.Kind);
+		}
+
+		[ScriptBody(Inline = "v")]
+		public static implicit operator DateTime(DateTimeEquiv v)
+		{
+			if (v != null)
+			{
+				if (v.Kind == DateTimeKind.Utc)
+				{
+					return v.date.ToDateTime().ToUniversalTime();
+				}
+				return v.date.ToDateTime();
+			}
+			return default(DateTime);
+		}
+	}
 }

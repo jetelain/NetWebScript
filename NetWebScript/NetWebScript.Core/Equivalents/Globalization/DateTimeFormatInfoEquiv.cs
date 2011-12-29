@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 
 namespace NetWebScript.Equivalents.Globalization
 {
@@ -15,7 +16,6 @@ namespace NetWebScript.Equivalents.Globalization
         public string AMDesignator { get; set; }
         //public System.Globalization.Calendar Calendar { get; set; }
         public System.Globalization.CalendarWeekRule CalendarWeekRule { get; set; }
-        //public static DateTimeFormatInfoEquiv CurrentInfo { get; }
         public string DateSeparator { get; set; }
         public string[] DayNames { get; set; }
         public DayOfWeek FirstDayOfWeek { get; set; }
@@ -55,11 +55,41 @@ namespace NetWebScript.Equivalents.Globalization
 
         public object GetFormat(Type formatType)
         {
-            if (object.Equals(formatType, typeof(System.Globalization.DateTimeFormatInfo)))
+            if (object.Equals(formatType, typeof(DateTimeFormatInfo)))
             {
                 return this;
             }
             return null;
+        }
+
+        public static DateTimeFormatInfo CurrentInfo 
+        { 
+            get 
+            {
+                return CultureInfo.CurrentCulture.DateTimeFormat;
+            } 
+        }
+
+        public static DateTimeFormatInfo InvariantInfo
+        {
+            get
+            {
+                return CultureInfo.InvariantCulture.DateTimeFormat;
+            }
+        }
+
+        public static DateTimeFormatInfo GetInstance(IFormatProvider provider)
+        {
+            DateTimeFormatInfo info = null;
+            if (provider != null)
+            {
+                info = (DateTimeFormatInfo)provider.GetFormat(typeof(DateTimeFormatInfo));
+                if (info != null)
+                {
+                    return info;
+                }
+            }
+            return CurrentInfo;
         }
     }
 }

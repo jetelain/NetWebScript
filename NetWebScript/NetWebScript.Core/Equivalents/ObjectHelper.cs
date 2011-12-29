@@ -86,6 +86,12 @@ namespace NetWebScript.Equivalents
         {
             return obj.GetType();
         }
+        
+        [ScriptBody(Body="function(o){var c=new (o.constructor||Object)();for(var n in o){if(c[n]!==o[n])c[n]=o[n];}return c;}")]
+        public static object MemberwiseClone(object obj)
+        {
+            throw new PlatformNotSupportedException();
+        }
 
     }
 }

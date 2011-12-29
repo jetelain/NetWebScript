@@ -11,9 +11,9 @@ namespace NetWebScript.Script
 
         private static readonly DateTime UnixEpox = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
-        private Date(DateTime datetime)
+        internal Date(DateTime datetime)
         {
-            this.datetime = datetime;
+            this.datetime = datetime.ToLocalTime();
         }
 
         public Date()
@@ -356,6 +356,12 @@ namespace NetWebScript.Script
         public override int GetHashCode()
         {
             return (int)((this - new Date(0)) % 0x7fffffff);
+        }
+
+
+        internal DateTime ToDateTime()
+        {
+            return datetime;
         }
     }
 }

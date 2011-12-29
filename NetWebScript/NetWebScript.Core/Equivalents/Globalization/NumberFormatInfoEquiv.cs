@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 
 namespace NetWebScript.Equivalents.Globalization
 {
@@ -71,11 +72,33 @@ namespace NetWebScript.Equivalents.Globalization
 
         public object GetFormat(Type formatType)
         {
-            if (object.Equals(formatType,typeof(System.Globalization.NumberFormatInfo)))
+            if (object.Equals(formatType,typeof(NumberFormatInfo)))
             {
                 return this;
             }
             return null;
+        }
+
+        public static NumberFormatInfo CurrentInfo
+        {
+            get
+            {
+                return CultureInfo.CurrentCulture.NumberFormat;
+            }
+        }
+
+        public static NumberFormatInfo GetInstance(IFormatProvider provider)
+        {
+            NumberFormatInfo info = null;
+            if (provider != null)
+            {
+                info = (NumberFormatInfo)provider.GetFormat(typeof(NumberFormatInfo));
+                if (info != null)
+                {
+                    return info;
+                }
+            }
+            return CurrentInfo;
         }
     }
 }
