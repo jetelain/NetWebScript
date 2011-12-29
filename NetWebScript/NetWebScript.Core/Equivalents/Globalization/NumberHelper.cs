@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using NetWebScript.Script;
+using System;
 
 namespace NetWebScript.Equivalents.Globalization
 {
@@ -56,6 +57,14 @@ namespace NetWebScript.Equivalents.Globalization
                         str = str.PadLeft(precision, '0');
                     }
                     if (value < 0) 
+                    {
+                        str = info.NegativeSign + str;
+                    }
+                    break;
+                case 'n':
+                case 'N':
+                    str = GroupIntegerNumber(((JSNumber)JSMath.Abs(value)).ToString(), info.NumberGroupSizes, info.NumberGroupSeparator);
+                    if (value < 0)
                     {
                         str = info.NegativeSign + str;
                     }
@@ -137,6 +146,39 @@ namespace NetWebScript.Equivalents.Globalization
                 if (s == "-") return info.NegativeSign;
                 return info.PositiveSign;
             });
+        }
+
+        private static string GroupDecimalNumber(JSString numberString, int[] groupSizes, string groupSep, string decimalSep) 
+        {
+            int idx = numberString.IndexOf(".");
+            if (idx == -1)
+            {
+                return GroupIntegerNumber(numberString, groupSizes, groupSep);
+            }
+            return GroupIntegerNumber(numberString.Substr(0, idx), groupSizes, groupSep) + decimalSep + numberString.Substr(idx + 1);	
+        }
+
+        internal static string GroupIntegerNumber(JSString numberString, int[] groupSizes, string groupSep)
+        {
+            var curSize = groupSizes[0];
+            var curGroupIndex = 1;
+            var stringIndex = numberString.Length - 1;
+            var ret = "";
+            while (stringIndex >= 0)
+            {
+                if (curSize == 0 || curSize > stringIndex)
+                {
+                    return numberString.Substring(0, stringIndex + 1) + (ret.Length > 0 ? (groupSep + ret) : "");
+                }
+                ret = numberString.Substring(stringIndex - curSize + 1, stringIndex + 1) + (ret.Length > 0 ? (groupSep + ret) : "");
+                stringIndex -= curSize;
+                if (curGroupIndex < groupSizes.Length)
+                {
+                    curSize = groupSizes[curGroupIndex];
+                    curGroupIndex++;
+                }
+            }
+            return numberString.Substring(0, stringIndex + 1) + groupSep + ret;	
         }
     }
 }

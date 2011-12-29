@@ -9,7 +9,6 @@ namespace NetWebScript.Equivalents.Reflection
 {
     [ScriptEquivalent(typeof(System.Reflection.ConstructorInfo))]
     [ScriptAvailable]
-    [TypeConverter(typeof(ConstructorInfoConverter))]
     public class ConstructorInfo : MethodBase
     {
         private readonly Type type;
@@ -36,27 +35,15 @@ namespace NetWebScript.Equivalents.Reflection
         {
             return method.Apply(target, parameters);
         }
-    }
 
-    internal class ConstructorInfoConverter : TypeConverter
-    {
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        [ScriptBody(Inline = "ctor")]
+        public static implicit operator ConstructorInfo(System.Reflection.ConstructorInfo ctor)
         {
-            if (typeof(System.Reflection.ConstructorInfo).IsAssignableFrom(sourceType))
-            {
-                return true;
-            }
-            return base.CanConvertFrom(context, sourceType);
-        }
-
-        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
-        {
-            var ctor = value as System.Reflection.ConstructorInfo;
             if (ctor != null)
             {
                 return new ConstructorInfo(ctor.DeclaringType, new JSFunction(ctor));
             }
-            return base.ConvertFrom(context, culture, value);
+            return null;
         }
     }
 }

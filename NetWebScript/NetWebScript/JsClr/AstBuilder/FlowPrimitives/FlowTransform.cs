@@ -5,6 +5,7 @@ using System.Text;
 using NetWebScript.JsClr.AstBuilder.Cil;
 using NetWebScript.JsClr.AstBuilder.FlowGraph;
 using System.Diagnostics.Contracts;
+using System.Diagnostics;
 
 namespace NetWebScript.JsClr.AstBuilder.Flow
 {
@@ -210,9 +211,12 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                 // Look for all predececors of block which can be reached from block
                 var predececors = graph.FindAllPredececorsFrom(block, block.Successors);
 
-                // In predececors, ensures that only one block have two sucessors (so one including block), all others
-                // must have at most one sucessor (that is by definition block)
-                var conditionCandidates = predececors.Where(p => p.Successors.Length == 2).ToList();
+                // In predececors, ensures that only one block have two sucessors (one to block, 
+                // and one with no path to block), all others must have at most one sucessor (that is by definition block)
+                var conditionCandidates = predececors.Where(p => 
+                    p.Successors.Length == 2 &&
+                    !graph.HasPathTo(p.Successors.First(b => b != block), block)
+                    ).ToList();
                 if (conditionCandidates.Count == 1 && predececors.Where(p => p.Successors.Length > 1).Count() == 1)
                 {
                     var condition = conditionCandidates[0];
@@ -223,7 +227,7 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
                     // break goes to end block
 
                     // Ensures that all paths from block goes to condition (continue), end (break), or returns (return).
-                    if (graph.DoesAllPathsGoToOrReturn(block, new[] { condition, end }))
+                    if (!graph.HasPathTo(end, block) && graph.DoesAllPathsGoToOrReturn(block, new[] { condition, end }))
                     {
                         var doWhile = new PostLoop();
                         doWhile.Body = PostLoopTransform(block, condition, end);
