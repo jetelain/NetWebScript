@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
+using NetWebScript.Metadata;
 namespace NetWebScript.Debug.Server
 {
     public enum JSThreadState
@@ -21,7 +22,8 @@ namespace NetWebScript.Debug.Server
         private DateTime lastActivity;
         private volatile JSThreadState state = JSThreadState.Running;
 
-        private String currentPoint;
+        private JSDebugPoint currentPoint;
+        private JSStack currentStack;
 
         private readonly List<IJSThreadCallback> callbacks = new List<IJSThreadCallback>();
 
@@ -87,7 +89,7 @@ namespace NetWebScript.Debug.Server
 
         public String CurrentPoint
         {
-            get { return currentPoint; }
+            get { return currentPoint == null ? null : currentPoint.UId; }
         }
         
         public event EventHandler BreakPointReady;
@@ -100,7 +102,7 @@ namespace NetWebScript.Debug.Server
             }
             lock (callbacks)
             {
-                foreach (IJSThreadCallback callback in callbacks)
+                foreach (IJSThreadCallback callback in callbacks.ToArray())
                 {
                     callback.OnStopped();
                 }
@@ -109,34 +111,51 @@ namespace NetWebScript.Debug.Server
         
         private void ReachedPoint ( String uid, String stackXml )
         {
-            lock ( this )
+            if (!Reached(uid, stackXml))
             {
-                state = JSThreadState.Breaked;
-                currentPoint = uid;
+                return;
             }
             lock (callbacks)
             {
                 foreach (IJSThreadCallback callback in callbacks)
                 {
-                    callback.OnBreakpoint(uid, stackXml);
+                    callback.OnBreakpoint(uid, stackXml, currentPoint, currentStack);
                 }
             }
         }
 
         private void StepedPoint(String uid, String stackXml)
         {
-            lock (this)
+            if (!Reached(uid, stackXml))
             {
-                state = JSThreadState.Breaked;
-                currentPoint = uid;
+                return;
             }
             lock (callbacks)
             {
                 foreach (IJSThreadCallback callback in callbacks)
                 {
-                    callback.OnStepDone(uid, stackXml);
+                    callback.OnStepDone(uid, stackXml, currentPoint, currentStack);
                 }
             }
+        }
+
+        private bool Reached(string uid, string stackXml)
+        {
+            lock (this)
+            {
+                state = JSThreadState.Breaked;
+                currentPoint = GetPointById(uid);
+                if (currentPoint == null)
+                {
+                    Continue();
+                    return false;
+                }
+                else
+                {
+                    currentStack = new JSStack(this, currentPoint, stackXml);
+                }
+            }
+            return true;
         }
 
         private void ContinueAck()
@@ -145,6 +164,7 @@ namespace NetWebScript.Debug.Server
             {
                 state = JSThreadState.Running;
                 currentPoint = null;
+                currentStack = null;
             }
             //if (StateChanged != null)
             //{
@@ -277,6 +297,21 @@ namespace NetWebScript.Debug.Server
             }
         }
 
+
+        internal JSDebugPoint GetPointById(string pointId)
+        {
+            return prog.GetPointById(pointId);
+        }
+
+        internal MethodBaseMetadata GetMethodById(string methodId)
+        {
+            return prog.GetMethodById(methodId);
+        }
+
+        internal TypeMetadata GetTypeById(string typeId)
+        {
+            return prog.GetTypeById(typeId);
+        }
     }
 }
 

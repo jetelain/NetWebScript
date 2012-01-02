@@ -10,12 +10,12 @@ namespace NetWebScript.Debug.Server
 
         void OnNewThread ( IJSThread thread );
 
-        void OnNewModule(ModuleInfo module);
+        void OnNewModule(JSModuleInfo module);
 
         /// <summary>
         /// Called when module is updated (new code and metadata)
         /// </summary>
         /// <param name="module"></param>
-        void OnModuleUpdate(ModuleInfo module);
+        void OnModuleUpdate(JSModuleInfo module);
     }
 }

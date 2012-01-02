@@ -7,9 +7,9 @@ namespace NetWebScript.Debug.Server
 {
     public interface IJSThreadCallback
     {
-        void OnBreakpoint(String id, String stackXml);
+        void OnBreakpoint(string id, string stackXml, JSDebugPoint point, JSStack stack);
 
-        void OnStepDone(String id, String stackXml);
+        void OnStepDone(string id, string stackXml, JSDebugPoint point, JSStack stack);
 
         void OnStopped();
     }

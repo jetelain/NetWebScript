@@ -27,10 +27,11 @@ namespace NetWebScript.Debug.Engine.Script
         //    }
         //}
 
-        public ScriptModule(ModuleInfo module)
+        public ScriptModule(JSModuleInfo module)
         {
             this.ModuleFile = module.Uri.ToString();
             this.Uri = module.Uri;
+            this.ModuleId = module.Id;
             String symbols = ModuleFile + ".xml";
             try
             {
@@ -42,6 +43,8 @@ namespace NetWebScript.Debug.Engine.Script
                 Trace.TraceWarning("Unable to load symbols from {0} : {1}",symbols,e.ToString());
             }
         }
+
+        public int ModuleId { get; private set; }
 
         private void LoadPoints(string symbolsFile)
         {
@@ -237,7 +240,7 @@ namespace NetWebScript.Debug.Engine.Script
 
         internal Uri Uri { get; set; }
 
-        internal void UpdateMetadata(ModuleInfo module)
+        internal void UpdateMetadata(JSModuleInfo module)
         {
             // TODO: This ModuleUpdate approach is not really thread safe, it's a temporary solution to avoid VS restart 
             // after each module compilation...

@@ -297,7 +297,7 @@ namespace NetWebScript.Debug.Engine.Script
 
         #region IJSThreadCallback Members
 
-        public void OnBreakpoint(string id, String stackXml)
+        public void OnBreakpoint(string id, string stackXml, JSDebugPoint point, JSStack stack)
         {
             BoundBreakpoint bp = program.GetPoint(id);
             if (bp == null || program.Attached == null)
@@ -312,7 +312,7 @@ namespace NetWebScript.Debug.Engine.Script
             }
         }
 
-        public void OnStepDone(string id, String stackXml)
+        public void OnStepDone(string id, string stackXml, JSDebugPoint jspoint, JSStack stack)
         {
             DocumentContext point = program.GetContextOfPoint(id);
             if (point == null || program.Attached == null)

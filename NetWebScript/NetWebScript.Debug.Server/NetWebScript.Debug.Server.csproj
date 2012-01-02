@@ -77,7 +77,13 @@
     <Compile Include="IJSThread.cs" />
     <Compile Include="IJSThreadCallback.cs" />
     <Compile Include="IJSServerCallback.cs" />
+    <Compile Include="JSData.cs" />
+    <Compile Include="JSDebugPoint.cs" />
+    <Compile Include="JSModule.cs" />
+    <Compile Include="JSModuleInfo.cs" />
     <Compile Include="JSProgram.cs" />
+    <Compile Include="JSStack.cs" />
+    <Compile Include="JSStackFrame.cs" />
     <Compile Include="JSThread.cs" />
     <Compile Include="ModuleInfo.cs" />
     <Compile Include="ProgramIdentity.cs" />
@@ -101,6 +107,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetWebScript.Metadata\NetWebScript.Metadata.csproj">
+      <Project>{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}</Project>
+      <Name>NetWebScript.Metadata</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

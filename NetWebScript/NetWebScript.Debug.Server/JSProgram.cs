@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using NetWebScript.Metadata;
 namespace NetWebScript.Debug.Server
 {
     internal sealed class JSProgram : IJSProgram
@@ -14,7 +15,8 @@ namespace NetWebScript.Debug.Server
 
         private readonly List<IJSProgramCallback> callbacks = new List<IJSProgramCallback>();
 
-        private readonly List<ModuleInfo> modules = new List<ModuleInfo>();
+        //private readonly List<ModuleInfo> moduleInfos = new List<ModuleInfo>();
+        private readonly List<JSModule> modules = new List<JSModule>();
         private readonly ProgramIdentity identity;
         private readonly Uri uri;
 
@@ -25,9 +27,13 @@ namespace NetWebScript.Debug.Server
             this.uri = uri;
             if (initialModules != null)
             {
-                modules.AddRange(initialModules);
+                foreach (var moduleInfo in initialModules)
+                {
+                    modules.Add(new JSModule(moduleInfo, modules.Count + 1));
+                }
             }
             identity = new ProgramIdentity(uri);
+            
         }
 
         public int Id
@@ -40,9 +46,9 @@ namespace NetWebScript.Debug.Server
             get { return uri; }
         }
 
-        public IList<ModuleInfo> Modules
+        public IList<JSModuleInfo> Modules
         {
-            get { return modules; }
+            get { return modules.Select(m => m.ModuleInfo).ToList(); }
         }
 
         internal bool IsPartOfProgram(Uri uri)
@@ -172,31 +178,28 @@ namespace NetWebScript.Debug.Server
 
         private void AddModule(ModuleInfo info)
         {
-            modules.Add(info);
+            var jsModule = new JSModule(info, modules.Count + 1);
+            modules.Add(jsModule);
             lock (callbacks)
             {
                 foreach (IJSProgramCallback callback in callbacks)
                 {
-                    callback.OnNewModule(info);
+                    callback.OnNewModule(jsModule.ModuleInfo);
                 }
             }
         }
 
-        private void ModuleUpdate(ModuleInfo existing, ModuleInfo newModule)
+        private void ModuleUpdate(JSModule existing, ModuleInfo newModule)
         {
-            lock (existing)
-            {
-                existing.Timestamp = newModule.Timestamp;
-                existing.Version = newModule.Version;
-            }
-
+            existing.UpdateMetadata(newModule);
+            
             lock (callbacks)
             {
                 lock (callbacks)
                 {
                     foreach (IJSProgramCallback callback in callbacks)
                     {
-                        callback.OnModuleUpdate(existing);
+                        callback.OnModuleUpdate(existing.ModuleInfo);
                     }
                 }
             }
@@ -210,13 +213,13 @@ namespace NetWebScript.Debug.Server
 
             foreach (ModuleInfo newModule in newModules)
             {
-                var existing = modules.FirstOrDefault(m => m.Uri == newModule.Uri);
+                var existing = modules.FirstOrDefault(m => m.ModuleUri == newModule.Uri);
 
                 if (existing == null)
                 {
                     AddModule(newModule);
                 }
-                else if (existing.Timestamp != newModule.Timestamp)
+                else if (existing.ModuleInfo.Timestamp != newModule.Timestamp)
                 {
                     ModuleUpdate(existing, newModule);
                 }
@@ -224,6 +227,59 @@ namespace NetWebScript.Debug.Server
         }
 
 
+
+        internal JSDebugPoint GetPointById(string pointId)
+        {
+            lock (modules)
+            {
+                return modules.Select(m => m.GetPointById(pointId)).FirstOrDefault(p => p != null);
+            }
+        }
+
+        internal MethodBaseMetadata GetMethodById(string methodId)
+        {
+            lock (modules)
+            {
+                return modules.Select(m => m.GetMethodById(methodId)).FirstOrDefault(p => p != null);
+            }
+        }
+
+        internal TypeMetadata GetTypeById(string typeId)
+        {
+            lock (modules)
+            {
+                return modules.Select(m => m.GetTypeById(typeId)).FirstOrDefault(p => p != null);
+            }
+        }
+
+        public List<JSDebugPoint> FindPoints(string fileName, int startCol, int startRow)
+        {
+            return modules.SelectMany(m => m.FindPoints(fileName, startCol, startRow)).ToList();
+        }
+
+        public List<JSDebugPoint> FindPoints(string fileName, int startRow)
+        {
+            return modules.SelectMany(m => m.FindPoints(fileName, startRow)).ToList();
+        }
+
+
+        public List<string> ListSourceFiles()
+        {
+            HashSet<string> files;
+            lock (modules)
+            {
+                files = new HashSet<string>(modules.SelectMany(m => m.ListSourceFiles()), StringComparer.OrdinalIgnoreCase);
+            }
+            return files.ToList();
+        }
+
+        public List<JSDebugPoint> ListActivePoints()
+        {
+            lock (this)
+            {
+                return breakPoints.Select(pointId => modules.Select(m => m.GetPointById(pointId)).FirstOrDefault(p => p != null)).Where(p => p != null).ToList();
+            }
+        }
     }
 }
 

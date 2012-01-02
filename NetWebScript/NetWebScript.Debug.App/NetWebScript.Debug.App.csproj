@@ -60,6 +60,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=4.1.0.7916, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -84,7 +85,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Window1.xaml">
+    <Compile Include="Controls\BreakPointsBackground.cs" />
+    <Compile Include="Controls\BreakPointsMargin.cs" />
+    <Compile Include="ProgramWindow.xaml.cs">
+      <DependentUpon>ProgramWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\DebuggerModel.cs" />
+    <Compile Include="ViewModel\DispatcherObservableCollection.cs" />
+    <Compile Include="ViewModel\ProgramModel.cs" />
+    <Compile Include="ViewModel\SourceFileModel.cs" />
+    <Compile Include="ViewModel\SourceFilesModel.cs" />
+    <Compile Include="ViewModel\SourceFolderModel.cs" />
+    <Compile Include="ViewModel\SourceNodeModel.cs" />
+    <Compile Include="ViewModel\ThreadModel.cs" />
+    <Page Include="ProgramsListWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -94,10 +108,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Window1.xaml.cs">
-      <DependentUpon>Window1.xaml</DependentUpon>
+    <Compile Include="ProgramsListWindow.xaml.cs">
+      <DependentUpon>ProgramsListWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ProgramWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -125,6 +143,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Libs\ICSharpCode.AvalonEdit.dll" />
     <Content Include="test.html" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +169,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

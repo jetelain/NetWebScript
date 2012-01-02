@@ -40,7 +40,7 @@ namespace NetWebScript.Debug.Engine.Script
             this.programName = program.Uri.LocalPath;
             program.RegisterCallback(this);
 
-            foreach (ModuleInfo module in program.Modules)
+            foreach (JSModuleInfo module in program.Modules)
             {
                 modules.Add(new ScriptModule(module));
             }
@@ -498,7 +498,7 @@ namespace NetWebScript.Debug.Engine.Script
             }
         }
 
-        public void OnNewModule(ModuleInfo module)
+        public void OnNewModule(JSModuleInfo module)
         {
             var scriptModule = new ScriptModule(module);
 
@@ -520,12 +520,12 @@ namespace NetWebScript.Debug.Engine.Script
         
         }
 
-        public void OnModuleUpdate(ModuleInfo module)
+        public void OnModuleUpdate(JSModuleInfo module)
         {
             // TODO: This ModuleUpdate approach is not really thread safe, it's a temporary solution to avoid VS restart 
             // after each module compilation...
 
-            var scriptModule = modules.FirstOrDefault(m => m.Uri == module.Uri);
+            var scriptModule = modules.FirstOrDefault(m => m.ModuleId == module.Id);
             if (scriptModule == null)
             {
                 OnNewModule(module);

@@ -13,7 +13,7 @@ namespace NetWebScript.Debug.Server
 
         Uri Uri { get; }
 
-        IList<ModuleInfo> Modules { get; }
+        IList<JSModuleInfo> Modules { get; }
 
         void AddBreakPoint(String uid);
 
@@ -24,5 +24,13 @@ namespace NetWebScript.Debug.Server
         void RegisterCallback ( IJSProgramCallback callback );
 
         void UnRegisterCallback(IJSProgramCallback callback);
+
+        List<JSDebugPoint> FindPoints(string fileName, int startCol, int startRow);
+
+        List<JSDebugPoint> FindPoints(string fileName, int startRow);
+
+        List<string> ListSourceFiles();
+
+        List<JSDebugPoint> ListActivePoints();
     }
 }
