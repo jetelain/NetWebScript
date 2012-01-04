@@ -3,9 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
         Title="" Height="700" Width="900">
-    <DockPanel>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="100" Width="0.3*" />
+            <ColumnDefinition Width="3" />
+            <ColumnDefinition MinWidth="100" Width="0.7*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <TreeView x:Name="tree" ItemsSource="{Binding SourceFiles}" DockPanel.Dock="Left" Width="200" Margin="5">
+        <TreeView Grid.Column="0" x:Name="tree" ItemsSource="{Binding SourceFiles}">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <EventSetter Event="MouseDoubleClick" Handler="OpenFile" />
@@ -18,28 +26,66 @@
             </TreeView.ItemTemplate>
         </TreeView>
 
-        <StackPanel DockPanel.Dock="Top"  Orientation="Horizontal">
-            <Button Click="Continue">Continue</Button>
-            <Button Click="StepOver">Step over</Button>
-            <Button Click="StepIn">Step in</Button>
-            <Button Click="StepOut">Step out</Button>
-        </StackPanel>
+        <GridSplitter Grid.ZIndex="1" Grid.Column="1" BorderThickness="5,0" HorizontalAlignment="Center" VerticalAlignment="Stretch" BorderBrush="Transparent" />
+
+        <DockPanel Grid.Column="2">
         
-        <ListView x:Name="list" Height="100" SelectedValuePath="." ItemsSource="{Binding ActivePoints}" DockPanel.Dock="Bottom">
-            <!--<ListView.ItemContainerStyle>
-                <Style TargetType="{x:Type ListViewItem}">
-                    <EventSetter Event="MouseDoubleClick" Handler="OpenProgramWindow" />
-                </Style>
-            </ListView.ItemContainerStyle>-->
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="File" Width="300"  DisplayMemberBinding="{Binding FileName}"   />
-                    <GridViewColumn Header="Line"   DisplayMemberBinding="{Binding StartRow}"   />
-                </GridView>
-            </ListView.View>
-        </ListView>
+            <StackPanel DockPanel.Dock="Top"  Orientation="Horizontal">
+                <Button Click="Continue">Continue</Button>
+                <Button Click="StepOver">Step over</Button>
+                <Button Click="StepIn">Step in</Button>
+                <Button Click="StepOut">Step out</Button>
+            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition MinHeight="100" Height="0.8*" />
+                    <RowDefinition Height="3" />
+                    <RowDefinition MinHeight="100" Height="0.2*" />
+                </Grid.RowDefinitions>
+
+                <avalon:TextEditor Grid.Row="0" ShowLineNumbers="True"  IsReadOnly="True" FontFamily="Consolas" SyntaxHighlighting="C#" FontSize="10pt" Margin="5" x:Name="editor" />
+
+                <GridSplitter Grid.ZIndex="1" Grid.Row="1" BorderThickness="0,5" VerticalAlignment="Center" HorizontalAlignment="Stretch" BorderBrush="Transparent" />
+
+                <TabControl Grid.Row="2">
+                    <TabItem Header="Breakpoints">
+                        <ListView SelectedValuePath="." ItemsSource="{Binding ActivePoints}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="File" Width="300" DisplayMemberBinding="{Binding FileName}" />
+                                    <GridViewColumn Header="Line" DisplayMemberBinding="{Binding StartRow}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </TabItem>
+                    <TabItem Header="Call stack">
+                        <ListView SelectedValuePath="." ItemsSource="{Binding CurrentBreakedThreadStack.Frames}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Method" DisplayMemberBinding="{Binding DisplayName}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </TabItem>
+                    <TabItem Header="Locals">
+                        <ListView SelectedValuePath="." ItemsSource="{Binding CurrentBreakedThreadStack.Frames[0].Locals.Children}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding DisplayName}" />
+                                    <GridViewColumn Header="Value" DisplayMemberBinding="{Binding Value}" />
+                                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding ValueTypeDisplayName}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </TabItem>
+                </TabControl>
+                
+            </Grid>
+
+        </DockPanel>
         
-        <avalon:TextEditor ShowLineNumbers="True"  IsReadOnly="True" FontFamily="Consolas" SyntaxHighlighting="C#" FontSize="10pt" Margin="5" x:Name="editor" />
-        
-    </DockPanel>
+    </Grid>
 </Window>

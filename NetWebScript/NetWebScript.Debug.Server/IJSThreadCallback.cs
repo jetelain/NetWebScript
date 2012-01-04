@@ -12,5 +12,7 @@ namespace NetWebScript.Debug.Server
         void OnStepDone(string id, string stackXml, JSDebugPoint point, JSStack stack);
 
         void OnStopped();
+
+        void OnContinueDone();
     }
 }

@@ -334,5 +334,10 @@ namespace NetWebScript.Debug.Engine.Script
         }
 
         #endregion
+
+        public void OnContinueDone()
+        {
+
+        }
     }
 }

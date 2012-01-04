@@ -18,6 +18,7 @@ namespace NetWebScript.Debug.Server
         {
             this.point = point;
             this.name = name;
+            this.locals = locals;
             if (metadata == null)
             {
                 displayName = name;

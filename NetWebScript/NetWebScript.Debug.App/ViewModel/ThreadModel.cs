@@ -33,6 +33,11 @@ namespace NetWebScript.Debug.App.ViewModel
             program.Stopped(this);
         }
 
+        public void OnContinueDone()
+        {
+            program.ClearCurrentPointAsync(this);
+        }
+
         public void Dispose()
         {
             thread.UnRegisterCallback(this);
@@ -57,5 +62,6 @@ namespace NetWebScript.Debug.App.ViewModel
         {
             thread.StepOver();
         }
+
     }
 }

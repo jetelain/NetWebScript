@@ -6,10 +6,11 @@ using System.Collections.ObjectModel;
 using NetWebScript.Debug.Server;
 using System.Windows.Threading;
 using System.Threading;
+using System.ComponentModel;
 
 namespace NetWebScript.Debug.App.ViewModel
 {
-    public class ProgramModel : IJSProgramCallback, IDisposable
+    public class ProgramModel : IJSProgramCallback, IDisposable, INotifyPropertyChanged
     {
         private readonly IJSProgram program;
 
@@ -151,23 +152,39 @@ namespace NetWebScript.Debug.App.ViewModel
             {
                 CurrentPointChanged(this, EventArgs.Empty);
             }
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("CurrentBreakedThreadStack"));
+            }
         }
 
-        private void ClearCurrentPoint(bool canSwitchThread)
+        internal void ClearCurrentPointAsync(ThreadModel thread)
         {
-            if (queue.Count > 0 && canSwitchThread)
+            dispatcher.Invoke(new Action(() => ClearCurrentPoint(thread)));
+        }
+
+        private void ClearCurrentPoint(ThreadModel thread)
+        {
+            if (CurrentBreakedThread == thread)
             {
+                if (queue.Count > 0)
+                {
+                    CurrentBreakedThread = null;
+                    var next = queue.Dequeue();
+                    SetCurrentPoint(next.Thread, next.Point, next.Stack);
+                    return;
+                }
+                CurrentPoint = null;
                 CurrentBreakedThread = null;
-                var next = queue.Dequeue();
-                SetCurrentPoint(next.Thread, next.Point, next.Stack);
-                return;
-            }
-            CurrentPoint = null;
-            CurrentBreakedThread = null;
-            CurrentBreakedThreadStack = null;
-            if (CurrentPointChanged != null)
-            {
-                CurrentPointChanged(this, EventArgs.Empty);
+                CurrentBreakedThreadStack = null;
+                if (CurrentPointChanged != null)
+                {
+                    CurrentPointChanged(this, EventArgs.Empty);
+                }
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentBreakedThreadStack"));
+                }
             }
         }
 
@@ -176,7 +193,6 @@ namespace NetWebScript.Debug.App.ViewModel
             if (CurrentBreakedThread != null)
             {
                 CurrentBreakedThread.Continue();
-                ClearCurrentPoint(true);
             }
         }
 
@@ -185,7 +201,6 @@ namespace NetWebScript.Debug.App.ViewModel
             if (CurrentBreakedThread != null)
             {
                 CurrentBreakedThread.StepInto();
-                ClearCurrentPoint(false);
             }
         }
 
@@ -194,7 +209,6 @@ namespace NetWebScript.Debug.App.ViewModel
             if (CurrentBreakedThread != null)
             {
                 CurrentBreakedThread.StepOut();
-                ClearCurrentPoint(false);
             }
         }
 
@@ -203,8 +217,9 @@ namespace NetWebScript.Debug.App.ViewModel
             if (CurrentBreakedThread != null)
             {
                 CurrentBreakedThread.StepOver();
-                ClearCurrentPoint(false);
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

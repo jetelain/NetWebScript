@@ -166,10 +166,13 @@ namespace NetWebScript.Debug.Server
                 currentPoint = null;
                 currentStack = null;
             }
-            //if (StateChanged != null)
-            //{
-            //    StateChanged(this, EventArgs.Empty);
-            //}
+            lock (callbacks)
+            {
+                foreach (IJSThreadCallback callback in callbacks)
+                {
+                    callback.OnContinueDone();
+                }
+            }
         }
         
         private void BreakPointAck(String[] uids)
