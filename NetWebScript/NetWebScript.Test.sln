@@ -4,6 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0C5B9791-7E69-473E-9204-B5C1B1E7D3D0}"
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		NetWebScript.License.txt = NetWebScript.License.txt
 		NetWebScript.vsmdi = NetWebScript.vsmdi
 	EndProjectSection
 EndProject

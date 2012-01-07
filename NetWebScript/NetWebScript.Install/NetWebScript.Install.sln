@@ -1,0 +1,148 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "NetWebScript.Install", "NetWebScript.Install.isproj", "{1375FEC5-FC95-4F19-AF75-1853092A6142}"
+	ProjectSection(ProjectDependencies) = postProject
+		{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2} = {65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}
+		{588FE57F-4673-4753-B6B9-D1A56A63B277} = {588FE57F-4673-4753-B6B9-D1A56A63B277}
+		{E1A592BD-2909-4925-B02D-258D3314EAB8} = {E1A592BD-2909-4925-B02D-258D3314EAB8}
+		{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32} = {A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}
+		{A65F49C8-A32A-41FA-BBCF-16621FEEA418} = {A65F49C8-A32A-41FA-BBCF-16621FEEA418}
+		{CA40B2C8-D7D0-4AC3-94D3-B0BA5986EFBD} = {CA40B2C8-D7D0-4AC3-94D3-B0BA5986EFBD}
+		{C556C9CE-C34D-4785-A8F4-206C1F3ECE2B} = {C556C9CE-C34D-4785-A8F4-206C1F3ECE2B}
+		{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8} = {CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291} = {A131E7E5-98D1-45DD-9C07-EA63AA69F291}
+		{DBF3AEF6-9D13-4E03-899B-561BCFDD9920} = {DBF3AEF6-9D13-4E03-899B-561BCFDD9920}
+		{221C14F9-1DE0-47E3-AC55-9DA6D548F064} = {221C14F9-1DE0-47E3-AC55-9DA6D548F064}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript", "..\NetWebScript\NetWebScript.csproj", "{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Antlr3.Runtime", "..\Antlr3.Runtime\Antlr3.Runtime.csproj", "{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jint", "..\Jint\Jint.csproj", "{DBF3AEF6-9D13-4E03-899B-561BCFDD9920}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Samples.Debugging", "..\Microsoft.Samples.Debugging\Microsoft.Samples.Debugging.csproj", "{588FE57F-4673-4753-B6B9-D1A56A63B277}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Core", "..\NetWebScript.Core\NetWebScript.Core.csproj", "{A65F49C8-A32A-41FA-BBCF-16621FEEA418}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Metadata", "..\NetWebScript.Metadata\NetWebScript.Metadata.csproj", "{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.CompilerCLI", "..\NetWebScript.CompilerCLI\NetWebScript.CompilerCLI.csproj", "{A131E7E5-98D1-45DD-9C07-EA63AA69F291}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Debug.Server", "..\NetWebScript.Debug.Server\NetWebScript.Debug.Server.csproj", "{E1A592BD-2909-4925-B02D-258D3314EAB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Debug.App", "..\NetWebScript.Debug.App\NetWebScript.Debug.App.csproj", "{221C14F9-1DE0-47E3-AC55-9DA6D548F064}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Debug.Engine", "..\NetWebScript.Debug.Engine\NetWebScript.Debug.Engine.csproj", "{CA40B2C8-D7D0-4AC3-94D3-B0BA5986EFBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.UnitTestFramework", "..\NetWebScript.UnitTestFramework\NetWebScript.UnitTestFramework.csproj", "{C556C9CE-C34D-4785-A8F4-206C1F3ECE2B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{745EB97D-4C61-4E26-A62E-1EA79F7DA728}"
+	ProjectSection(SolutionItems) = preProject
+		NetWebScript Online Documentation.url = NetWebScript Online Documentation.url
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 13
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs26
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = NetWebScript.Install.isproj
+		SccLocalPath1 = .
+		SccProjectUniqueName2 = ..\\NetWebScript\\NetWebScript.csproj
+		SccProjectName2 = ../NetWebScript
+		SccLocalPath2 = ..\\NetWebScript
+		SccProjectUniqueName3 = ..\\Antlr3.Runtime\\Antlr3.Runtime.csproj
+		SccProjectName3 = ../Antlr3.Runtime
+		SccLocalPath3 = ..\\Antlr3.Runtime
+		SccProjectUniqueName4 = ..\\Jint\\Jint.csproj
+		SccProjectName4 = ../Jint
+		SccLocalPath4 = ..\\Jint
+		SccProjectUniqueName5 = ..\\Microsoft.Samples.Debugging\\Microsoft.Samples.Debugging.csproj
+		SccProjectName5 = ../Microsoft.Samples.Debugging
+		SccLocalPath5 = ..\\Microsoft.Samples.Debugging
+		SccProjectUniqueName6 = ..\\NetWebScript.Core\\NetWebScript.Core.csproj
+		SccProjectName6 = ../NetWebScript.Core
+		SccLocalPath6 = ..\\NetWebScript.Core
+		SccProjectUniqueName7 = ..\\NetWebScript.Metadata\\NetWebScript.Metadata.csproj
+		SccProjectName7 = ../NetWebScript.Metadata
+		SccLocalPath7 = ..\\NetWebScript.Metadata
+		SccProjectUniqueName8 = ..\\NetWebScript.CompilerCLI\\NetWebScript.CompilerCLI.csproj
+		SccProjectName8 = ../NetWebScript.CompilerCLI
+		SccLocalPath8 = ..\\NetWebScript.CompilerCLI
+		SccProjectUniqueName9 = ..\\NetWebScript.Debug.Server\\NetWebScript.Debug.Server.csproj
+		SccProjectName9 = ../NetWebScript.Debug.Server
+		SccLocalPath9 = ..\\NetWebScript.Debug.Server
+		SccProjectUniqueName10 = ..\\NetWebScript.Debug.App\\NetWebScript.Debug.App.csproj
+		SccProjectName10 = ../NetWebScript.Debug.App
+		SccLocalPath10 = ..\\NetWebScript.Debug.App
+		SccProjectUniqueName11 = ..\\NetWebScript.Debug.Engine\\NetWebScript.Debug.Engine.csproj
+		SccProjectName11 = ../NetWebScript.Debug.Engine
+		SccLocalPath11 = ..\\NetWebScript.Debug.Engine
+		SccProjectUniqueName12 = ..\\NetWebScript.UnitTestFramework\\NetWebScript.UnitTestFramework.csproj
+		SccProjectName12 = ../NetWebScript.UnitTestFramework
+		SccLocalPath12 = ..\\NetWebScript.UnitTestFramework
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		CD_ROM|Default = CD_ROM|Default
+		DVD-5|Default = DVD-5|Default
+		SingleImage|Default = SingleImage|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1375FEC5-FC95-4F19-AF75-1853092A6142}.CD_ROM|Default.ActiveCfg = SingleImage
+		{1375FEC5-FC95-4F19-AF75-1853092A6142}.CD_ROM|Default.Build.0 = SingleImage
+		{1375FEC5-FC95-4F19-AF75-1853092A6142}.DVD-5|Default.ActiveCfg = DVD-5
+		{1375FEC5-FC95-4F19-AF75-1853092A6142}.DVD-5|Default.Build.0 = DVD-5
+		{1375FEC5-FC95-4F19-AF75-1853092A6142}.SingleImage|Default.ActiveCfg = SingleImage
+		{1375FEC5-FC95-4F19-AF75-1853092A6142}.SingleImage|Default.Build.0 = SingleImage
+		{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}.CD_ROM|Default.ActiveCfg = Release|Any CPU
+		{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}.DVD-5|Default.ActiveCfg = Debug|Any CPU
+		{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}.SingleImage|Default.ActiveCfg = Release|Any CPU
+		{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}.SingleImage|Default.Build.0 = Release|Any CPU
+		{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}.CD_ROM|Default.ActiveCfg = Release|Any CPU
+		{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}.DVD-5|Default.ActiveCfg = Debug|Any CPU
+		{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}.SingleImage|Default.ActiveCfg = Release|Any CPU
+		{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}.SingleImage|Default.Build.0 = Release|Any CPU
+		{DBF3AEF6-9D13-4E03-899B-561BCFDD9920}.CD_ROM|Default.ActiveCfg = Release|Any CPU
+		{DBF3AEF6-9D13-4E03-899B-561BCFDD9920}.DVD-5|Default.ActiveCfg = Debug|Any CPU
+		{DBF3AEF6-9D13-4E03-899B-561BCFDD9920}.SingleImage|Default.ActiveCfg = Release|Any CPU
+		{DBF3AEF6-9D13-4E03-899B-561BCFDD9920}.SingleImage|Default.Build.0 = Release|Any CPU
+		{588FE57F-4673-4753-B6B9-D1A56A63B277}.CD_ROM|Default.ActiveCfg = Release|Any CPU
+		{588FE57F-4673-4753-B6B9-D1A56A63B277}.DVD-5|Default.ActiveCfg = Debug|Any CPU
+		{588FE57F-4673-4753-B6B9-D1A56A63B277}.SingleImage|Default.ActiveCfg = Release|Any CPU
+		{588FE57F-4673-4753-B6B9-D1A56A63B277}.SingleImage|Default.Build.0 = Release|Any CPU
+		{A65F49C8-A32A-41FA-BBCF-16621FEEA418}.CD_ROM|Default.ActiveCfg = Release|Any CPU
+		{A65F49C8-A32A-41FA-BBCF-16621FEEA418}.DVD-5|Default.ActiveCfg = Debug|Any CPU
+		{A65F49C8-A32A-41FA-BBCF-16621FEEA418}.SingleImage|Default.ActiveCfg = Release|Any CPU
+		{A65F49C8-A32A-41FA-BBCF-16621FEEA418}.SingleImage|Default.Build.0 = Release|Any CPU
+		{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}.CD_ROM|Default.ActiveCfg = Release|Any CPU
+		{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}.DVD-5|Default.ActiveCfg = Debug|Any CPU
+		{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}.SingleImage|Default.ActiveCfg = Release|Any CPU
+		{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}.SingleImage|Default.Build.0 = Release|Any CPU
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.CD_ROM|Default.ActiveCfg = Release|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.DVD-5|Default.ActiveCfg = Debug|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.SingleImage|Default.ActiveCfg = Release|x86
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291}.SingleImage|Default.Build.0 = Release|x86
+		{E1A592BD-2909-4925-B02D-258D3314EAB8}.CD_ROM|Default.ActiveCfg = Release|Any CPU
+		{E1A592BD-2909-4925-B02D-258D3314EAB8}.DVD-5|Default.ActiveCfg = Debug|Any CPU
+		{E1A592BD-2909-4925-B02D-258D3314EAB8}.SingleImage|Default.ActiveCfg = Release|Any CPU
+		{E1A592BD-2909-4925-B02D-258D3314EAB8}.SingleImage|Default.Build.0 = Release|Any CPU
+		{221C14F9-1DE0-47E3-AC55-9DA6D548F064}.CD_ROM|Default.ActiveCfg = Release|Any CPU
+		{221C14F9-1DE0-47E3-AC55-9DA6D548F064}.DVD-5|Default.ActiveCfg = Debug|Any CPU
+		{221C14F9-1DE0-47E3-AC55-9DA6D548F064}.SingleImage|Default.ActiveCfg = Release|Any CPU
+		{221C14F9-1DE0-47E3-AC55-9DA6D548F064}.SingleImage|Default.Build.0 = Release|Any CPU
+		{CA40B2C8-D7D0-4AC3-94D3-B0BA5986EFBD}.CD_ROM|Default.ActiveCfg = Release|Any CPU
+		{CA40B2C8-D7D0-4AC3-94D3-B0BA5986EFBD}.DVD-5|Default.ActiveCfg = Debug|Any CPU
+		{CA40B2C8-D7D0-4AC3-94D3-B0BA5986EFBD}.SingleImage|Default.ActiveCfg = Release|Any CPU
+		{CA40B2C8-D7D0-4AC3-94D3-B0BA5986EFBD}.SingleImage|Default.Build.0 = Release|Any CPU
+		{C556C9CE-C34D-4785-A8F4-206C1F3ECE2B}.CD_ROM|Default.ActiveCfg = Release|Any CPU
+		{C556C9CE-C34D-4785-A8F4-206C1F3ECE2B}.DVD-5|Default.ActiveCfg = Debug|Any CPU
+		{C556C9CE-C34D-4785-A8F4-206C1F3ECE2B}.SingleImage|Default.ActiveCfg = Release|Any CPU
+		{C556C9CE-C34D-4785-A8F4-206C1F3ECE2B}.SingleImage|Default.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
