@@ -17,6 +17,11 @@ namespace NetWebScript.Script
         private readonly MethodBase method;
         private readonly Delegate deleg;
 
+        public JSFunction(string arg0, string body)
+        {
+            throw new PlatformNotSupportedException();
+        }
+
         internal JSFunction(Type type)
         {
             this.type = type;

@@ -28,16 +28,17 @@ namespace NetWebScript.JsClr.Compiler
         private readonly HashSet<Assembly> assemblies = new HashSet<Assembly>();
         private int index;
         private int indexMethods;
+        private readonly ScriptType debugger;
 
         /// <summary>
         /// Instrument generated script to be debuggable
         /// </summary>
-        public bool Debuggable { get; set; }
+        public bool Debuggable { get; private set; }
 
         /// <summary>
         /// Indent and add some commands on generated script to be human freindly
         /// </summary>
-        public bool PrettyPrint { get; set; }
+        public bool PrettyPrint { get; private set; }
 
         /// <summary>
         /// Metadata of generated script
@@ -47,7 +48,8 @@ namespace NetWebScript.JsClr.Compiler
         /// <summary>
         /// Creates a compiler using default script system.
         /// </summary>
-        public ModuleCompiler() : this(new ScriptSystem())
+        public ModuleCompiler(bool debuggable, bool prettyPrint)
+            : this(new ScriptSystem(), debuggable, prettyPrint)
         {
 
         }
@@ -56,7 +58,7 @@ namespace NetWebScript.JsClr.Compiler
         /// Created a compiler using a custom script system
         /// </summary>
         /// <param name="system">Script system to use</param>
-        public ModuleCompiler(ScriptSystem system)
+        public ModuleCompiler(ScriptSystem system, bool debuggable, bool prettyPrint)
         {
             this.system = system;
             runtimeFilter = new RuntimeAstFilter(system, messages);
@@ -64,6 +66,17 @@ namespace NetWebScript.JsClr.Compiler
 
             AddAssemblyPrivate(typeof(TypeSystemHelper).Assembly);
             AddEntryPoint(typeof(TypeSystemHelper));
+
+            if (debuggable)
+            {
+                debugger = (ScriptType)AddEntryPoint(typeof(NetWebScript.Diagnostics.Debugger));
+                PrettyPrint = true;
+                Debuggable = true;
+            }
+            else if (prettyPrint)
+            {
+                PrettyPrint = true;
+            }
         }
 
         /// <summary>
@@ -74,6 +87,7 @@ namespace NetWebScript.JsClr.Compiler
         /// <returns>Script version of type</returns>
         public IScriptType AddEntryPoint(Type type)
         {
+
             if (!assemblies.Contains(type.Assembly))
             {
                 AddAssemblyPrivate(type.Assembly);
@@ -192,24 +206,34 @@ namespace NetWebScript.JsClr.Compiler
             {
                 throw new Exception(BuildReport());
             }
+
+            var exports = system.TypesToGenerate.Where(t => t.IsExported);
+
+
+
             Metadata.Assemblies.Clear();
             Metadata.Documents.Clear();
             Metadata.Types.Clear();
             Metadata.Name = system.ModuleId;
+
             HashSet<Assembly> assemblies = new HashSet<Assembly>();
+
             var moduleWriter = new ModuleWriter(writer, system, Debuggable, PrettyPrint);
+
             foreach (var type in system.TypesToGenerate.ToArray())
             {
                 assemblies.Add(type.Type.Assembly);
                 moduleWriter.WriteType(Metadata, type);
                 SanityCheck(type);
             }
+
             foreach (var type in system.EnumToGenerate.ToArray())
             {
                 assemblies.Add(type.Type.Assembly);
                 moduleWriter.WriteEnumType(Metadata, type);
                 SanityCheck(type);
             }
+
             foreach (var type in system.ImportedTypes.ToArray())
             {
                 if (type.ExtensionMethods.Count > 0)
@@ -219,29 +243,40 @@ namespace NetWebScript.JsClr.Compiler
                 }
             }
 
-            moduleWriter.WriteExports(system.TypesToGenerate.Where(t => t.IsExported));
+            moduleWriter.WriteExports(exports);
 
             if (PrettyPrint)
             {
                 writer.WriteLine("// ### Static constructors");
             }
-            foreach (var type in system.TypesToGenerate.Where(t => t.StaticConstructor != null).ToArray())
+            if (debugger != null)
             {
-                if (PrettyPrint)
-                {
-                    writer.WriteLine("// {0}", type.Type.FullName);
-                }
-                var ctor = type.StaticConstructor;
-                writer.WriteLine("{0}.{1}();", type.TypeId, ctor.ImplId);
+                // Debugger static constructor must be call before anything else
+                WriteStaticCtorCall(writer, debugger);
             }
-
+            foreach (var type in system.TypesToGenerate.Where(t => t.StaticConstructor != null && t != debugger).ToArray())
+            {
+                WriteStaticCtorCall(writer, type);
+            }
             foreach (var type in system.Equivalents)
             {
                 Metadata.Equivalents.Add(new EquivalentMetadata() { CRef = CRefToolkit.GetCRef(type.Type), EquivalentCRef = CRefToolkit.GetCRef(type.Equivalent.Type) });
             }
+
             Metadata.Assemblies.AddRange(assemblies.Select(a => a.FullName));
             MetadataProvider.Current = new MetadataProvider(Metadata);
         }
+
+        private void WriteStaticCtorCall(TextWriter writer, ScriptType type)
+        {
+            if (PrettyPrint)
+            {
+                writer.WriteLine("// {0}", type.Type.FullName);
+            }
+            var ctor = type.StaticConstructor;
+            writer.WriteLine("{0}.{1}();", type.TypeId, ctor.ImplId);
+        }
+
 
         private void SanityCheck(IScriptType previous)
         {

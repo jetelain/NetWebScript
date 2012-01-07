@@ -26,12 +26,4 @@ NWS.ToXml = function(doc) {
     return doc.xml;
 }
 
-NWS.$Modules = [];
-
-NWS.$RegMod = function(name, version, filename, timestamp) {
-    var module = { Name: name, Version: version, Filename: filename, Timestamp: timestamp };
-    NWS.$Modules.push(module);
-    return module;
-}
-
 

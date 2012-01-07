@@ -15,6 +15,7 @@ namespace NetWebScript.Debug.Server
         {
             XmlDocument document = new XmlDocument();
             document.LoadXml(stackXmlData);
+            int idx = 0;
             foreach (XmlElement element in document.DocumentElement.SelectNodes("Frame"))
             {
                 string name = element.GetAttribute("Name");
@@ -27,13 +28,14 @@ namespace NetWebScript.Debug.Server
                 if (p != null)
                 {
                     point = currentPoint;
-                    locals = new JSData(thread, metadata, p);
+                    locals = new JSData(idx, thread, metadata, p);
                 }
                 else
                 {
                     point = thread.GetPointById(pointId);
                 }
                 frames.Add(new JSStackFrame(thread, point, name, metadata, locals));
+                idx++;
             }
             if (frames.Count == 0)
             {

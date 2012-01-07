@@ -31,16 +31,31 @@ namespace NetWebScript.Debug.Server
                 ValueTypeDisplayName = CRefToolkit.GetDisplayName(type.CRef);
             }
 
-            Children = CreateFromObjectChildren(path, thread, type, element);
+            if (element.GetAttribute("Retreive") == "true")
+            {
+                ShouldRetreiveChildren = true;
+            }
+            else
+            {
+                Children = CreateFromObjectChildren(path, thread, type, element);
+            }
         }
 
-        internal JSData(JSThread thread, MethodBaseMetadata methodMetadata, XmlElement element)
+        internal JSData(int frameIndex, JSThread thread, MethodBaseMetadata methodMetadata, XmlElement element)
         {
-            this.path = "t";
+            this.path = string.Format("$s[{0}].context", frameIndex);
             DisplayName = "Locals";
             Value = element.GetAttribute("Value");
-
             Children = CreateFromMethodContext(path, thread, methodMetadata, element);
+        }
+
+        private static string CombinePath(string path, string name)
+        {
+            if (name.StartsWith("[", StringComparison.Ordinal) && name.EndsWith("]", StringComparison.Ordinal))
+            {
+                return path + name;
+            }
+            return path + "." + name;
         }
 
         private static List<JSData> CreateFromMethodContext(string path, JSThread thread, MethodBaseMetadata methodMetadata, XmlElement element)
@@ -53,7 +68,7 @@ namespace NetWebScript.Debug.Server
                 {
                     var name = subelement.GetAttribute("Name");
                     var displayName = GetDisplayName(methodMetadata, name);
-                    children.Add(new JSData(thread, subelement, path + "." + name, displayName));
+                    children.Add(new JSData(thread, subelement, CombinePath(path, name), displayName));
                 }
                 return children;
             }
@@ -72,7 +87,7 @@ namespace NetWebScript.Debug.Server
                     if (!name.StartsWith("$", StringComparison.Ordinal))
                     {
                         var displayName = GetDisplayName(thread, type, name);
-                        children.Add(new JSData(thread, subelement, path + "." + name, displayName));
+                        children.Add(new JSData(thread, subelement, CombinePath(path, name), displayName));
                     }
                 }
                 return children;
@@ -120,6 +135,11 @@ namespace NetWebScript.Debug.Server
         }
 
         /// <summary>
+        /// Evaluation Path
+        /// </summary>
+        public string Path { get { return path; } }
+
+        /// <summary>
         /// Type of the represented object 
         /// </summary>
         public string ValueTypeDisplayName { get; private set; }
@@ -140,11 +160,30 @@ namespace NetWebScript.Debug.Server
         public List<JSData> Children { get; private set; }
 
         /// <summary>
+        /// Children properties have not been yet retreived from runtime
+        /// </summary>
+        public bool ShouldRetreiveChildren { get; private set; }
+
+        /// <summary>
         /// Specify if data has children (might not be yet retreived from runtime)
         /// </summary>
         public bool IsExpandable
         {
-            get { return Children != null && Children.Count > 0; }
+            get { return ShouldRetreiveChildren || (Children != null && Children.Count > 0); }
         }
+
+        /// <summary>
+        /// Merge with retreived data from runtime.
+        /// </summary>
+        /// <param name="expandedData"></param>
+        public void Merge(JSData expandedData)
+        {
+            if (!expandedData.ShouldRetreiveChildren)
+            {
+                Children = expandedData.Children;
+                ShouldRetreiveChildren = false;
+            }
+        }
+
     }
 }

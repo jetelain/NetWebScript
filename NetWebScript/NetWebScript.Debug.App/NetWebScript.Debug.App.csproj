@@ -93,6 +93,7 @@
     <Compile Include="ProgramWindow.xaml.cs">
       <DependentUpon>ProgramWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\DataModel.cs" />
     <Compile Include="ViewModel\DebuggerModel.cs" />
     <Compile Include="ViewModel\DispatcherObservableCollection.cs" />
     <Compile Include="ViewModel\ProgramModel.cs" />
@@ -100,6 +101,8 @@
     <Compile Include="ViewModel\SourceFilesModel.cs" />
     <Compile Include="ViewModel\SourceFolderModel.cs" />
     <Compile Include="ViewModel\SourceNodeModel.cs" />
+    <Compile Include="ViewModel\StackFrameModel.cs" />
+    <Compile Include="ViewModel\StackModel.cs" />
     <Compile Include="ViewModel\ThreadModel.cs" />
     <Page Include="Controls\TreeListView.xaml">
       <SubType>Designer</SubType>

@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NetWebScript.Script;
-using NetWebScript.Script.Xml;
 using System.Diagnostics;
+using NetWebScript.Runtime;
+using NetWebScript.Script;
 using NetWebScript.Script.HTML;
+using NetWebScript.Script.Xml;
 
 namespace NetWebScript.Diagnostics
 {
+    [ScriptAvailable, Exported(IgnoreNamespace=true, Name="$dbg")]
 	public static class Debugger
 	{
 		private static string serverUrl = "http://localhost:9090/";
@@ -16,6 +15,8 @@ namespace NetWebScript.Diagnostics
 		private static Script.JSObject breakPoints = new Script.JSObject();
 		private static Script.JSArray<StackFrame> callStack = new Script.JSArray<StackFrame>();
 		private static int stepDeep = 0;
+        private static int timer;
+        private static bool detached = false;
 
 		[DebuggerHidden]
 		private static void Break(string cmd, string id)
@@ -72,9 +73,10 @@ namespace NetWebScript.Diagnostics
 		/// Starts connection with debug server
 		/// </summary>
 		[DebuggerHidden]
-		internal static void Start()
+		public static void Start()
 		{
 			//FIXME: $.support.cors = true;
+            JQuery.Support["cors"] = true;
 			var success = true;
 			var xhr = JQuery.Ajax(new JQueryAjaxSettings()
 			{
@@ -85,7 +87,7 @@ namespace NetWebScript.Diagnostics
 				Timeout = 500,
 				Async = false,
 				Cache = false,
-				Error = (a,b,c) => { success = false; }
+                Error = (a, b, c) => { success = false;}
 			});
 			if (success)
 			{
@@ -97,25 +99,43 @@ namespace NetWebScript.Diagnostics
 				Process(c, "listbp", result.Substring(i + 1));
 				ProcessAll(c);
 
-				var timer = Window.SetInterval(new Action(QueryStatus), 5000);
-				//FIXME
-				//$(window).unload(function () {
-				//    clearInterval(timer);
-				//    var c = new Debugger.Channel();
-				//    c.Send('stop');
-				//});
+				timer = Window.SetInterval(new Action(QueryStatus), 5000);
+
+				JQuery.Query(Window.Instance).Unload(delegate (JQueryEvent e) {
+                    NotifyStop();
+                    return true;
+				});
 			}
 			else
 			{
-				Window.Alert("Debugger unavailable Status=" + xhr.Status);
+                Window.Alert("Debugger unavailable at Url='" + serverUrl + "' Status='" + xhr.Status + "' ResponseText='" + xhr.ResponseText + "'");
 			}
 		}
+
+
+        [DebuggerHidden]
+        private static void NotifyStop()
+        {
+            if (detached)
+            {
+                return;
+            }
+            Window.ClearInterval(timer);
+            var c = new Debugger.Channel("nowait");
+            c.Send("stop", "");
+            detached = true;
+        }
 
 		[DebuggerHidden]
 		private static void Detach()
 		{
-			stepDeep = 0;
-			breakPoints = new Script.JSObject();
+            if (!detached)
+            {
+                Window.ClearInterval(timer);
+                stepDeep = 0;
+                breakPoints = new Script.JSObject();
+                detached = true;
+            }
 		}
 
 		[DebuggerHidden]
@@ -135,7 +155,7 @@ namespace NetWebScript.Diagnostics
 		[DebuggerHidden]
 		private static void Status(string hasp)
 		{
-			if (hasp == "true")
+			if (hasp == "true" && !detached)
 			{
 				var c = new Channel(null);
 				c.Send("ping", null);
@@ -169,7 +189,7 @@ namespace NetWebScript.Diagnostics
 			}
 			else if (cmd == "listbp")
 			{
-				var ids = data.Split(',');
+				var ids = ((JSString)data).Split(",");
 				for (var i = 0; i < ids.Length; ++i)
 				{
 					breakPoints[ids[i]] = "full";
@@ -185,7 +205,7 @@ namespace NetWebScript.Diagnostics
 				object result;
 				try
 				{
-					result = Window.Eval(data);
+                    result = new JSFunction("$s", data).Call(null, callStack);
 				}
 				catch (Exception e)
 				{
@@ -195,7 +215,8 @@ namespace NetWebScript.Diagnostics
 			}
 		}
 
-		private class Channel
+        [ScriptAvailable]
+        private class Channel
 		{
 			private Script.JSArray<Message> q;
 			private string mode;
@@ -316,7 +337,7 @@ namespace NetWebScript.Diagnostics
 		/// <param name="name">Method identifier</param>
 		/// <param name="context">Method local variables (including $this)</param>
 		[DebuggerHidden]
-		internal static void Enter(string name, object context)
+		public static void E(string name, object context)
 		{
 			callStack.Push(new StackFrame() { Id = callStack.Length, Name = name, Context = context });
 		}
@@ -327,7 +348,7 @@ namespace NetWebScript.Diagnostics
 		/// <param name="v">Value to return as-is</param>
 		/// <returns>Value of <paramref name="v"/></returns>
 		[DebuggerHidden]
-		internal static object Leave(object v)
+        public static object L(object v)
 		{
 			callStack.Pop();
 			return v;
@@ -378,14 +399,59 @@ namespace NetWebScript.Diagnostics
 		[DebuggerHidden]
 		private static IXmlElement DumpObject(object obj, IXmlDocument doc, int depth)
 		{
+            if (obj == null || obj == JSObject.Undefined)
+            {
+                var xnode = doc.CreateElement("P");
+                xnode.SetAttribute("Value", obj == null ? "(null)" : "(undefined)");
+                xnode.SetAttribute("Type", "unknown");
+                return xnode;
+            }
+
 			var node = doc.CreateElement("P");
 			node.SetAttribute("Value", ToStringSafe(obj));
 			node.SetAttribute("Type", Unsafe.GetScriptTypeName(obj));
-			if (NetWebScript.Script.JSObject.TypeOf(obj) == "object")
+
+            if (JQuery.IsArray(obj))
+            {
+                if (depth == 3)
+                {
+                    node.SetAttribute("Retreive", "true");
+                    return node;
+                }
+
+                JSArray<object> array = (JSArray<object>)obj;
+
+                if (array.Length > 50)
+                {
+                    node.SetAttribute("Partial", "50");
+                }
+
+                var vnode = doc.CreateElement("P");
+                vnode.SetAttribute("Value", ToStringSafe(array.Length));
+                vnode.SetAttribute("Type", "number");
+                vnode.SetAttribute("Name", "Length");
+                node.AppendChild(vnode);
+
+                int index = 0;
+                while (index < 50 && index < array.Length)
+                {
+                    vnode = DumpObject(array[index], doc, depth + 1);
+                    vnode.SetAttribute("Name", "[" + index + "]");
+                    node.AppendChild(vnode);
+                    index++;
+                }
+            }
+            else if (JSObject.TypeOf(obj) == "object")
 			{
+                if (depth == 3)
+                {
+                    node.SetAttribute("Retreive", "true");
+                    return node;
+                }
+
 				foreach (var key in Unsafe.GetFields(obj))
 				{
-					var value = NetWebScript.Script.JSObject.Get(obj, key);
+					var value = JSObject.Get(obj, key);
 					if (key == "$this")
 					{
 						var dump = DumpObject(value, doc, 0);
@@ -394,32 +460,13 @@ namespace NetWebScript.Diagnostics
 					}
 					else
 					{
-						IXmlElement vnode;
-						if (NetWebScript.Script.JSObject.TypeOf(value) == "object")
-						{
-							if (depth < 2)
-							{
-								vnode = DumpObject(value, doc, depth + 1);
-							}
-							else
-							{
-								vnode = doc.CreateElement("P");
-								vnode.SetAttribute("Value", ToStringSafe(value));
-								vnode.SetAttribute("Retreive", "true");
-								vnode.SetAttribute("Type", Unsafe.GetScriptTypeName(value));
-							}
-						}
-						else
-						{
-							vnode = doc.CreateElement("P");
-							vnode.SetAttribute("Value", ToStringSafe(value));
-							vnode.SetAttribute("Type", Unsafe.GetScriptTypeName(value));
-						}
+                        IXmlElement vnode = DumpObject(value, doc, depth + 1);
 						vnode.SetAttribute("Name", key);
 						node.AppendChild(vnode);
 					}
 				}
 			}
+
 			return node;
 		}
 
@@ -427,15 +474,16 @@ namespace NetWebScript.Diagnostics
 		private static string Identity()
 		{
 			var doc = XmlToolkit.CreateDocument("Identity");
-			//    doc.DocumentElement.SetAttribute("Url", document.location.href);
-			//    for (var i = 0; i < NWS.$Modules.length; ++i) {
-			//        var mod = NWS.$Modules[i];
-			//        var element = doc.CreateElement("Module");
-			//        element.SetAttribute("Name", mod.Name);
-			//        element.SetAttribute("Version", mod.Version);
-			//        element.SetAttribute("Filename", mod.Filename);
-			//        doc.DocumentElement.AppendChild(element);
-			//    }
+			doc.DocumentElement.SetAttribute("Url", Window.Instance.Location.Href);
+			foreach(var mod in Modules.List)
+            {
+			    var element = doc.CreateElement("Module");
+			    element.SetAttribute("Name", mod.Name);
+			    element.SetAttribute("Version", mod.Version);
+			    element.SetAttribute("Filename", mod.Filename);
+                element.SetAttribute("Timestamp", mod.Timestamp);
+			    doc.DocumentElement.AppendChild(element);
+			}
 			return XmlToolkit.ToXml(doc);
 		}
 
@@ -445,7 +493,7 @@ namespace NetWebScript.Diagnostics
 		/// <param name="id">Point of code identifier</param>
 		/// <returns>always true</returns>
 		[DebuggerHidden]
-		internal static bool Point(string id)
+		public static bool P(string id)
 		{
 			if ( callStack.Length > 0) 
 			{

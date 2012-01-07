@@ -127,7 +127,7 @@ namespace NetWebScript.Debug.App.ViewModel
 
         public ThreadModel CurrentBreakedThread { get; private set; }
 
-        public JSStack CurrentBreakedThreadStack { get; private set; }
+        public StackModel CurrentBreakedThreadStack { get; private set; }
 
         public event EventHandler BreakPointsChanged;
 
@@ -156,7 +156,7 @@ namespace NetWebScript.Debug.App.ViewModel
             }
             CurrentPoint = point;
             CurrentBreakedThread = thread;
-            CurrentBreakedThreadStack = stack;
+            CurrentBreakedThreadStack = new StackModel(thread, stack);
             if (CurrentPointChanged != null)
             {
                 CurrentPointChanged(this, EventArgs.Empty);

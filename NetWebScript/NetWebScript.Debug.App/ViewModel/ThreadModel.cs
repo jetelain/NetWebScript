@@ -63,5 +63,10 @@ namespace NetWebScript.Debug.App.ViewModel
             thread.StepOver();
         }
 
+        internal JSData Expand(JSData data)
+        {
+            return thread.Expand(data);
+        }
+
     }
 }

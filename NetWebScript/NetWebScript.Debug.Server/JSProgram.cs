@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using NetWebScript.Metadata;
 using System.Diagnostics.Contracts;
+using System.Diagnostics;
 namespace NetWebScript.Debug.Server
 {
     internal sealed class JSProgram : IJSProgram
@@ -317,13 +318,9 @@ namespace NetWebScript.Debug.Server
         {
             lock (locker)
             {
-                if (!breakPoints.Contains(point))
+                if (breakPoints.Remove(point))
                 {
-                    return;
-                }
-                foreach (var module in modules)
-                {
-                    var resolved = module.ResolvePoint(point);
+                    var resolved = breakPointsUids.Where(p => p.Point.Equals(point)).ToList();
                     foreach (var modulePoint in resolved)
                     {
                         RemoveBreakPoint(modulePoint);

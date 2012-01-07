@@ -45,7 +45,7 @@ namespace NetWebScript.Test.Compiler
         [TestMethod]
         public void Compile_SimpleClass()
         {
-            var compiler = new ModuleCompiler();
+            var compiler = new ModuleCompiler(false, false);
             var type = CreateSimpleClass();
             compiler.AddEntryPoint(type);
 
@@ -85,7 +85,7 @@ return a0+1;
         [TestMethod]
         public void Compile_ScriptBody()
         {
-            var compiler = new ModuleCompiler();
+            var compiler = new ModuleCompiler(false, false);
             compiler.AddEntryPoint(typeof(BodyTest));
 
             var writer = new StringWriter();

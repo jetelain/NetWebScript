@@ -9,7 +9,7 @@ namespace NetWebScript.Script
     /// <summary>
     /// JavaScript unknown object (no C# corresponding found).
     /// </summary>
-    [Imported(Name="Object")]
+    [Imported(Name="Object", IgnoreNamespace=true)]
     public sealed class JSObject
     {
         [ScriptBody(Inline = "undefined")]

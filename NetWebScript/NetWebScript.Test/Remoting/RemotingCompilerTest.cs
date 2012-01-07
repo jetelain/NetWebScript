@@ -15,7 +15,7 @@ namespace NetWebScript.Test.Remoting
         [TestMethod]
         public void RemotingCompile_RemoteMethod()
         {
-            var compiler = new ModuleCompiler(new RemotingScriptSystem("a"));
+            var compiler = new ModuleCompiler(new RemotingScriptSystem("a"), false, false);
             compiler.AddEntryPoint(typeof(RemoteA));
 
             var writer = new StringWriter();

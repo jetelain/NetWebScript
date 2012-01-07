@@ -165,9 +165,7 @@ namespace NetWebScript.CompilerCLI
             IScriptPageFactory factory = null;
             var assemblies = options.add.Select(n => Assembly.LoadFrom(n.FullName)).ToArray();
 
-            var compiler = new ModuleCompiler();
-            compiler.PrettyPrint = options.pretty;
-            compiler.Debuggable = options.debug;
+            var compiler = new ModuleCompiler(options.debug, options.pretty);
 
             foreach( var assembly in assemblies )
             {
@@ -219,15 +217,15 @@ namespace NetWebScript.CompilerCLI
 
             using (var writer = new StreamWriter(new FileStream(Path.Combine(options.path.FullName, options.name + ".js"), FileMode.Create, FileAccess.Write)))
             {
-                CoreRuntime.WriteRuntime(writer, compiler.Debuggable);
-                writer.WriteLine("NWS.$RegMod('{0}','0.0.0.0','{0}.js','{1}');", options.name, compiler.Metadata.Timestamp);
+                //CoreRuntime.WriteRuntime(writer, compiler.Debuggable);
                 compiler.Write(writer);
+                writer.WriteLine("Modules.Reg('{0}','0.0.0.0','{0}.js','{1}');", options.name, compiler.Metadata.Timestamp);
                 if (compiler.Debuggable)
                 {
                     writer.WriteLine("$(document).ready(function(){");
                     if (compiler.Debuggable)
                     {
-                        writer.WriteLine("$dbgStart();");
+                        writer.WriteLine("$dbg.Start();");
                     }
                     writer.WriteLine("});");
                 }

@@ -36,5 +36,12 @@ namespace NetWebScript.Debug.Server
         /// Unique identifier number within parent <see cref="IJSProgram"/>.
         /// </summary>
         int Id { get; }
+
+        /// <summary>
+        /// Retreive missing data of supplied <see cref="JSData"/>.
+        /// </summary>
+        /// <param name="data">Data to expand</param>
+        /// <returns>Expanded version of data</returns>
+        JSData Expand(JSData data);
     }
 }

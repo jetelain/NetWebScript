@@ -25,7 +25,7 @@ namespace NetWebScript.JsClr.Compiler
 		{
             this.system = system;
             this.pretty = pretty;
-            if (!Attribute.IsDefined(method.Method, typeof(DebuggerHiddenAttribute)))
+            if (!Attribute.IsDefined(method.Method, typeof(DebuggerHiddenAttribute)) && !(method.Method.IsStatic && method.Method is ConstructorInfo))
             {
                 this.methodMetadata = methodMetadata;
             }
@@ -208,7 +208,7 @@ namespace NetWebScript.JsClr.Compiler
             {
                 if (IsDebug)
                 {
-                   writer.Write("$dbgL();");
+                   writer.Write("$dbg.L();");
                 }
                 if (isctor)
                 {
@@ -224,7 +224,7 @@ namespace NetWebScript.JsClr.Compiler
                 writer.Write("return ");
                 if (IsDebug)
                 {
-                    writer.Write("$dbgL(");
+                    writer.Write("$dbg.L(");
                     writer.WriteCommaSeparated(returnStatement.Value.Accept(this));
                     writer.Write(")");
                 }
@@ -242,7 +242,7 @@ namespace NetWebScript.JsClr.Compiler
             writer.Write("throw ");
             if (IsDebug)
             {
-                writer.Write("$dbgL(");
+                writer.Write("$dbg.L(");
                 writer.WriteCommaSeparated(throwStatement.Value.Accept(this));
                 writer.Write(")");
             }
@@ -377,7 +377,7 @@ namespace NetWebScript.JsClr.Compiler
                     writer.Write("{0}:{0}", ArgumentName(arg));
                 }
                 writer.WriteLine("};");
-                writer.WriteLine("$dbgE('{0}',t);", methodMetadata.Id);
+                writer.WriteLine("$dbg.E('{0}',t);", methodMetadata.Id);
             }
             else if (ast.Variables.Count > 0)
             {
@@ -411,7 +411,7 @@ namespace NetWebScript.JsClr.Compiler
             writer.WriteIndented(pretty, ast.Statements.Select(s => s.Accept(this)));
             if (IsDebug)
             {
-                writer.WriteLine("$dbgL();");
+                writer.WriteLine("$dbg.L();");
             }
             if (isctor)
             {
@@ -432,7 +432,7 @@ namespace NetWebScript.JsClr.Compiler
                 return null;
             }
             JsTokenWriter builder = new JsTokenWriter();
-            builder.Write("$dbgP");
+            builder.Write("$dbg.P");
             builder.WriteOpenArgs();
             builder.Write("'" + AddDebugPoint(point.Point).Id + "'");
             builder.WriteCloseArgs();
@@ -453,7 +453,7 @@ namespace NetWebScript.JsClr.Compiler
                 throw new InvalidOperationException();
             }
             JsTokenWriter builder = new JsTokenWriter();
-            builder.Write("$dbgP");
+            builder.Write("$dbg.P");
             builder.WriteOpenArgs();
             builder.Write("'" + AddDebugPoint(point).Id + "'");
             builder.WriteCloseArgs();

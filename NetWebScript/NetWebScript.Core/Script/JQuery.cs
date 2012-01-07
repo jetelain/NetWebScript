@@ -282,7 +282,7 @@ namespace NetWebScript.Script
         /// A collection of properties that represent the presence of different browser features or bugs.
         /// </summary>
         [IntrinsicProperty]
-        public static object Support { get; set; }
+        public static JSObject Support { get; set; }
 
         /// <summary>
         /// Add elements to the set of matched elements.

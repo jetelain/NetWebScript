@@ -4,6 +4,7 @@ using System.Threading;
 using System.Linq;
 using System.Diagnostics;
 using NetWebScript.Metadata;
+using System.Xml;
 
 namespace NetWebScript.Debug.Server
 {
@@ -275,6 +276,10 @@ namespace NetWebScript.Debug.Server
             {
                 StepedPoint(data, postData);
             }
+            else if (cmd == "result")
+            {
+                ResultReceived(data, postData);
+            }
 
             if ( blocking )
             {
@@ -283,6 +288,44 @@ namespace NetWebScript.Debug.Server
             else
             {			
                 return GetNonBlockingMessage();
+            }
+        }
+
+        private class ResultWaiter
+        {
+            public string Expression;
+            public ManualResetEvent WaitHandle = new ManualResetEvent(false);
+            public JSData Data;
+        }
+
+        private readonly List<ResultWaiter> resultWaiters = new List<ResultWaiter>();
+
+        private void ResultReceived(string expression, string postData)
+        {
+            ResultWaiter waiter;
+            lock (resultWaiters)
+            {
+                waiter = resultWaiters.FirstOrDefault(w => w.Expression == expression);
+                if (waiter != null)
+                {
+                    resultWaiters.Remove(waiter);
+                }
+            }
+
+            if (waiter != null)
+            {
+                XmlDocument document = new XmlDocument();
+                document.LoadXml(postData);
+                XmlElement node = document.SelectSingleNode("/Dump/P") as XmlElement;
+                if (node != null)
+                {
+                    waiter.Data = new JSData(this, node, expression, "result");
+                }
+                else
+                {
+                    waiter.Data = null;
+                }
+                waiter.WaitHandle.Set();
             }
         }
 
@@ -316,6 +359,28 @@ namespace NetWebScript.Debug.Server
         internal TypeMetadata GetTypeById(string typeId)
         {
             return prog.GetTypeById(typeId);
+        }
+
+        public JSData Expand(JSData data)
+        {
+            if (string.IsNullOrEmpty(data.Path))
+            {
+                return null;
+            }
+            string expression = "return " + data.Path + ";";
+
+            ResultWaiter waiter = new ResultWaiter() { Expression = expression };
+            lock (resultWaiters)
+            {
+                resultWaiters.Add(waiter);
+            }
+            SendMessage("retreive:" + expression);
+            waiter.WaitHandle.WaitOne(5000);
+            lock (resultWaiters)
+            {
+                resultWaiters.Remove(waiter);
+            }
+            return waiter.Data;
         }
     }
 }

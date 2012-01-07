@@ -292,8 +292,9 @@ var Debugger = {
     Identity: function () {
         var doc = NWS.CreateDocument('Identity');
         doc.documentElement.setAttribute("Url", document.location.href);
-        for (var i = 0; i < NWS.$Modules.length; ++i) {
-            var mod = NWS.$Modules[i];
+        var modules = Modules.get_List();
+        for (var i = 0; i < modules.length; ++i) {
+            var mod = modules[i];
             var element = doc.createElement('Module');
             element.setAttribute("Name", mod.Name);
             element.setAttribute("Version", mod.Version);

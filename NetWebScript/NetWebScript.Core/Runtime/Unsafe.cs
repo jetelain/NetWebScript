@@ -43,7 +43,7 @@ namespace NetWebScript.Script
             return GetFields(obj);
         }
 
-        [ScriptBody(Body = "function(o){if (o.constructor && o.constructor.$n) return o.constructor.$n; return typeof o;}")]
+        [ScriptBody(Body = "function(o){if (o.constructor && o.constructor.$n) return o.constructor.$n; if($.isArray(o)) return 'array'; return typeof o;}")]
         public static string GetScriptTypeName(object obj)
         {
             if (obj == null)

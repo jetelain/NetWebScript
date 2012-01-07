@@ -412,6 +412,10 @@ namespace NetWebScript.Equivalents
 
         public string[] Split(params char[] separator)
         {
+            if (separator.Length == 1)
+            {
+                return str.Split(JSString.FromCharCode(separator[0]));
+            }
             return str.Split(new JSRegExp(CharsRegexPatten(separator), "g"));
         }
 
