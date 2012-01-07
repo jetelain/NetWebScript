@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Threading;
 
 namespace NetWebScript.Debug.App.ViewModel
@@ -19,6 +17,8 @@ namespace NetWebScript.Debug.App.ViewModel
         public SourceFolderModel(Dispatcher dispatcher, SourceFolderModel parent, string filename)
             : base(filename)
         {
+            this.dispatcher = dispatcher;
+            this.parent = parent;
             children = new DispatcherObservableCollection<SourceNodeModel>(dispatcher);
         }
 

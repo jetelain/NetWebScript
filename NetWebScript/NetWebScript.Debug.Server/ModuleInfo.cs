@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NetWebScript.Debug.Server
 {
-    [Serializable]
-    public class ModuleInfo
+    internal class ModuleInfo
     {
         public string Name { get; set; }
 

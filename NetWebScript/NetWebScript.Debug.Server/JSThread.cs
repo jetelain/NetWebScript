@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
 using System.Diagnostics;
 using NetWebScript.Metadata;
+
 namespace NetWebScript.Debug.Server
 {
     public enum JSThreadState
@@ -22,13 +24,13 @@ namespace NetWebScript.Debug.Server
         private DateTime lastActivity;
         private volatile JSThreadState state = JSThreadState.Running;
 
-        private JSDebugPoint currentPoint;
+        private JSModuleDebugPoint currentPoint;
         private JSStack currentStack;
 
         private readonly List<IJSThreadCallback> callbacks = new List<IJSThreadCallback>();
 
         private readonly int id;
-        private readonly String uid;
+        private readonly string uid;
 
         public JSThread (int id, JSProgram prog)
         {
@@ -42,23 +44,24 @@ namespace NetWebScript.Debug.Server
             get { return id; }
         }
 
-        public String UId
+        public string UId
         {
             get { return uid; }
         }
 
-        public void NotifyNewBreakPoint ( String uid )
+        internal void NotifyNewBreakPoint(String uid)
         {
             SendMessage("addbp:"+uid);	
         }
 
-        public void NotifyRemoveBreakPoint(String uid)
+        internal void NotifyRemoveBreakPoint(String uid)
         {
             SendMessage("rmbp:" + uid);
         }
 
-        public void NotifyDetach()
+        internal void NotifyDetach()
         {
+            Stopped();
             SendMessage("detach");
         }
         
@@ -119,7 +122,7 @@ namespace NetWebScript.Debug.Server
             {
                 foreach (IJSThreadCallback callback in callbacks)
                 {
-                    callback.OnBreakpoint(uid, stackXml, currentPoint, currentStack);
+                    callback.OnBreakpoint(currentPoint, currentStack);
                 }
             }
         }
@@ -134,7 +137,7 @@ namespace NetWebScript.Debug.Server
             {
                 foreach (IJSThreadCallback callback in callbacks)
                 {
-                    callback.OnStepDone(uid, stackXml, currentPoint, currentStack);
+                    callback.OnStepDone(currentPoint, currentStack);
                 }
             }
         }
@@ -182,17 +185,17 @@ namespace NetWebScript.Debug.Server
                 ackedBreakPoints.UnionWith(uids);
             }
         }
-        
-        private Semaphore semaphore = new Semaphore(1,1);
+
+        private ManualResetEvent waitHandle = new ManualResetEvent(true);
         
         private void SendMessage ( String message )
         {
             lock ( this )
             {
                 messages.Enqueue(message);
-                if ( waiting )
+                if (waiting)
                 {
-                    semaphore.Release();	
+                    waitHandle.Set();	
                 }
             }
         }
@@ -207,7 +210,7 @@ namespace NetWebScript.Debug.Server
                 }
                 waiting = true;
             }
-            semaphore.WaitOne(2000);
+            waitHandle.WaitOne(2000);
             lock(this)
             {
                 waiting = false;
@@ -238,7 +241,6 @@ namespace NetWebScript.Debug.Server
 
         internal String Query ( String cmd, String data, String postData, bool blocking )
         {
-
             lastActivity = DateTime.Now;
             
             // Commandes spéciales : ne renvoie pas de message (requetes "asynchrones")
@@ -301,7 +303,7 @@ namespace NetWebScript.Debug.Server
         }
 
 
-        internal JSDebugPoint GetPointById(string pointId)
+        internal JSModuleDebugPoint GetPointById(string pointId)
         {
             return prog.GetPointById(pointId);
         }

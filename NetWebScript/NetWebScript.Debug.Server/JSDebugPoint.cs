@@ -1,25 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NetWebScript.Debug.Server
 {
+    /// <summary>
+    /// Segment of a source file where debugger can stop
+    /// </summary>
     [Serializable]
-    public sealed class JSDebugPoint
+    public sealed class JSDebugPoint : IEquatable<JSDebugPoint>
     {
-        private readonly int moduleId;
-        private readonly string id;
         private readonly string fileName;
         private readonly int startRow;
         private readonly int startCol;
         private readonly int endRow;
         private readonly int endCol;
 
-        internal JSDebugPoint(JSModule jSModule, string id, string fileName, int startRow, int startCol, int endRow, int endCol)
+        internal JSDebugPoint(string fileName, int startRow, int startCol, int endRow, int endCol)
         {
-            this.moduleId = jSModule.Id;
-            this.id = id;
             this.fileName = fileName;
             this.startRow = startRow;
             this.startCol = startCol;
@@ -27,18 +23,56 @@ namespace NetWebScript.Debug.Server
             this.endCol = endCol;
         }
 
-        public int ModuleId { get { return moduleId; } }
-
+        /// <summary>
+        /// Start columun (start at 1)
+        /// </summary>
         public int StartCol { get { return startCol; } }
 
+        /// <summary>
+        /// Start line (start at 1)
+        /// </summary>
         public int StartRow { get { return startRow; } }
 
+        /// <summary>
+        /// End column (start at 1)
+        /// </summary>
         public int EndCol { get { return endCol; } }
 
+        /// <summary>
+        /// End line (start at 1)
+        /// </summary>
         public int EndRow { get { return endRow; } }
 
-        public string UId { get { return id; } }
-
+        /// <summary>
+        /// File name
+        /// </summary>
         public string FileName { get { return fileName; } }
+
+        public bool Equals(JSDebugPoint other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+            return StartCol == other.StartCol &&
+                StartRow == other.StartRow && 
+                EndCol == other.EndCol &&
+                EndRow == other.EndRow && 
+                FileName == other.FileName;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as JSDebugPoint);
+        }
+
+        public override int GetHashCode()
+        {
+            return StartCol.GetHashCode() ^ 
+                StartRow.GetHashCode() ^ 
+                EndCol.GetHashCode() ^ 
+                EndRow.GetHashCode() ^ 
+                FileName.GetHashCode();
+        }
     }
 }

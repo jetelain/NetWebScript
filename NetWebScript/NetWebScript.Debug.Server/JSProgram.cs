@@ -2,12 +2,15 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using NetWebScript.Metadata;
+using System.Diagnostics.Contracts;
 namespace NetWebScript.Debug.Server
 {
     internal sealed class JSProgram : IJSProgram
     {
         private readonly Dictionary<String,JSThread> threadsDict = new Dictionary<String, JSThread>();
-        private readonly List<String> breakPoints = new List<String>();
+        private readonly List<JSModuleDebugPoint> breakPointsUids = new List<JSModuleDebugPoint>();
+        private readonly List<JSDebugPoint> breakPoints = new List<JSDebugPoint>();
+
         private readonly int id;
         private readonly WebServer server;
         
@@ -19,6 +22,8 @@ namespace NetWebScript.Debug.Server
         private readonly List<JSModule> modules = new List<JSModule>();
         private readonly ProgramIdentity identity;
         private readonly Uri uri;
+
+        private readonly object locker = new object();
 
         public JSProgram (WebServer server, int id, Uri uri, IEnumerable<ModuleInfo> initialModules)
         {
@@ -33,12 +38,26 @@ namespace NetWebScript.Debug.Server
                 }
             }
             identity = new ProgramIdentity(uri);
-            
         }
 
         public int Id
         {
             get { return id; }
+        }
+
+        public string Name
+        {
+            get
+            {
+                lock (locker)
+                {
+                    if (modules.Count == 0)
+                    {
+                        return uri.ToString();
+                    }
+                    return string.Join(" ,", modules.Select(m => m.ModuleInfo.Name));
+                }
+            }
         }
 
         public Uri Uri
@@ -56,46 +75,40 @@ namespace NetWebScript.Debug.Server
             return identity.IsPartOfProgram(uri);
         }
 
-        public List<String> BreakPoints
+        internal IEnumerable<String> BreakPoints
         {
-            get { return breakPoints; }	
+            get { return breakPointsUids.Select(p => p.UId); }	
         }
 
-        public void AddBreakPoint ( String uid )
+        private void AddBreakPoint(JSModuleDebugPoint point)
         {
-            lock (this)
+            if (!breakPointsUids.Any(p => p.UId == point.UId))
             {
-                if ( !breakPoints.Contains(uid) )
+                breakPointsUids.Add(point);
+                foreach (JSThread thread in threadsDict.Values)
                 {
-                    breakPoints.Add(uid);
-                    foreach ( JSThread thread in threadsDict.Values )
-                    {
-                        thread.NotifyNewBreakPoint(uid);
-                    }
+                    thread.NotifyNewBreakPoint(point.UId);
                 }
             }
         }
 
-        public void RemoveBreakPoint(String uid)
+        private void RemoveBreakPoint(JSModuleDebugPoint point)
         {
-            lock (this)
+            if (breakPointsUids.Remove(point))
             {
-                if (breakPoints.Contains(uid))
+                foreach (JSThread thread in threadsDict.Values)
                 {
-                    breakPoints.Remove(uid);
-                    foreach (JSThread thread in threadsDict.Values)
-                    {
-                        thread.NotifyRemoveBreakPoint(uid);
-                    }
+                    thread.NotifyRemoveBreakPoint(point.UId);
                 }
             }
         }
 
-        public void DetachAll()
+        public void ClearAndDetachAll()
         {
-            lock (this)
+            lock (locker)
             {
                 breakPoints.Clear();
+                breakPointsUids.Clear();
                 foreach (JSThread thread in threadsDict.Values)
                 {
                     thread.NotifyDetach();
@@ -106,7 +119,7 @@ namespace NetWebScript.Debug.Server
         internal JSThread CreateThread()
         {
             JSThread thread;
-            lock (this)
+            lock (locker)
             {
                 thread = new JSThread(nextThreadId, this);
                 nextThreadId++;
@@ -123,40 +136,14 @@ namespace NetWebScript.Debug.Server
             return thread;
         }
 
-        /*public JSThread GetThread ( String t )
-        {
-            JSThread thread;
-            if( !threadsDict.TryGetValue(t, out thread) )
-            {
-                lock (this)
-                {
-                    if (!threadsDict.TryGetValue(t, out thread))
-                    {
-                        thread = new JSThread(this);
-                        threadsDict.Add(t, thread);
-                        lock (callbacks)
-                        {
-                            foreach (IJSProgramCallback callback in callbacks)
-                            {
-                                callback.OnNewThread(thread);
-                            }
-                        }
-                    }
-                }
-            }	
-            return thread;
-        }*/
-
         public ICollection<IJSThread> Threads
         {
             get 
-            { 
-                List<IJSThread> list = new List<IJSThread>();
-                foreach (JSThread thread in threadsDict.Values)
+            {
+                lock (locker)
                 {
-                    list.Add(thread);
+                    return threadsDict.Values.Cast<IJSThread>().ToList();
                 }
-                return list;
             }
         }
 
@@ -189,18 +176,52 @@ namespace NetWebScript.Debug.Server
             }
         }
 
+        private void ComputeNewBreakpointsUids()
+        {
+            Contract.Requires(threadsDict.Count == 0);
+            breakPointsUids.Clear();
+            foreach (var module in modules)
+            {
+                foreach (var point in breakPoints)
+                {
+                    var resolved = module.ResolvePoint(point);
+                    foreach (var modulePoint in resolved)
+                    {
+                        AddBreakPoint(modulePoint);
+                    }
+                }
+            }
+        }
+
+        private void DetachAllThreads()
+        {
+            Contract.Ensures(threadsDict.Count == 0);
+            foreach (JSThread thread in threadsDict.Values)
+            {
+                thread.NotifyDetach();
+            }
+            threadsDict.Clear();
+        }
+
         private void ModuleUpdate(JSModule existing, ModuleInfo newModule)
         {
-            existing.UpdateMetadata(newModule);
-            
+            lock (locker)
+            {
+                // Detach all existing threads
+                DetachAllThreads();
+
+                // Update module metadata
+                existing.UpdateMetadata(newModule);
+
+                // Computes new breakpoints
+                ComputeNewBreakpointsUids();
+            }
+
             lock (callbacks)
             {
-                lock (callbacks)
+                foreach (IJSProgramCallback callback in callbacks)
                 {
-                    foreach (IJSProgramCallback callback in callbacks)
-                    {
-                        callback.OnModuleUpdate(existing.ModuleInfo);
-                    }
+                    callback.OnModuleUpdate(existing.ModuleInfo);
                 }
             }
         }
@@ -208,9 +229,6 @@ namespace NetWebScript.Debug.Server
 
         internal void MergeModules(List<ModuleInfo> newModules)
         {
-            // FIXME: Due to browser 'cache', multiple version of a same module may be connected to debugger at the same time.
-            // Module should be attached to 'thread' and not to 'program' to avoid problems.
-
             foreach (ModuleInfo newModule in newModules)
             {
                 var existing = modules.FirstOrDefault(m => m.ModuleUri == newModule.Uri);
@@ -224,13 +242,14 @@ namespace NetWebScript.Debug.Server
                     ModuleUpdate(existing, newModule);
                 }
             }
+            
         }
 
 
 
-        internal JSDebugPoint GetPointById(string pointId)
+        internal JSModuleDebugPoint GetPointById(string pointId)
         {
-            lock (modules)
+            lock (locker)
             {
                 return modules.Select(m => m.GetPointById(pointId)).FirstOrDefault(p => p != null);
             }
@@ -238,7 +257,7 @@ namespace NetWebScript.Debug.Server
 
         internal MethodBaseMetadata GetMethodById(string methodId)
         {
-            lock (modules)
+            lock (locker)
             {
                 return modules.Select(m => m.GetMethodById(methodId)).FirstOrDefault(p => p != null);
             }
@@ -246,7 +265,7 @@ namespace NetWebScript.Debug.Server
 
         internal TypeMetadata GetTypeById(string typeId)
         {
-            lock (modules)
+            lock (locker)
             {
                 return modules.Select(m => m.GetTypeById(typeId)).FirstOrDefault(p => p != null);
             }
@@ -254,32 +273,84 @@ namespace NetWebScript.Debug.Server
 
         public List<JSDebugPoint> FindPoints(string fileName, int startCol, int startRow)
         {
-            return modules.SelectMany(m => m.FindPoints(fileName, startCol, startRow)).ToList();
+            HashSet<JSDebugPoint> points;
+            lock (locker)
+            {
+                points = new HashSet<JSDebugPoint>(modules.SelectMany(m => m.FindPoints(fileName, startCol, startRow)));
+            }
+            return points.ToList();
         }
 
         public List<JSDebugPoint> FindPoints(string fileName, int startRow)
         {
-            return modules.SelectMany(m => m.FindPoints(fileName, startRow)).ToList();
+            HashSet<JSDebugPoint> points;
+            lock (locker)
+            {
+                points = new HashSet<JSDebugPoint>(modules.SelectMany(m => m.FindPoints(fileName, startRow)));
+            }
+            return points.ToList();
         }
-
 
         public List<string> ListSourceFiles()
         {
             HashSet<string> files;
-            lock (modules)
+            lock (locker)
             {
                 files = new HashSet<string>(modules.SelectMany(m => m.ListSourceFiles()), StringComparer.OrdinalIgnoreCase);
             }
             return files.ToList();
         }
 
-        public List<JSDebugPoint> ListActivePoints()
+        public List<JSDebugPoint> ActivePoints
         {
-            lock (this)
+            get
             {
-                return breakPoints.Select(pointId => modules.Select(m => m.GetPointById(pointId)).FirstOrDefault(p => p != null)).Where(p => p != null).ToList();
+                lock (locker)
+                {
+                    return breakPoints.ToList();
+                }
             }
         }
+
+
+        public void RemoveBreakPoint(JSDebugPoint point)
+        {
+            lock (locker)
+            {
+                if (!breakPoints.Contains(point))
+                {
+                    return;
+                }
+                foreach (var module in modules)
+                {
+                    var resolved = module.ResolvePoint(point);
+                    foreach (var modulePoint in resolved)
+                    {
+                        RemoveBreakPoint(modulePoint);
+                    }
+                }
+            }
+        }
+
+        public void AddBreakPoint(JSDebugPoint point)
+        {
+            lock (locker)
+            {
+                if (!breakPoints.Contains(point))
+                {
+                    breakPoints.Add(point);
+                    foreach (var module in modules)
+                    {
+                        var resolved = module.ResolvePoint(point);
+                        foreach (var modulePoint in resolved)
+                        {
+                            AddBreakPoint(modulePoint);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
 

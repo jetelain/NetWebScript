@@ -18,14 +18,14 @@ namespace NetWebScript.Debug.App.ViewModel
             thread.RegisterCallback(this);
         }
 
-        public void OnBreakpoint(string id, string stackXml, JSDebugPoint point, JSStack stack)
+        public void OnBreakpoint(JSModuleDebugPoint point, JSStack stack)
         {
-            program.SetCurrentPointAsync(this, point, stack);
+            program.SetCurrentPointAsync(this, point.Point, stack);
         }
 
-        public void OnStepDone(string id, string stackXml, JSDebugPoint point, JSStack stack)
+        public void OnStepDone(JSModuleDebugPoint point, JSStack stack)
         {
-            program.SetCurrentPointAsync(this, point, stack);
+            program.SetCurrentPointAsync(this, point.Point, stack);
         }
 
         public void OnStopped()

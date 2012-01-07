@@ -70,16 +70,16 @@ namespace NetWebScript.Debug.Engine.Debug
         }*/
 
         // Remove all of the bound breakpoints for this pending breakpoint
-        public void ClearBoundBreakpoints()
-        {
-            lock (m_boundBreakpoints)
-            {
-                for (int i = m_boundBreakpoints.Count - 1; i >= 0; i--)
-                {
-                    ((IDebugBoundBreakpoint2)m_boundBreakpoints[i]).Delete();
-                }
-            }
-        }
+        //public void ClearBoundBreakpoints()
+        //{
+        //    lock (m_boundBreakpoints)
+        //    {
+        //        for (int i = m_boundBreakpoints.Count - 1; i >= 0; i--)
+        //        {
+        //            ((IDebugBoundBreakpoint2)m_boundBreakpoints[i]).Delete();
+        //        }
+        //    }
+        //}
 
         /*// Called by bound breakpoints when they are being deleted.
         public void OnBoundBreakpointDeleted(AD7BoundBreakpoint boundBreakpoint)
@@ -104,18 +104,15 @@ namespace NetWebScript.Debug.Engine.Debug
 
                 foreach ( ScriptProgram program in m_engine.Programs )
                 {
-                    var points = new HashSet<DocumentContext>();
-                    foreach (ScriptModule module in program.Modules)
-                    {
-                        points.UnionWith(module.ResolvePoints(documentName, startCol, startRow));
-                    }
+                    var points = program.ResolvePoint(documentName, startCol, startRow);
+
                     if (points.Count > 0)
                     {
                         hasPoints = true;
 
                         lock (m_boundBreakpoints)
                         {
-                            foreach (DocumentContext point in points)
+                            foreach (var point in points)
                             {
                                 BoundBreakpoint bound = new BoundBreakpoint(this, program, point);
                                 m_boundBreakpoints.Add(bound);
@@ -315,36 +312,51 @@ namespace NetWebScript.Debug.Engine.Debug
 
             GetPosition(out documentName, out startCol, out startRow);
 
-            var points = new List<DocumentContext>(module.ResolvePoints(documentName, startCol, startRow));
-            if (points.Count > 0)
+            var points = program.ResolvePoint(documentName, startCol, startRow);
+            
+            lock (m_boundBreakpoints)
             {
-                lock (m_boundBreakpoints)
+                var remain = m_boundBreakpoints.Where(bp => bp.Program == program).ToList();
+                foreach (var point in points)
                 {
-                    foreach (DocumentContext point in points)
+                    var match = remain.FirstOrDefault(bp => bp.Point.Equals(point));
+                    if (match == null)
                     {
                         var bound = new BoundBreakpoint(this, program, point);
                         m_boundBreakpoints.Add(bound);
                     }
+                    else
+                    {
+                        remain.Remove(match);
+                    }
+                }
+                if (remain.Count > 0)
+                {
+                    foreach (var bp in remain)
+                    {
+                        bp.Delete();
+                    }
                 }
             }
+            
             // XXX: Events to rise ?
         }
 
         internal void OnModuleUpdate(ScriptProgram scriptProgram, ScriptModule scriptModule)
         {
-            // TODO: This ModuleUpdate approach is not really thread safe, it's a temporary solution to avoid VS restart 
-            // after each module compilation...
+            //// TODO: This ModuleUpdate approach is not really thread safe, it's a temporary solution to avoid VS restart 
+            //// after each module compilation...
 
-            // Remove all bound breakpoints to module
-            lock (m_boundBreakpoints)
-            {
-                var toClear = m_boundBreakpoints.Where(bp => bp.Module == scriptModule).ToList();
-                foreach (var point in toClear)
-                {
-                    point.Delete();
-                }
-            }
-            // Bound all new points
+            //// Remove all bound breakpoints to module
+            //lock (m_boundBreakpoints)
+            //{
+            //    var toClear = m_boundBreakpoints.Where(bp => bp.Module == scriptModule).ToList();
+            //    foreach (var point in toClear)
+            //    {
+            //        point.Delete();
+            //    }
+            //}
+            //// Bound all new points
             OnNewModule(scriptProgram, scriptModule);
         }
     }

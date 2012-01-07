@@ -244,7 +244,7 @@ namespace NetWebScript.Debug.Engine.Script
 
             Callback callback = attached.Callback;
 
-            program.DetachAll();
+            program.ClearAndDetachAll();
             points.Clear();
 
             attached.Detached(this);
@@ -439,33 +439,14 @@ namespace NetWebScript.Debug.Engine.Script
             }
         }
 
-        internal BoundBreakpoint GetPoint(String id)
+        internal void AddBreakPoint(JSDebugPoint point)
         {
-            return points.FirstOrDefault(p => p.Id == id);
+            program.AddBreakPoint(point);
         }
 
-        internal DocumentContext GetContextOfPoint(String id)
+        internal void RemoveBreakPoint(JSDebugPoint point)
         {
-            DocumentContext point;
-            foreach ( ScriptModule module in modules )
-            {
-                point = module.GetPoint(id);
-                if (point != null)
-                {
-                    return point;
-                }
-            }
-            return null;
-        }
-
-        internal void AddBreakPoint(string id)
-        {
-            program.AddBreakPoint(id);
-        }
-
-        internal void RemoveBreakPoint(string id)
-        {
-            program.RemoveBreakPoint(id);
+            program.RemoveBreakPoint(point);
         }
 
         internal NWSEngine Attached
@@ -540,6 +521,21 @@ namespace NetWebScript.Debug.Engine.Script
                     attached.OnModuleUpdate(this, scriptModule);
                 }
             }
+        }
+
+        internal List<JSDebugPoint> ResolvePoint(string documentName, int startCol, int startRow)
+        {
+            return program.FindPoints(documentName, startCol, startRow);
+        }
+
+        internal IDebugModule2 GetModuleById(int moduleId)
+        {
+            return modules.First(m => m.ModuleId == moduleId);
+        }
+
+        internal BoundBreakpoint ResolveBoundBreakPoint(JSDebugPoint jSDebugPoint)
+        {
+            return points.FirstOrDefault(p => p.Point.Equals(jSDebugPoint));
         }
     }
 }

@@ -2,7 +2,18 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
+        xmlns:l="clr-namespace:NetWebScript.Debug.App.Controls"
         Title="" Height="700" Width="900">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary 
+                  Source="Controls/TreeListView.xaml">
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="100" Width="0.3*" />
@@ -65,13 +76,13 @@
                         <ListView SelectedValuePath="." ItemsSource="{Binding CurrentBreakedThreadStack.Frames}">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Method" DisplayMemberBinding="{Binding DisplayName}" />
+                                    <GridViewColumn Header="Method" DisplayMemberBinding="{Binding DisplayName}" Width="600" />
                                 </GridView>
                             </ListView.View>
                         </ListView>
                     </TabItem>
                     <TabItem Header="Locals">
-                        <ListView SelectedValuePath="." ItemsSource="{Binding CurrentBreakedThreadStack.Frames[0].Locals.Children}">
+                        <!--<ListView SelectedValuePath="." ItemsSource="{Binding CurrentBreakedThreadStack.Frames[0].Locals.Children}">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding DisplayName}" />
@@ -79,7 +90,18 @@
                                     <GridViewColumn Header="Type" DisplayMemberBinding="{Binding ValueTypeDisplayName}" />
                                 </GridView>
                             </ListView.View>
-                        </ListView>
+                        </ListView>-->
+                        <l:TreeListView ItemsSource="{Binding CurrentBreakedThreadStack.Frames[0].Locals.Children}">
+                            <l:TreeListView.Columns>
+                                <GridViewColumn Header="Name" CellTemplate="{StaticResource CellTemplate_Name}" Width="175" />
+                                <!--<GridViewColumn Header="Name" DisplayMemberBinding="{Binding DisplayName}" />-->
+                                <GridViewColumn Header="Value" DisplayMemberBinding="{Binding Value}" Width="325" />
+                                <GridViewColumn Header="Type" DisplayMemberBinding="{Binding ValueTypeDisplayName}" Width="100" />
+                            </l:TreeListView.Columns>
+                            <l:TreeListView.ItemTemplate>
+                                <HierarchicalDataTemplate ItemsSource="{Binding Children}" />
+                            </l:TreeListView.ItemTemplate>
+                        </l:TreeListView>
                     </TabItem>
                 </TabControl>
                 

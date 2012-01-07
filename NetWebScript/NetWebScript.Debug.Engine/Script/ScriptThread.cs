@@ -18,8 +18,8 @@ namespace NetWebScript.Debug.Engine.Script
         private readonly int threadNum;
 
         private String name;
-        private DocumentContext currentPoint;
-        private String currentStackXml;
+        private JSModuleDebugPoint currentPoint;
+        private JSStack currentStack;
         private List<Frame> frames;
 
         public ScriptThread(ScriptProgram program, IJSThread thread)
@@ -50,40 +50,14 @@ namespace NetWebScript.Debug.Engine.Script
             if (frames == null)
             {
                 frames = new List<Frame>();
-                XmlDocument document = new XmlDocument();
-                document.LoadXml(currentStackXml);
-                foreach (XmlElement element in document.DocumentElement.SelectNodes("Frame"))
+                foreach (var jsFrame in currentStack.Frames)
                 {
-                    String name = element.GetAttribute("Name");
-                    String pointId = element.GetAttribute("Point");
-                    DocumentContext point = null;
-                    XmlElement p = (XmlElement)element.SelectSingleNode("P");
-                    if (p != null)
-                    {
-                        point = currentPoint;
-                    }
-                    else
-                    {
-                        point = ResolveByPointId(pointId);
-                    }
-                    var metadata = ResolveMethodMetadata(name);
-
-                    Frame frame = new Frame(program, this, point, name, metadata);
-                    if (p != null)
-                    {
-                        frame.Property = new Property(frame, p);
-                    }
-                    frames.Add(frame);
+                    frames.Add(new Frame(program, this, jsFrame));
                 }
                 if (frames.Count == 0)
                 {
-                    frames.Add(new Frame(program, this, currentPoint, "unknown()", null));
+                    frames.Add(new Frame(program, this, currentPoint, "unknown()"));
                 }
-                else
-                {
-                    frames.Reverse();
-                }
-
             }
             // TODO: Be able to retreive full stack trace
             FRAMEINFO[] frameInfoArray = new FRAMEINFO[frames.Count];
@@ -93,45 +67,6 @@ namespace NetWebScript.Debug.Engine.Script
             }
             ppEnum = new FrameInfos(frameInfoArray);
             return Constants.S_OK;
-        }
-
-        private MethodBaseMetadata ResolveMethodMetadata(string name)
-        {
-            foreach (var module in program.Modules)
-            {
-                var method = module.ResolveMethod(name);
-                if (method != null)
-                {
-                    return method;
-                }
-            }
-            return null;
-        }
-
-        internal TypeMetadata ResolveTypeMetadata(string name)
-        {
-            foreach (var module in program.Modules)
-            {
-                var method = module.ResolveType(name);
-                if (method != null)
-                {
-                    return method;
-                }
-            }
-            return null;
-        }
-
-        internal DocumentContext ResolveByPointId(string name)
-        {
-            foreach (var module in program.Modules)
-            {
-                var point = module.ResolvePointById(name);
-                if (point != null)
-                {
-                    return point;
-                }
-            }
-            return null;
         }
 
         public int GetLogicalThread(IDebugStackFrame2 pStackFrame, out IDebugLogicalThread2 ppLogicalThread)
@@ -287,19 +222,19 @@ namespace NetWebScript.Debug.Engine.Script
             currentPoint = null;
         }
 
-        private void SetCurrentPoint(DocumentContext point, String stackXml)
+        private void SetCurrentPoint(JSModuleDebugPoint jspoint, JSStack stack)
         {
-            currentPoint = point;
-            currentStackXml = stackXml;
+            currentPoint = jspoint;
+            currentStack = stack;
             frames = null;
         }
 
 
         #region IJSThreadCallback Members
 
-        public void OnBreakpoint(string id, string stackXml, JSDebugPoint point, JSStack stack)
+        public void OnBreakpoint(JSModuleDebugPoint jspoint, JSStack stack)
         {
-            BoundBreakpoint bp = program.GetPoint(id);
+            var bp = program.ResolveBoundBreakPoint(jspoint.Point);
             if (bp == null || program.Attached == null)
             {
                 ClearCurrentPoint();
@@ -307,23 +242,21 @@ namespace NetWebScript.Debug.Engine.Script
             }
             else
             {
-                SetCurrentPoint(bp.Context, stackXml);
+                SetCurrentPoint(jspoint, stack);
                 program.Attached.Callback.SendBreakpoint(program, this, bp);
             }
         }
 
-        public void OnStepDone(string id, string stackXml, JSDebugPoint jspoint, JSStack stack)
+        public void OnStepDone(JSModuleDebugPoint jspoint, JSStack stack)
         {
-            DocumentContext point = program.GetContextOfPoint(id);
-            if (point == null || program.Attached == null)
+            if (program.Attached == null)
             {
-                Trace.TraceError("Point unknown: " + id);
                 ClearCurrentPoint();
                 Continue();
             }
             else
             {
-                SetCurrentPoint(point, stackXml);
+                SetCurrentPoint(jspoint, stack);
                 program.Attached.Callback.SendStepComplete(program, this);
             }
         }

@@ -87,6 +87,9 @@
     </ApplicationDefinition>
     <Compile Include="Controls\BreakPointsBackground.cs" />
     <Compile Include="Controls\BreakPointsMargin.cs" />
+    <Compile Include="Controls\LevelToIndentConverter.cs" />
+    <Compile Include="Controls\TreeListView.cs" />
+    <Compile Include="Controls\TreeListViewItem.cs" />
     <Compile Include="ProgramWindow.xaml.cs">
       <DependentUpon>ProgramWindow.xaml</DependentUpon>
     </Compile>
@@ -98,6 +101,10 @@
     <Compile Include="ViewModel\SourceFolderModel.cs" />
     <Compile Include="ViewModel\SourceNodeModel.cs" />
     <Compile Include="ViewModel\ThreadModel.cs" />
+    <Page Include="Controls\TreeListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ProgramsListWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

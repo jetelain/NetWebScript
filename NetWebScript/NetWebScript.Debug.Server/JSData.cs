@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using NetWebScript.Metadata;
 using System.Xml;
+using NetWebScript.Metadata;
 
 namespace NetWebScript.Debug.Server
 {
+    /// <summary>
+    /// Data dumped from runtime
+    /// </summary>
     public sealed class JSData
     {
-        internal JSData(JSThread thread, XmlElement element, string name, string displayName)
+        private readonly string path;
+
+        internal JSData(JSThread thread, XmlElement element, string path, string displayName)
         {
+            this.path = path;
+
             DisplayName = displayName;
             Value = element.GetAttribute("Value");
             var valueType = element.GetAttribute("Type");
@@ -25,18 +31,19 @@ namespace NetWebScript.Debug.Server
                 ValueTypeDisplayName = CRefToolkit.GetDisplayName(type.CRef);
             }
 
-            Children = CreateFromObjectChildren(thread, type, element);
+            Children = CreateFromObjectChildren(path, thread, type, element);
         }
 
         internal JSData(JSThread thread, MethodBaseMetadata methodMetadata, XmlElement element)
         {
-            DisplayName = "t";
+            this.path = "t";
+            DisplayName = "Locals";
             Value = element.GetAttribute("Value");
 
-            Children = CreateFromMethodContext(thread, methodMetadata, element);
+            Children = CreateFromMethodContext(path, thread, methodMetadata, element);
         }
 
-        private static List<JSData> CreateFromMethodContext(JSThread thread, MethodBaseMetadata methodMetadata, XmlElement element)
+        private static List<JSData> CreateFromMethodContext(string path, JSThread thread, MethodBaseMetadata methodMetadata, XmlElement element)
         {
             var list = element.SelectNodes("P");
             if (list.Count > 0)
@@ -46,14 +53,14 @@ namespace NetWebScript.Debug.Server
                 {
                     var name = subelement.GetAttribute("Name");
                     var displayName = GetDisplayName(methodMetadata, name);
-                    children.Add(new JSData(thread, subelement, name, displayName));
+                    children.Add(new JSData(thread, subelement, path + "." + name, displayName));
                 }
                 return children;
             }
             return null;
         }
 
-        private static List<JSData> CreateFromObjectChildren(JSThread thread, TypeMetadata type, XmlElement element)
+        private static List<JSData> CreateFromObjectChildren(string path, JSThread thread, TypeMetadata type, XmlElement element)
         {
             var list = element.SelectNodes("P");
             if (list.Count > 0)
@@ -65,7 +72,7 @@ namespace NetWebScript.Debug.Server
                     if (!name.StartsWith("$", StringComparison.Ordinal))
                     {
                         var displayName = GetDisplayName(thread, type, name);
-                        children.Add(new JSData(thread, subelement, name, displayName));
+                        children.Add(new JSData(thread, subelement, path + "." + name, displayName));
                     }
                 }
                 return children;
@@ -112,21 +119,32 @@ namespace NetWebScript.Debug.Server
             return name;
         }
 
-        //internal string ValueTypeName { get; private set; }
-
-        //internal string Name { get; private set; }
-
+        /// <summary>
+        /// Type of the represented object 
+        /// </summary>
         public string ValueTypeDisplayName { get; private set; }
 
+        /// <summary>
+        /// Name of the represented object within its parent 
+        /// </summary>
         public string DisplayName { get; private set; }
 
+        /// <summary>
+        /// Result of "ToString()" on represented object
+        /// </summary>
         public string Value { get; private set; }
 
+        /// <summary>
+        /// Children properties (or variables and argments for the "method locals" object)
+        /// </summary>
         public List<JSData> Children { get; private set; }
 
-        public bool IsExpandable()
+        /// <summary>
+        /// Specify if data has children (might not be yet retreived from runtime)
+        /// </summary>
+        public bool IsExpandable
         {
-            return Children != null && Children.Count > 0;
+            get { return Children != null && Children.Count > 0; }
         }
     }
 }

@@ -38,7 +38,7 @@ namespace NetWebScript.Debug.App.Controls
         /// <inheritdoc/>
         protected override Size MeasureOverride(Size availableSize)
         {
-            return new Size(18, 0);
+            return new Size(15, 0);
         }
 
         /// <inheritdoc/>
@@ -48,18 +48,17 @@ namespace NetWebScript.Debug.App.Controls
             if (textView != null && textView.VisualLinesValid)
             {
                 var renderSize = RenderSize;
-                var actives = ActiveBreakLines;
-                var activeBrush = new SolidColorBrush(Colors.Red);
-                var defaultBrush = new SolidColorBrush(Colors.LightGray);
+                var halfWidth = renderSize.Width / 2;
+                var discSize = halfWidth - 1;
+                var breaks = ActiveBreakLines;
+                var breakBrush = new SolidColorBrush(Colors.Crimson);
                 foreach (VisualLine current in textView.VisualLines)
                 {
                     var y = current.VisualTop - textView.VerticalOffset;
-                    var brush = defaultBrush;
-                    if (actives != null && actives.Contains(current.FirstDocumentLine.LineNumber))
+                    if (breaks != null && breaks.Contains(current.FirstDocumentLine.LineNumber))
                     {
-                        brush = activeBrush;
+                        drawingContext.DrawEllipse(breakBrush, null, new Point(halfWidth, y + (current.Height / 2)), discSize, discSize);
                     }
-                    drawingContext.DrawRectangle(brush, null, new Rect(1, y + 1, renderSize.Width - 2, current.Height - 2));
                 }
             }
         }

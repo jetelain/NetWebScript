@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.VisualStudio.Debugger.Interop;
 using NetWebScript.Debug.Engine.Script;
 using System.Diagnostics;
+using NetWebScript.Debug.Server;
 
 namespace NetWebScript.Debug.Engine.Debug
 {
@@ -12,24 +13,25 @@ namespace NetWebScript.Debug.Engine.Debug
     {
         private readonly PendingBreakpoint parent;
         private readonly ScriptProgram program;
-        private readonly String id;
+        private readonly JSDebugPoint point;
         private readonly DocumentContext doc;
         private bool enabled = true;
         private bool deleted = false;
 
-        public BoundBreakpoint(PendingBreakpoint parent, ScriptProgram program, DocumentContext doc)
+        public BoundBreakpoint(PendingBreakpoint parent, ScriptProgram program, JSDebugPoint point)
         {
             this.program = program;
-            this.id = doc.Id;
-            this.doc = doc;
+            this.point = point;
+            this.doc = new DocumentContext(point);
             this.parent = parent;
-            program.AddBreakPoint(id);
+
+            program.AddBreakPoint(point);
             program.RegisterBreakPoint(this);
         }
 
-        internal String Id
+        internal JSDebugPoint Point
         {
-            get { return id; }
+            get { return point; }
         }
 
         internal PendingBreakpoint Parent
@@ -51,7 +53,7 @@ namespace NetWebScript.Debug.Engine.Debug
                 deleted = true;
                 if (enabled)
                 {
-                    program.RemoveBreakPoint(id);
+                    program.RemoveBreakPoint(point);
                 }
                 parent.OnBoundBreakpointDeleted(this);
                 program.UnRegisterBreakPoint(this);
@@ -67,11 +69,11 @@ namespace NetWebScript.Debug.Engine.Debug
                 enabled = newEnabled;
                 if (enabled)
                 {
-                    program.AddBreakPoint(id);
+                    program.AddBreakPoint(point);
                 }
                 else
                 {
-                    program.RemoveBreakPoint(id);
+                    program.RemoveBreakPoint(point);
                 }
             }
             return Constants.S_OK;
@@ -154,6 +156,6 @@ namespace NetWebScript.Debug.Engine.Debug
 
         #endregion
 
-        internal ScriptModule Module { get { return doc.Module; } }
+        internal ScriptProgram Program { get{return program;} }
     }
 }

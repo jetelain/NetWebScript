@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("NetWebScript.Debug.Engine")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("NetWebScript Debugger - Microsoft Visual Studio Integration Engine")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NetWebScript.Debug.Engine")]
-[assembly: AssemblyCopyright("Copyright ©  2010")]
+[assembly: AssemblyCompany("http//netwebscript.codeplex.com/")]
+[assembly: AssemblyProduct("NetWebScript Debugger")]
+[assembly: AssemblyCopyright("Copyright © 2010-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -14,22 +14,26 @@ namespace NetWebScript.Debug.App.Controls
         {
             if (ActiveBreakSegments != null && ActiveBreakSegments.Count > 0)
             {
-                var brush = new SolidColorBrush(Colors.Red);
-                brush.Opacity = 0.4;
+                var brush = new SolidColorBrush(Colors.Crimson);
+                brush.Opacity = 0.1;
                 brush.Freeze();
+                var pen = new Pen(new SolidColorBrush(Colors.Crimson), 1);
+                pen.Freeze();
 
                 foreach (var segment in ActiveBreakSegments)
                 {
                     BackgroundGeometryBuilder backgroundGeometryBuilder = new BackgroundGeometryBuilder();
+                    backgroundGeometryBuilder.CornerRadius = 3;
                     backgroundGeometryBuilder.AlignToMiddleOfPixels = true;
                     backgroundGeometryBuilder.AddSegment(textView, segment);
-                    drawingContext.DrawGeometry(brush, null, backgroundGeometryBuilder.CreateGeometry());
+                    drawingContext.DrawGeometry(brush, pen, backgroundGeometryBuilder.CreateGeometry());
                 }
             }
             if (CurrentSegment != null)
             {
                 var brush = new SolidColorBrush(Colors.Yellow);
                 BackgroundGeometryBuilder backgroundGeometryBuilder = new BackgroundGeometryBuilder();
+                backgroundGeometryBuilder.CornerRadius = 3;
                 backgroundGeometryBuilder.AlignToMiddleOfPixels = true;
                 backgroundGeometryBuilder.AddSegment(textView, CurrentSegment);
                 drawingContext.DrawGeometry(brush, null, backgroundGeometryBuilder.CreateGeometry());

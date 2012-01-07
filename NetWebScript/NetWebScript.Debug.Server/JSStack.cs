@@ -11,7 +11,7 @@ namespace NetWebScript.Debug.Server
     {
         private readonly List<JSStackFrame> frames = new List<JSStackFrame>();
 
-        internal JSStack(JSThread thread, JSDebugPoint currentPoint, string stackXmlData)
+        internal JSStack(JSThread thread, JSModuleDebugPoint currentPoint, string stackXmlData)
         {
             XmlDocument document = new XmlDocument();
             document.LoadXml(stackXmlData);
@@ -21,7 +21,7 @@ namespace NetWebScript.Debug.Server
                 string pointId = element.GetAttribute("Point");
 
                 var metadata = thread.GetMethodById(name);
-                JSDebugPoint point = null;
+                JSModuleDebugPoint point = null;
                 JSData locals = null;
                 XmlElement p = (XmlElement)element.SelectSingleNode("P");
                 if (p != null)

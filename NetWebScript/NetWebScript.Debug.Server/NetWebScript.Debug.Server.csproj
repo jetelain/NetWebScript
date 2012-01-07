@@ -80,6 +80,7 @@
     <Compile Include="JSData.cs" />
     <Compile Include="JSDebugPoint.cs" />
     <Compile Include="JSModule.cs" />
+    <Compile Include="JSModuleDebugPoint.cs" />
     <Compile Include="JSModuleInfo.cs" />
     <Compile Include="JSProgram.cs" />
     <Compile Include="JSStack.cs" />

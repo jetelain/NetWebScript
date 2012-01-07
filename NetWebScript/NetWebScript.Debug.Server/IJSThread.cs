@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace NetWebScript.Debug.Server
 {
     public interface IJSThread
@@ -11,18 +7,34 @@ namespace NetWebScript.Debug.Server
 
         void UnRegisterCallback(IJSThreadCallback callback);
 
+        /// <summary>
+        /// If thread is breaked, step over current line of code
+        /// </summary>
         void StepOver();
 
+        /// <summary>
+        /// If thread is breaked, step out to current method caller
+        /// </summary>
         void StepOut();
 
+        /// <summary>
+        /// If thread is breaked, step in current line method call
+        /// </summary>
         void StepInto();
 
+        /// <summary>
+        /// If thread is breaked, continue until next break point
+        /// </summary>
         void Continue();
 
+        /// <summary>
+        /// Current state of thread
+        /// </summary>
         JSThreadState State { get; }
 
+        /// <summary>
+        /// Unique identifier number within parent <see cref="IJSProgram"/>.
+        /// </summary>
         int Id { get; }
-
-        String UId { get; }
     }
 }

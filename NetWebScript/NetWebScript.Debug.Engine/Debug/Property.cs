@@ -5,125 +5,50 @@ using System.Text;
 using Microsoft.VisualStudio.Debugger.Interop;
 using System.Xml;
 using NetWebScript.Metadata;
+using NetWebScript.Debug.Server;
 
 namespace NetWebScript.Debug.Engine.Debug
 {
     class Property : IDebugProperty2
     {
         private readonly Frame frame;
-        private readonly TypeMetadata type;
+        private readonly JSData jSData;
 
-        internal Property(Frame frame, XmlElement element, string name, string displayName)
+        public Property(Frame frame, Server.JSData jSData)
         {
             this.frame = frame;
+            this.jSData = jSData;
 
-            Name = name;
-            DisplayName = displayName;
-            
-            Value = element.GetAttribute("Value");
-            TypeName = element.GetAttribute("Type");
-
-            type = frame.Thread.ResolveTypeMetadata(TypeName);
-            CreateChildren(element);
-        }
-
-        internal Property ( Frame frame, XmlElement element )
-        {
-            this.frame = frame;
-            DisplayName = Name = "t";
-            Value = element.GetAttribute("Value");
-            TypeName = element.GetAttribute("Type");
-            CreateChildren(element, frame.MethodMetadata);
-        }
-
-        private void CreateChildren(XmlElement element, MethodBaseMetadata methodMetadata)
-        {
-            var list = element.SelectNodes("P");
-            if (list.Count > 0)
+            if (jSData.Children != null)
             {
-                Children = new List<Property>();
-                foreach (XmlElement subelement in list)
-                {
-                    var name = subelement.GetAttribute("Name");
-                    var displayName = GetDisplayName(methodMetadata, name);
-                    Children.Add(new Property(frame, subelement, name, displayName));
-                }
+                Children = jSData.Children.Select(c => new Property(frame, c)).ToList();
             }
         }
-
-        private void CreateChildren(XmlElement element)
-        {
-            var list = element.SelectNodes("P");
-            if (list.Count > 0)
-            {
-                Children = new List<Property>();
-                foreach (XmlElement subelement in list)
-                {
-                    var name = subelement.GetAttribute("Name");
-                    if (!name.StartsWith("$", StringComparison.Ordinal))
-                    {
-                        var displayName = GetDisplayName(type, name);
-                        Children.Add(new Property(frame, subelement, name, displayName));
-                    }
-                }
-            }
-        }
-
-
-        private string GetDisplayName(MethodBaseMetadata parentType, string name)
-        {
-            if (name == "$this")
-            {
-                return "this";
-            }
-            var variable = parentType.Variables.FirstOrDefault(v => v.Name == name);
-            if (variable != null)
-            {
-                return variable.CName;
-            }
-            return name;
-        }
-
-        private string GetDisplayName(TypeMetadata type, string name)
-        {
-            if (type != null)
-            {
-                var field = type.Fields.FirstOrDefault(f => f.Name == name);
-                if (field != null)
-                {
-                    return CRefToolkit.GetDisplayName(field.CRef);
-                }
-                if (!string.IsNullOrEmpty(type.BaseTypeName))
-                {
-                    var baseType = frame.Thread.ResolveTypeMetadata(type.BaseTypeName);
-                    if (baseType != null)
-                    {
-                        return GetDisplayName(baseType, name);
-                    }
-                }
-            }
-            return name;
-        }
-
-        internal String TypeName { get; private set; }
 
         internal String TypeDisplayName 
         { 
             get 
             {
-                if (type != null)
-                {
-                    return type.CRef;
-                }
-                return TypeName;
+                return jSData.ValueTypeDisplayName;
             } 
         }
 
-        internal String DisplayName { get; private set; }
+        internal String DisplayName 
+        {
+            get 
+            {
+                return jSData.DisplayName;
+            }  
+        }
 
-        internal String Name { get; private set; }
 
-        internal String Value { get; private set; }
+        internal String Value
+        {
+            get
+            {
+                return jSData.Value;
+            }
+        }
 
         internal List<Property> Children { get; private set; }
 

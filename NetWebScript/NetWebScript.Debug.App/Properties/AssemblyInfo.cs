@@ -8,11 +8,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("NetWebScript.Debug.App")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("NetWebScript Standalone Debugger")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NetWebScript.Debug.App")]
-[assembly: AssemblyCopyright("Copyright ©  2010")]
+[assembly: AssemblyCompany("http//netwebscript.codeplex.com/")]
+[assembly: AssemblyProduct("NetWebScript Debugger")]
+[assembly: AssemblyCopyright("Copyright © 2010-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

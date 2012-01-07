@@ -9,12 +9,12 @@ namespace NetWebScript.Debug.Server
     [Serializable]
     public sealed class JSStackFrame
     {
-        private readonly JSDebugPoint point;
+        private readonly JSModuleDebugPoint point;
         private readonly string name;
         private readonly string displayName;
         private readonly JSData locals;
 
-        internal JSStackFrame(JSThread thread, JSDebugPoint point, string name, MethodBaseMetadata metadata, JSData locals)
+        internal JSStackFrame(JSThread thread, JSModuleDebugPoint point, string name, MethodBaseMetadata metadata, JSData locals)
         {
             this.point = point;
             this.name = name;
@@ -40,6 +40,11 @@ namespace NetWebScript.Debug.Server
         }
 
         public JSDebugPoint Point
+        {
+            get { return point.Point; }
+        }
+
+        public JSModuleDebugPoint ModulePoint
         {
             get { return point; }
         }

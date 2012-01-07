@@ -30,15 +30,18 @@ namespace NetWebScript.Debug.App.ViewModel
             this.program = program;
             this.threads = new DispatcherObservableCollection<ThreadModel>(dispatcher);
 
-            Name = program.Uri.ToString();
+            Name = program.Name;
+            
             program.RegisterCallback(this);
             foreach (var thread in program.Threads)
             {
                 threads.Add(new ThreadModel(this, thread));
             }
             sources = new SourceFilesModel(dispatcher, program.ListSourceFiles());
-            activePoints = new ObservableCollection<JSDebugPoint>(program.ListActivePoints());
+            activePoints = new ObservableCollection<JSDebugPoint>(program.ActivePoints);
+            
         }
+
 
         public void Dispose()
         {
@@ -53,6 +56,12 @@ namespace NetWebScript.Debug.App.ViewModel
         public void OnNewModule(JSModuleInfo module)
         {
             sources.SetFilesAsync(program.ListSourceFiles());
+
+            this.Name = program.Name;
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("Name"));
+            }
         }
 
         public void OnModuleUpdate(JSModuleInfo module)
@@ -97,16 +106,16 @@ namespace NetWebScript.Debug.App.ViewModel
 
         private void ToggleBreakPoint(JSDebugPoint point)
         {
-            var existing = activePoints.FirstOrDefault(p => p.ModuleId == point.ModuleId && p.UId == point.UId);
+            var existing = activePoints.FirstOrDefault(p => point.Equals(p));
             if (existing != null)
             {
                 activePoints.Remove(point);
-                program.RemoveBreakPoint(point.UId);
+                program.RemoveBreakPoint(point);
             }
             else
             {
                 activePoints.Add(point);
-                program.AddBreakPoint(point.UId);
+                program.AddBreakPoint(point);
             }
             if (BreakPointsChanged != null)
             {

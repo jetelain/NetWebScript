@@ -12,7 +12,7 @@ namespace NetWebScript.Debug.Server
     {
         private ModuleMetadata metadata;
         private readonly JSModuleInfo infos;
-        private readonly List<JSDebugPoint> points = new List<JSDebugPoint>();
+        private readonly List<JSModuleDebugPoint> points = new List<JSModuleDebugPoint>();
         private readonly int id;
 
         internal JSModule(ModuleInfo module, int id)
@@ -58,7 +58,7 @@ namespace NetWebScript.Debug.Server
                 {
                     foreach (var point in method.Points)
                     {
-                        points.Add(new JSDebugPoint(
+                        points.Add(new JSModuleDebugPoint(
                             this,
                             point.Id,
                             documents[point.DocumentId],
@@ -77,7 +77,7 @@ namespace NetWebScript.Debug.Server
             {
                 return null;
             }
-            return points.Where(p =>
+            return points.Select(p => p.Point).Where(p =>
                 p.StartCol == startCol &&
                 p.StartRow == startRow &&
                 string.Equals(p.FileName, fileName, StringComparison.OrdinalIgnoreCase));
@@ -89,7 +89,7 @@ namespace NetWebScript.Debug.Server
             {
                 return null;
             }
-            return points.Where(p =>
+            return points.Select(p => p.Point).Where(p =>
                 p.StartRow == startRow &&
                 string.Equals(p.FileName, fileName, StringComparison.OrdinalIgnoreCase));
         }
@@ -112,7 +112,7 @@ namespace NetWebScript.Debug.Server
             return metadata.Types.FirstOrDefault(t => t.Name == name);
         }
 
-        public JSDebugPoint GetPointById(string id)
+        public JSModuleDebugPoint GetPointById(string id)
         {
             if (metadata == null)
             {
@@ -151,6 +151,11 @@ namespace NetWebScript.Debug.Server
                 return Enumerable.Empty<string>();
             }
             return metadata.Documents.Select(d => d.Filename);
+        }
+
+        internal IEnumerable<JSModuleDebugPoint> ResolvePoint(JSDebugPoint point)
+        {
+            return points.Where(p => p.Point.Equals(point));
         }
     }
 }

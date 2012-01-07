@@ -5,42 +5,26 @@ using System.Text;
 using Microsoft.VisualStudio.Debugger.Interop;
 using NetWebScript.Debug.Engine.Script;
 using System.Diagnostics;
+using NetWebScript.Debug.Server;
 
 namespace NetWebScript.Debug.Engine.Debug
 {
     class DocumentContext : IDebugDocumentContext2
     {
-        private readonly string uid;
-        private readonly string fileName;
-        private readonly int startRow;
-        private readonly int startCol;
-        private readonly int endRow;
-        private readonly int endCol;
-        private readonly ScriptModule module;
+        private readonly JSDebugPoint point;
         private readonly CodeContext codeContext;
 
-        public DocumentContext(ScriptModule module, string uid, string fileName, int startRow, int startCol, int endRow, int endCol)
+        public DocumentContext(JSDebugPoint point)
         {
-            this.module = module;
-            this.uid = uid;
-            this.fileName = fileName;
-            this.startCol = startCol;
-            this.startRow = startRow;
-            this.endRow = endRow;
-            this.endCol = endCol;
+            this.point = point;
             this.codeContext = new CodeContext(this);
-        }
-
-        public string Id
-        {
-            get { return uid; }
         }
 
         public String FileName
         {
             get
             {
-                return fileName;
+                return point.FileName;
             }
         }
 
@@ -48,7 +32,7 @@ namespace NetWebScript.Debug.Engine.Debug
         {
             get
             {
-                return startCol;
+                return point.StartCol;
             }
         }
 
@@ -56,13 +40,8 @@ namespace NetWebScript.Debug.Engine.Debug
         {
             get
             {
-                return startRow;
+                return point.StartRow;
             }
-        }
-
-        public ScriptModule Module
-        {
-            get { return module; }
         }
 
         public CodeContext CodeContext
@@ -110,7 +89,7 @@ namespace NetWebScript.Debug.Engine.Debug
         // Gets the displayable name of the document that contains this document context.
         int IDebugDocumentContext2.GetName(enum_GETNAME_TYPE gnType, out string pbstrFileName)
         {
-            pbstrFileName = fileName;
+            pbstrFileName = point.FileName;
             return Constants.S_OK;
         }
 
@@ -129,10 +108,10 @@ namespace NetWebScript.Debug.Engine.Debug
         // A statement range is the range of the lines that contributed the code to which this document context refers.
         int IDebugDocumentContext2.GetStatementRange(TEXT_POSITION[] pBegPosition, TEXT_POSITION[] pEndPosition)
         {
-            pBegPosition[0].dwColumn = (uint)startCol - 1;
-            pBegPosition[0].dwLine = (uint)startRow - 1;
-            pEndPosition[0].dwColumn = (uint)endCol - 1;
-            pEndPosition[0].dwLine = (uint)endRow - 1;
+            pBegPosition[0].dwColumn = (uint)point.StartCol - 1;
+            pBegPosition[0].dwLine = (uint)point.StartRow - 1;
+            pEndPosition[0].dwColumn = (uint)point.EndCol - 1;
+            pEndPosition[0].dwLine = (uint)point.EndRow - 1;
             return Constants.S_OK;
         }
 

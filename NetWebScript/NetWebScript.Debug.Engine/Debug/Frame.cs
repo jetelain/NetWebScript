@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Debugger.Interop;
 using NetWebScript.Debug.Engine.Script;
 using System.Diagnostics;
 using NetWebScript.Metadata;
+using NetWebScript.Debug.Server;
 
 namespace NetWebScript.Debug.Engine.Debug
 {
@@ -13,27 +14,36 @@ namespace NetWebScript.Debug.Engine.Debug
     {
         private readonly ScriptProgram program;
         private readonly ScriptThread thread;
-        private readonly DocumentContext point;
+        private readonly JSModuleDebugPoint point;
         private readonly String name;
-        private readonly MethodBaseMetadata metadata;
+        private readonly DocumentContext docContext;
 
-        public Frame(ScriptProgram program, ScriptThread thread, DocumentContext point, String name, MethodBaseMetadata metadata)
+
+        public Frame(ScriptProgram program, ScriptThread thread, JSModuleDebugPoint point, string name)
         {
             this.program = program;
             this.thread = thread;
             this.point = point;
+            this.docContext = new DocumentContext(point.Point);
             this.name = name;
-            this.metadata = metadata;
+        }
+
+        public Frame(ScriptProgram program, ScriptThread thread, JSStackFrame jsFrame)
+        {
+            this.program = program;
+            this.thread = thread;
+            this.point = jsFrame.ModulePoint;
+            this.docContext = new DocumentContext(point.Point);
+            this.name = jsFrame.DisplayName;
+            if (jsFrame.Locals != null)
+            {
+                this.Property = new Property(this, jsFrame.Locals);
+            }
         }
 
         internal ScriptThread Thread
         {
             get { return thread; }
-        }
-
-        internal MethodBaseMetadata MethodMetadata
-        {
-            get { return metadata; }
         }
 
         internal Property Property { get; set; }
@@ -42,10 +52,6 @@ namespace NetWebScript.Debug.Engine.Debug
         {
             get 
             {
-                if (metadata != null)
-                {
-                    return metadata.CRef;
-                }
                 return name;
             }
         }
@@ -68,7 +74,7 @@ namespace NetWebScript.Debug.Engine.Debug
 
         public int GetCodeContext(out IDebugCodeContext2 ppCodeCxt)
         {
-            ppCodeCxt = point.CodeContext;
+            ppCodeCxt = docContext.CodeContext;
             return Constants.S_OK;
         }
 
@@ -80,7 +86,7 @@ namespace NetWebScript.Debug.Engine.Debug
 
         public int GetDocumentContext(out IDebugDocumentContext2 ppCxt)
         {
-            ppCxt = point;
+            ppCxt = docContext;
             return Constants.S_OK;
         }
 
@@ -180,7 +186,7 @@ namespace NetWebScript.Debug.Engine.Debug
             {
                 if (point != null)
                 {
-                    frameInfo.m_pModule = point.Module;
+                    frameInfo.m_pModule = program.GetModuleById(point.ModuleId);
                     frameInfo.m_dwValidFields |= enum_FRAMEINFO_FLAGS.FIF_DEBUG_MODULEP;
                 }
             }
