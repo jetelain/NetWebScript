@@ -38,6 +38,7 @@ namespace NetWebScript.Debug.App.ViewModel
                 if (children == null && jsData.ShouldRetreiveChildren)
                 {
                     var retreive = thread.Expand(jsData);
+                    jsData.Merge(retreive);
                     if (retreive != null && retreive.Children != null)
                     {
                         children = retreive.Children.Select(d => new DataModel(thread, d)).ToList();

@@ -12,9 +12,9 @@ using System.Collections.Generic;
 [assembly: AssemblyTitle("NetWebScript.Core")]
 [assembly: AssemblyDescription("Core classes and attributes to write script runnable .Net code")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NetWebScript")]
-[assembly: AssemblyCopyright("Copyright © 2010-2011")]
+//[assembly: AssemblyCompany("")]
+//[assembly: AssemblyProduct("NetWebScript")]
+//[assembly: AssemblyCopyright("Copyright © 2010-2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -36,8 +36,8 @@ using System.Collections.Generic;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+//[assembly: AssemblyVersion("1.0.0.0")]
+//[assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: CLSCompliant(true)]
         

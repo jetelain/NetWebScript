@@ -15,45 +15,74 @@ namespace NetWebScript.CompilerCLI
     {
         static int Main(string[] args)
         {
-            Options options = null;
+            var report = new ConsoleReporter();
+            bool interractive = true;
+            bool success = false;
             try
             {
-                options = new Options();
-                if (!Parse(args, options))
+                Compiler compiler = new Compiler(report);
+                if (!Parse(args, out interractive, compiler))
                 {
                     return Usage();
                 }
-                return Execute(options);
+                success = compiler.Compile();
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine("Error: Unexpected '{0}' : {1}", e.GetType().Name, e.Message);
+                report.Error(string.Format(" Unexpected '{0}' : {1}", e.GetType().Name, e.Message));
 #if DEBUG
-                if (options == null || options.interactive)
-                {
-                    Console.Error.WriteLine(e.ToString());
-                    Console.ReadKey();
-                }
+                Console.WriteLine(e.ToString());
 #endif
-                return 4;
+            }
+            if (!success)
+            {
+                Console.WriteLine("Failed: {0} error(s)", report.Errors);
+            }
+#if DEBUG
+            if (interractive)
+            {
+                Console.ReadKey();
+            }
+#endif
+            return 0;
+        }
+
+        private class ConsoleReporter : IErrorReporter
+        {
+            int errors;
+
+            public void Error(string p)
+            {
+                Console.Error.WriteLine("Error: {0}", p);
+                errors++;
+            }
+
+            public void Warning(string p)
+            {
+                Console.Error.WriteLine("Warning: {0}", p);
+            }
+
+            public void Info(string p)
+            {
+                Console.Error.WriteLine("Info: {0}", p);
+            }
+
+            public int Errors
+            {
+                get { return errors; }
+            }
+
+            public void Report(CompilerMessage message)
+            {
+                Console.Error.WriteLine(message.ToString());
             }
         }
 
-        private class Options
-        {
-            public bool debug = false;
-            public bool pretty = false;
-#if DEBUG
-            public bool interactive = false;
-#endif
-            public List<FileInfo> add = new List<FileInfo>();
-            public string name = null;
-            public DirectoryInfo path = null;
-            public string page = null;
-        }
 
-        private static bool Parse(string[] args, Options options)
+        private static bool Parse(string[] args, out bool interactive, Compiler compiler)
         {
+            interactive = false;
+
             if (args.Length == 0)
             {
                 return false;
@@ -66,17 +95,17 @@ namespace NetWebScript.CompilerCLI
 
                 if (string.Equals(option, "/debug", StringComparison.OrdinalIgnoreCase))
                 {
-                    options.debug = true;
+                    compiler.Debug = true;
                 }
 #if DEBUG
                 else if (string.Equals(option, "/interactive", StringComparison.OrdinalIgnoreCase))
                 {
-                    options.interactive = true;
+                    interactive = true;
                 }
 #endif
                 else if (string.Equals(option, "/pretty", StringComparison.OrdinalIgnoreCase))
                 {
-                    options.pretty = true;
+                    compiler.Pretty = true;
                 }
                 else if (string.Equals(option, "/add", StringComparison.OrdinalIgnoreCase))
                 {
@@ -91,7 +120,7 @@ namespace NetWebScript.CompilerCLI
                         Console.Error.WriteLine("Error: File '{0}' not found.", info.FullName);
                         return false;
                     }
-                    options.add.Add(info);
+                    compiler.AssembliesPath.Add(info.FullName);
                 }
                 else if (string.Equals(option, "/name", StringComparison.OrdinalIgnoreCase))
                 {
@@ -100,7 +129,7 @@ namespace NetWebScript.CompilerCLI
                         Console.Error.WriteLine("Error: Missing name.", option);
                         return false;
                     }
-                    options.name = e.Current;
+                    compiler.Name = e.Current;
                 }
                 else if (string.Equals(option, "/page", StringComparison.OrdinalIgnoreCase))
                 {
@@ -109,7 +138,7 @@ namespace NetWebScript.CompilerCLI
                         Console.Error.WriteLine("Error: Missing page class name.", option);
                         return false;
                     }
-                    options.page = e.Current;
+                    compiler.Page = e.Current;
                 }
                 else if (string.Equals(option, "/path", StringComparison.OrdinalIgnoreCase))
                 {
@@ -118,11 +147,12 @@ namespace NetWebScript.CompilerCLI
                         Console.Error.WriteLine("Error: Missing path.", option);
                         return false;
                     }
-                    options.path = new DirectoryInfo(e.Current);
-                    if (!options.path.Exists)
+                    var directory = new DirectoryInfo(e.Current);
+                    if (!directory.Exists)
                     {
-                        options.path.Create();
+                        directory.Create();
                     }
+                    compiler.OutputPath = directory.FullName;
                 }
                 else
                 {
@@ -131,17 +161,17 @@ namespace NetWebScript.CompilerCLI
                 }
             }
 
-            if (options.add.Count == 0)
+            if (compiler.AssembliesPath.Count == 0)
             {
                 Console.Error.WriteLine("Error: Supply at least one '/add' option.");
                 return false;
             }
 
-            if (options.name == null)
+            if (compiler.Name == null)
             {
-                if (options.add.Count == 1)
+                if (compiler.AssembliesPath.Count == 1)
                 {
-                    options.name = Path.GetFileNameWithoutExtension(options.add[0].Name);
+                    compiler.Name = Path.GetFileNameWithoutExtension(compiler.AssembliesPath[0]);
                 }
                 else
                 {
@@ -150,128 +180,14 @@ namespace NetWebScript.CompilerCLI
                 }
             }
 
-            if (options.path == null)
+            if (compiler.OutputPath == null)
             {
-                options.path = new DirectoryInfo(Directory.GetCurrentDirectory());
+                compiler.OutputPath = Directory.GetCurrentDirectory();
             }
 
             return true;
         }
 
-        private static int Execute(Options options)
-        {
-            Console.WriteLine("NetWebScript Compiler");
-            Type pageType = null;
-            IScriptPageFactory factory = null;
-            var assemblies = options.add.Select(n => Assembly.LoadFrom(n.FullName)).ToArray();
-
-            var compiler = new ModuleCompiler(options.debug, options.pretty);
-
-            foreach( var assembly in assemblies )
-            {
-                compiler.AddAssembly(assembly);
-            }
-
-            if (!string.IsNullOrEmpty(options.page))
-            {
-                pageType = assemblies.Select(a => a.GetType(options.page, false)).FirstOrDefault(t => t != null);
-                if (pageType == null)
-                {
-                    Console.Error.WriteLine("Error: Type '{0}' not found.", options.page);
-#if DEBUG
-                    if (options.interactive)
-                    {
-                        Console.ReadKey();
-                    }
-#endif
-                    return 5;
-                }
-                if (typeof(IScriptPageFactory).IsAssignableFrom(pageType))
-                {
-                    factory = (IScriptPageFactory)Activator.CreateInstance(pageType);
-                    factory.Prepare(assemblies, compiler);
-                }
-                else
-                {
-                    compiler.AddEntryPoint(pageType);
-                }
-            }
-
-            if (ReportMessage(compiler.GetMessages()))
-            {
-#if DEBUG
-                if (options.interactive)
-                {
-                    Console.ReadKey();
-                }
-#endif
-                return 3;
-            }
-
-            
-
-            using (var writer = new StreamWriter(new FileStream(Path.Combine(options.path.FullName, CoreRuntime.JQueryFilename), FileMode.Create, FileAccess.Write)))
-            {
-                CoreRuntime.WriteJQuery(writer);
-            }
-
-            using (var writer = new StreamWriter(new FileStream(Path.Combine(options.path.FullName, options.name + ".js"), FileMode.Create, FileAccess.Write)))
-            {
-                //CoreRuntime.WriteRuntime(writer, compiler.Debuggable);
-                compiler.Write(writer);
-                writer.WriteLine("Modules.Reg('{0}','0.0.0.0','{0}.js','{1}');", options.name, compiler.Metadata.Timestamp);
-                if (compiler.Debuggable)
-                {
-                    writer.WriteLine("$(document).ready(function(){");
-                    if (compiler.Debuggable)
-                    {
-                        writer.WriteLine("$dbg.Start();");
-                    }
-                    writer.WriteLine("});");
-                }
-            }
-
-            using (var writer = new StreamWriter(new FileStream(Path.Combine(options.path.FullName, options.name + ".js.xml"), FileMode.Create, FileAccess.Write)))
-            {
-                compiler.WriteMetadata(writer);
-            }
-
-            if (pageType != null)
-            {
-                using (var writer = new StreamWriter(new FileStream(Path.Combine(options.path.FullName, options.name + ".html"), FileMode.Create, FileAccess.Write)))
-                {
-                    WritePage(writer, options.name, compiler, pageType, factory);
-                }
-            }
-
-            Console.WriteLine("Success.");
-#if DEBUG
-            if (options.interactive)
-            {
-                Console.ReadKey();
-            }
-#endif
-            return 0;
-        }
-
-        private static bool ReportMessage(List<CompilerMessage> messages)
-        {
-            int errors = 0;
-            foreach (var message in messages)
-            {
-                Console.WriteLine(message.ToString());
-                if (message.Severity == JsClr.Compiler.MessageSeverity.Error)
-                {
-                    errors++;
-                }
-            }
-            Console.WriteLine("{0} error(s).", errors);
-            if (errors > 0)
-            {
-                return true;
-            }
-            return false;
-        }
 
         private static int Usage()
         {
@@ -279,43 +195,9 @@ namespace NetWebScript.CompilerCLI
 #if DEBUG
             Console.ReadKey();
 #endif
-            
-            
             return 1;
         }
 
-        private static void WritePage(TextWriter writer, string name, ModuleCompiler compiler, Type scriptPageType, IScriptPageFactory factory)
-        {
-
-            writer.WriteLine("<!DOCTYPE html>");
-            writer.WriteLine("<html>");
-            writer.WriteLine("<head>");
-            writer.WriteLine("<title>{0}</title>", name);
-            writer.WriteLine("<script type=\"text/javascript\" src=\"{0}\"></script>", CoreRuntime.JQueryFilename);
-            writer.WriteLine("<script type=\"text/javascript\" src=\"{0}.js\"></script>", name);
-            writer.WriteLine("<script type=\"text/javascript\">");
-            writer.WriteLine("$(document).ready(function(){");
-            if (factory != null)
-            {
-                var page = factory.CreatePage();
-                var cache = new SerializerCache(compiler.Metadata);
-                var serializer = new EvaluableSerializer(cache);
-                serializer.Serialize(writer, new Action(page.OnLoad));
-                writer.WriteLine(".call(null);");
-            }
-            else
-            {
-                var ctor = compiler.AddEntryPoint(scriptPageType).GetScriptConstructor(scriptPageType.GetConstructor(Type.EmptyTypes));
-                var method = compiler.AddEntryPoint(typeof(IScriptPage)).GetScriptMethod(typeof(IScriptPage).GetMethod("OnLoad"));
-                writer.WriteLine("new {0}().{1}().{2}();", ctor.Owner.TypeId, ctor.ImplId, method.SlodId);
-            }
-            writer.WriteLine("});");
-            writer.WriteLine("</script>");
-            writer.WriteLine("</head>");
-            writer.WriteLine("<body>");
-            writer.WriteLine("</body>");
-            writer.WriteLine("</html>");
-        }
-
+  
     }
 }

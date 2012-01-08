@@ -91,6 +91,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="..\Version.cs">
+      <Link>Properties\Version.cs</Link>
+    </Compile>
     <Compile Include="Controls\BreakPointsBackground.cs" />
     <Compile Include="Controls\BreakPointsMargin.cs" />
     <Compile Include="Controls\LevelToIndentConverter.cs" />

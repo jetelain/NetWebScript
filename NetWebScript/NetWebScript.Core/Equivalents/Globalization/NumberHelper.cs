@@ -180,5 +180,28 @@ namespace NetWebScript.Equivalents.Globalization
             }
             return numberString.Substring(0, stringIndex + 1) + groupSep + ret;	
         }
+
+        public static JSNumber ParseInteger(JSString str, NumberFormatInfo info)
+        {
+            if (info.NegativeSign != "-")
+            {
+                str = str.Replace(info.NegativeSign, "-");
+            }
+            if (info.PositiveSign != "+")
+            {
+                str = str.Replace(info.PositiveSign, "+");
+            }
+            return JSNumber.ParseInt(str);
+        }
+
+        public static JSNumber ParseInteger(JSString str, NumberStyles style, NumberFormatInfo info)
+        {
+            if (style == NumberStyles.Integer)
+            {
+                return ParseInteger(str, info);
+            }
+            throw new System.NotImplementedException();
+        }
+
     }
 }

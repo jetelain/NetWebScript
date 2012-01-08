@@ -85,5 +85,36 @@ namespace NetWebScript.Test.Material.Tests
             Assert.AreEqual("139AFAE4", c.ToString("X5", info));
             Assert.AreEqual("EB26C639", d.ToString("X5", info));
         }
+
+        [TestMethod]
+        public void Int32_Parse_Integer()
+        {
+            Assert.AreEqual(32, int.Parse("32"));
+            Assert.AreEqual(32, int.Parse("+32"));
+            Assert.AreEqual(-4, int.Parse("-4"));
+            Assert.AreEqual(328923876, int.Parse("328923876"));
+            Assert.AreEqual(328923876, int.Parse("+328923876"));
+            Assert.AreEqual(-349780423, int.Parse("-349780423"));
+
+            NumberFormatInfo info = new NumberFormatInfo();
+            info.NegativeSign = "-";
+            info.PositiveSign = "+";
+            Assert.AreEqual(32, int.Parse("32", info));
+            Assert.AreEqual(32, int.Parse("+32", info));
+            Assert.AreEqual(-4, int.Parse("-4", info));
+            Assert.AreEqual(328923876, int.Parse("328923876", info));
+            Assert.AreEqual(328923876, int.Parse("+328923876", info));
+            Assert.AreEqual(-349780423, int.Parse("-349780423", info));
+
+            info = new NumberFormatInfo();
+            info.NegativeSign = "!";
+            info.PositiveSign = "@";
+            Assert.AreEqual(32, int.Parse("32", info));
+            Assert.AreEqual(32, int.Parse("@32", info));
+            Assert.AreEqual(-4, int.Parse("!4", info));
+            Assert.AreEqual(328923876, int.Parse("328923876", info));
+            Assert.AreEqual(328923876, int.Parse("@328923876", info));
+            Assert.AreEqual(-349780423, int.Parse("!349780423", info));
+        }
     }
 }

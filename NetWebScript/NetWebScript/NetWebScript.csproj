@@ -75,6 +75,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version.cs">
+      <Link>Properties\Version.cs</Link>
+    </Compile>
     <Compile Include="JsClr\AstBuilder\AstBuilderException.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\AstFilters.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\BinaryFix.cs" />
@@ -153,7 +156,9 @@
     <Compile Include="JsClr\Ast\UnaryOperator.cs" />
     <Compile Include="JsClr\Ast\VariableReferenceExpression.cs" />
     <Compile Include="JsClr\Ast\WhileStatement.cs" />
+    <Compile Include="JsClr\Compiler\Compiler.cs" />
     <Compile Include="JsClr\Compiler\CompilerMessage.cs" />
+    <Compile Include="JsClr\Compiler\IErrorReporter.cs" />
     <Compile Include="JsClr\Compiler\InternalMessage.cs" />
     <Compile Include="JsClr\Compiler\AstScriptWriter.cs" />
     <Compile Include="JsClr\Compiler\MessageSeverity.cs" />
@@ -333,6 +338,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ControlFlowGraph.License.txt" />
+    <Content Include="JQuery.License.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

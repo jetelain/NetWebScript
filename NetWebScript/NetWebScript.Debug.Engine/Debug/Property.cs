@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.Debugger.Interop;
-using System.Xml;
-using NetWebScript.Metadata;
 using NetWebScript.Debug.Server;
 
 namespace NetWebScript.Debug.Engine.Debug
@@ -54,7 +51,11 @@ namespace NetWebScript.Debug.Engine.Debug
 
         internal bool IsExpandable()
         {
-            return Children != null && Children.Count > 0;
+            if (Children != null)
+            {
+                return Children.Count > 0;
+            }
+            return jSData.ShouldRetreiveChildren;
         }
 
         internal DEBUG_PROPERTY_INFO GetDebugPropertyInfo(enum_DEBUGPROP_INFO_FLAGS dwFields)
@@ -113,7 +114,21 @@ namespace NetWebScript.Debug.Engine.Debug
 
         public int EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum)
         {
-            if (IsExpandable())
+            if (Children == null && jSData.ShouldRetreiveChildren)
+            {
+                var expanded = frame.Thread.Expand(jSData);
+                jSData.Merge(expanded);
+                if (expanded != null && expanded.Children != null)
+                {
+                    Children = expanded.Children.Select(c => new Property(frame, c)).ToList();
+                }
+                else
+                {
+                    Children = new List<Property>(0);
+                }
+            }
+
+            if (Children != null && Children.Count > 0)
             {
                 DEBUG_PROPERTY_INFO[] properties = new DEBUG_PROPERTY_INFO[Children.Count];
                 for (int i = 0; i < Children.Count; ++i)

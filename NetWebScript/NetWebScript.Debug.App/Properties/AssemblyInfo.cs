@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("NetWebScript.Debug.App")]
 [assembly: AssemblyDescription("NetWebScript Standalone Debugger")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("http//netwebscript.codeplex.com/")]
-[assembly: AssemblyProduct("NetWebScript Debugger")]
-[assembly: AssemblyCopyright("Copyright © 2010-2012")]
+//[assembly: AssemblyCompany("http//netwebscript.codeplex.com/")]
+//[assembly: AssemblyProduct("NetWebScript Debugger")]
+//[assembly: AssemblyCopyright("Copyright © 2010-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+//[assembly: AssemblyVersion("1.0.0.0")]
+//[assembly: AssemblyFileVersion("1.0.0.0")]

@@ -67,6 +67,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version.cs">
+      <Link>Properties\Version.cs</Link>
+    </Compile>
     <Compile Include="Equivalents\BooleanEquiv.cs" />
     <Compile Include="Equivalents\CharEquiv.cs" />
     <Compile Include="Equivalents\DateTimeEquiv.cs" />

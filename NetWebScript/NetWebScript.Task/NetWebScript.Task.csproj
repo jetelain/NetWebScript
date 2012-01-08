@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}</ProjectGuid>
+    <ProjectGuid>{38E96A60-BCD9-4714-A660-4CAC418AF95F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NetWebScript</RootNamespace>
-    <AssemblyName>NetWebScript.Metadata</AssemblyName>
+    <RootNamespace>NetWebScript.Task</RootNamespace>
+    <AssemblyName>NetWebScript.Task</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -30,13 +30,13 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;SIGNED</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>C:\Projets\Private\NetWebScript.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Utilities, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,19 +47,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Version.cs">
-      <Link>Properties\Version.cs</Link>
+      <Link>Version.cs</Link>
     </Compile>
-    <Compile Include="Metadata\CRefToolkit.cs" />
-    <Compile Include="Metadata\DebugPointMetadata.cs" />
-    <Compile Include="Metadata\DocumentReference.cs" />
-    <Compile Include="Metadata\EquivalentMetadata.cs" />
-    <Compile Include="Metadata\FieldMetadata.cs" />
-    <Compile Include="Metadata\MethodBaseMetadata.cs" />
-    <Compile Include="Metadata\ModuleMetadata.cs" />
-    <Compile Include="Metadata\ModuleMetadataSerializer.cs" />
-    <Compile Include="Metadata\VariableMetadata.cs" />
+    <Compile Include="CompileScriptTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Metadata\TypeMetadata.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetWebScript\NetWebScript.csproj">
+      <Project>{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}</Project>
+      <Name>NetWebScript</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NetWebScript.targets">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

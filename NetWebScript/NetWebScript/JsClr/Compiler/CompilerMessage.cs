@@ -10,8 +10,11 @@ namespace NetWebScript.JsClr.Compiler
         public string Message { get; set; }
         public MessageSeverity Severity { get; set; }
         public string Filename { get; set; }
+
         public int LineNumber { get; set; }
         public int LinePosition { get; set; }
+        public int EndLineNumber { get; set; }
+        public int EndLinePosition { get; set; }
 
         public override string ToString()
         {
@@ -24,5 +27,7 @@ namespace NetWebScript.JsClr.Compiler
                 return string.Format("{0}: {1}", Severity, Message);
             }
         }
+
+
     }
 }

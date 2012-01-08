@@ -186,6 +186,8 @@ namespace NetWebScript.JsClr.Compiler
                     publicMessage.Filename = point.Filename;
                     publicMessage.LineNumber = point.StartRow;
                     publicMessage.LinePosition = point.StartCol;
+                    publicMessage.EndLineNumber = point.EndRow;
+                    publicMessage.EndLinePosition = point.EndCol;
                 }
                 else
                 {

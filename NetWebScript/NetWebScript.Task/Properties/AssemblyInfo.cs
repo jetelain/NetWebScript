@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("NetWebScript Compiler")]
-[assembly: AssemblyDescription("NetWebScript Compiler command line interface")]
+[assembly: AssemblyTitle("NetWebScript.Task")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 //[assembly: AssemblyCompany("")]
-//[assembly: AssemblyProduct("NetWebScript")]
-//[assembly: AssemblyCopyright("Copyright ©  2011")]
+//[assembly: AssemblyProduct("NetWebScript.Task")]
+//[assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c82a7e48-5f5b-417c-a932-5604a25be00f")]
+[assembly: Guid("ae8eb054-85e8-4ff3-8cbf-4d597f35775f")]
 
 // Version information for an assembly consists of the following four values:
 //

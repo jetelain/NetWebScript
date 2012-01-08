@@ -44,7 +44,22 @@ namespace NetWebScript.Equivalents
 
         public static int Parse(string s)
         {
-            return JSNumber.ParseInt(s);
+            return NumberFormat.ParseInteger(s, NumberFormatInfo.CurrentInfo);
+        }
+
+        public static int Parse(string s, NumberStyles style)
+        {
+            return NumberFormat.ParseInteger(s, style, NumberFormatInfo.CurrentInfo);
+        }
+
+        public static int Parse(string s, IFormatProvider provider)
+        {
+            return NumberFormat.ParseInteger(s, NumberFormatInfo.GetInstance(provider));
+        }
+
+        public static int Parse(string s, NumberStyles style, IFormatProvider provider)
+        {
+            return NumberFormat.ParseInteger(s, style, NumberFormatInfo.GetInstance(provider));
         }
     }
 }

@@ -178,7 +178,7 @@ namespace NetWebScript.Debug.Server
         /// <param name="expandedData"></param>
         public void Merge(JSData expandedData)
         {
-            if (!expandedData.ShouldRetreiveChildren)
+            if (expandedData != null)
             {
                 Children = expandedData.Children;
                 ShouldRetreiveChildren = false;

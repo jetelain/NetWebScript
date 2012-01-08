@@ -272,5 +272,10 @@ namespace NetWebScript.Debug.Engine.Script
         {
 
         }
+
+        internal JSData Expand(JSData jsData)
+        {
+            return thread.Expand(jsData);
+        }
     }
 }

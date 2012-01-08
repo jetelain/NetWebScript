@@ -360,6 +360,7 @@
 		<row><td>NetWebScript.Debug.Engine.dll2</td><td>{0A1326B3-5E40-4631-81A3-2BA398EE9B30}</td><td>VSENGINE</td><td>2</td><td/><td>netwebscript.debug.engine.dl2</td><td>1</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>NetWebScript.Debug.Server.dll</td><td>{7180712C-7BC4-499C-BD17-13E1B8754F39}</td><td>GlobalAssemblyCache</td><td>2</td><td/><td>netwebscript.debug.server.dl</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>NetWebScript.Metadata.dll</td><td>{6DC3191A-ADED-411F-B82A-6C32B874747A}</td><td>GlobalAssemblyCache</td><td>2</td><td/><td>netwebscript.metadata.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>NetWebScript.Task.dll</td><td>{4BE87388-826B-4AED-94D8-EE1E840A69E5}</td><td>BIN</td><td>2</td><td/><td>netwebscript.task.dll</td><td>1</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>NetWebScript.UnitTestFramework.dll1</td><td>{C75288DD-CCF8-4306-9D35-940F0A74FD6F}</td><td>UNITTEST</td><td>2</td><td/><td>netwebscript.unittestframewo1</td><td>1</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>NetWebScript.dll2</td><td>{C0C2D4F1-1464-4319-993F-02754211E52E}</td><td>BIN</td><td>2</td><td/><td>netwebscript.dll2</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>nwsc.exe2</td><td>{8CECB7CA-C58F-49F4-8339-3CDC79613451}</td><td>BIN</td><td>2</td><td/><td>nwsc.exe2</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -1072,7 +1073,6 @@
 	<table name="CreateFolder">
 		<col key="yes" def="s72">Directory_</col>
 		<col key="yes" def="s72">Component_</col>
-		<row><td>BIN</td><td>ISX_DEFAULTCOMPONENT2</td></row>
 		<row><td>DEBUGGER</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 		<row><td>GlobalAssemblyCache</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>INSTALLDIR</td><td>C__05D622DE4AB449DDA61ABD26C04C0A7F</td></row>
@@ -1914,6 +1914,7 @@
 		<row><td>AlwaysInstall</td><td>NetWebScript.Debug.Engine.dll2</td></row>
 		<row><td>AlwaysInstall</td><td>NetWebScript.Debug.Server.dll</td></row>
 		<row><td>AlwaysInstall</td><td>NetWebScript.Metadata.dll</td></row>
+		<row><td>AlwaysInstall</td><td>NetWebScript.Task.dll</td></row>
 		<row><td>AlwaysInstall</td><td>NetWebScript.UnitTestFramework.dll1</td></row>
 		<row><td>AlwaysInstall</td><td>NetWebScript.dll2</td></row>
 		<row><td>AlwaysInstall</td><td>nwsc.exe2</td></row>
@@ -1939,6 +1940,8 @@
 		<row><td>icsharpcode.avalonedit.readm</td><td>ISX_DEFAULTCOMPONENT6</td><td>ICSHAR~1.TXT|ICSharpCode.AvalonEdit.Readme.txt</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript.Debug.App\Libs\ICSharpCode.AvalonEdit.Readme.txt</td><td>1</td><td/></row>
 		<row><td>jint.dll2</td><td>Jint.dll2</td><td>Jint.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript\bin\Release\Jint.dll</td><td>1</td><td/></row>
 		<row><td>jint.license.txt</td><td>ISX_DEFAULTCOMPONENT6</td><td>JINTLI~1.TXT|Jint.License.txt</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\Jint\Jint.License.txt</td><td>1</td><td/></row>
+		<row><td>jquery.license.txt</td><td>ISX_DEFAULTCOMPONENT6</td><td>JQUERY~1.TXT|JQuery.License.txt</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript\JQuery.License.txt</td><td>1</td><td/></row>
+		<row><td>microsoft.samples.debugging.</td><td>ISX_DEFAULTCOMPONENT6</td><td>MICROS~1.RTF|Microsoft.Samples.Debugging.License.rtf</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\Microsoft.Samples.Debugging\Microsoft.Samples.Debugging.License.rtf</td><td>1</td><td/></row>
 		<row><td>microsoft.samples.debugging.2</td><td>Microsoft.Samples.Debugging.dll2</td><td>MICROS~1.DLL|Microsoft.Samples.Debugging.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript\bin\Release\Microsoft.Samples.Debugging.dll</td><td>1</td><td/></row>
 		<row><td>netwebscript.core.dll</td><td>NetWebScript.Core.dll</td><td>NETWEB~1.DLL|NetWebScript.Core.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript.Core\bin\Release\NetWebScript.Core.dll</td><td>1</td><td/></row>
 		<row><td>netwebscript.debug.app.exe1</td><td>NetWebScript.Debug.App.exe1</td><td>NETWEB~1.EXE|NetWebScript.Debug.App.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript.Debug.App\bin\Release\NetWebScript.Debug.App.exe</td><td>1</td><td/></row>
@@ -1947,6 +1950,8 @@
 		<row><td>netwebscript.dll2</td><td>NetWebScript.dll2</td><td>NETWEB~1.DLL|NetWebScript.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript\bin\Release\NetWebScript.dll</td><td>1</td><td/></row>
 		<row><td>netwebscript.license.txt</td><td>ISX_DEFAULTCOMPONENT6</td><td>NETWEB~1.TXT|NetWebScript.License.txt</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript.License.txt</td><td>1</td><td/></row>
 		<row><td>netwebscript.metadata.dll</td><td>NetWebScript.Metadata.dll</td><td>NETWEB~1.DLL|NetWebScript.Metadata.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript.Metadata\bin\Release\NetWebScript.Metadata.dll</td><td>1</td><td/></row>
+		<row><td>netwebscript.targets</td><td>ISX_DEFAULTCOMPONENT2</td><td>NETWEB~1.TAR|NetWebScript.targets</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript.Task\bin\Release\NetWebScript.targets</td><td>1</td><td/></row>
+		<row><td>netwebscript.task.dll</td><td>NetWebScript.Task.dll</td><td>NETWEB~1.DLL|NetWebScript.Task.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript.Task\bin\Release\NetWebScript.Task.dll</td><td>1</td><td/></row>
 		<row><td>netwebscript.unittestframewo1</td><td>NetWebScript.UnitTestFramework.dll1</td><td>NETWEB~1.DLL|NetWebScript.UnitTestFramework.dll</td><td>0</td><td/><td/><td>512</td><td>1</td><td>C:\Projets\NetWebScript\NetWebScript.UnitTestFramework\bin\Release\NetWebScript.UnitTestFramework.dll</td><td>5</td><td/></row>
 		<row><td>netwebscript_online_document</td><td>ISX_DEFAULTCOMPONENT7</td><td>NETWEB~1.URL|NetWebScript Online Documentation.url</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript.Install\NetWebScript Online Documentation.url</td><td>1</td><td/></row>
 		<row><td>nwsc.exe2</td><td>nwsc.exe2</td><td>nwsc.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projets\NetWebScript\NetWebScript.CompilerCLI\bin\Release\nwsc.exe</td><td>1</td><td/></row>
@@ -2225,6 +2230,7 @@
 		<row><td>NetWebScript.Debug.Engine.dll2</td><td/><td/><td>_75BE8E5B_30CD_4EDB_8E12_C3A0F19A40EA_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>NetWebScript.Debug.Server.dll</td><td/><td/><td>_032AB1F2_BB0C_4AF5_B09C_0E285D0BBB80_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>NetWebScript.Metadata.dll</td><td/><td/><td>_FB1627BD_AA3B_4B29_ACA8_F73A2CC6DC6B_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>NetWebScript.Task.dll</td><td/><td/><td>_92CFEDC3_8825_417D_B65E_16E39C6D375D_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>NetWebScript.UnitTestFramework.dll1</td><td/><td/><td>_1D8E2606_9F92_419E_8ACF_93EFE3DC816F_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>NetWebScript.dll2</td><td/><td/><td>_72714B92_4520_4B86_9B5C_10B2D13AC932_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>nwsc.exe2</td><td/><td/><td>_625EEC23_B233_423E_B5BB_6F4F99B8071F_FILTER</td><td/><td/><td/><td/></row>
@@ -3953,7 +3959,7 @@
 		<row><td>IDS__TargetReq_DESC_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>950041106</td></row>
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>950041106</td></row>
 		<row><td>ID_STRING1</td><td>1033</td><td/><td>0</td><td/><td>950045202</td></row>
-		<row><td>ID_STRING2</td><td>1033</td><td>http://www.NetWebScript.com</td><td>0</td><td/><td>950049235</td></row>
+		<row><td>ID_STRING2</td><td>1033</td><td>http://netwebscript.codeplex.com/</td><td>0</td><td/><td>1084229839</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>NetWebScript</td><td>0</td><td/><td>950049235</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>NETWEB~1|NetWebScript</td><td>0</td><td/><td>950022419</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td>STANDA~1|Standalone Debugger</td><td>0</td><td/><td>950044947</td></row>
@@ -4195,7 +4201,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>Classic.theme</td></row>
 		<row><td>ISUSLock</td><td>{D8BAB302-4B0A-4566-9D96-6474E6F8B1BA}</td></row>
 		<row><td>ISUSSignature</td><td>{19477BB1-B29E-4AE7-A873-E2A1EC35DAD8}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewEnvironmentVariables,viewAppFiles,viewObjects,viewUI,viewDesignPatches,viewRelease,viewISToday,viewAppV,viewProject,viewRegistry,viewFeatureFiles,viewTextMessages,viewVRoots,viewFileExtensions,viewIniFiles,viewShortcuts</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewEnvironmentVariables,viewAppFiles,viewObjects,viewUI,viewDesignPatches,viewRelease,viewISToday,viewAppV,viewProject,viewRegistry,viewFeatureFiles,viewTextMessages,viewVRoots,viewFileExtensions,viewIniFiles,viewShortcuts,viewUpgradePaths,viewUpdateService,viewSystemSearch,viewCustomActions</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4573,7 +4579,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>ProductCode</td><td>{60E4F018-DA28-496A-A112-DC7C548E2541}</td><td/></row>
 		<row><td>ProductName</td><td>NetWebScript</td><td/></row>
-		<row><td>ProductVersion</td><td>1.00.0000</td><td/></row>
+		<row><td>ProductVersion</td><td>0.01.0000</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
