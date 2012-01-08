@@ -161,6 +161,8 @@
   <ItemGroup>
     <Resource Include="Debugger.ico" />
     <Content Include="Libs\ICSharpCode.AvalonEdit.dll" />
+    <Resource Include="Libs\ICSharpCode.AvalonEdit.License.txt" />
+    <Resource Include="Libs\ICSharpCode.AvalonEdit.Readme.txt" />
     <Content Include="test.html" />
   </ItemGroup>
   <ItemGroup>

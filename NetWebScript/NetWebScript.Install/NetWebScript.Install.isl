@@ -352,6 +352,7 @@
 		<row><td>ISX_DEFAULTCOMPONENT5</td><td>{2888372D-3EE6-49E3-84DE-C0024AA99F95}</td><td>UNITTEST</td><td>2</td><td/><td/><td>1</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT6</td><td>{B5DAD566-2784-4F65-8567-3E4C446E8E18}</td><td>LICENSES</td><td>2</td><td/><td/><td>1</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT7</td><td>{0E1C9896-6A05-493D-B74A-86ABEF15671F}</td><td>DOCUMENTATION</td><td>2</td><td/><td/><td>1</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT8</td><td>{7AFD23E8-2557-4DF4-8794-E2CDBF53C428}</td><td>SystemFolder</td><td>2</td><td/><td/><td>1</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Jint.dll2</td><td>{C120FC83-19A8-4A0D-92A4-465D9C102BF7}</td><td>BIN</td><td>2</td><td/><td>jint.dll2</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Microsoft.Samples.Debugging.dll2</td><td>{B3F670F3-4CD3-4310-997B-F88136E576AF}</td><td>BIN</td><td>2</td><td/><td>microsoft.samples.debugging.2</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>NetWebScript.Core.dll</td><td>{6B84FFD3-ECD8-48FD-A727-EE554B74DC76}</td><td>GlobalAssemblyCache</td><td>2</td><td/><td>netwebscript.core.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -1076,6 +1077,7 @@
 		<row><td>GlobalAssemblyCache</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>INSTALLDIR</td><td>C__05D622DE4AB449DDA61ABD26C04C0A7F</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>SystemFolder</td><td>ISX_DEFAULTCOMPONENT8</td></row>
 		<row><td>UNITTEST</td><td>ISX_DEFAULTCOMPONENT5</td></row>
 		<row><td>VSENGINE</td><td>ISX_DEFAULTCOMPONENT3</td></row>
 	</table>
@@ -1904,6 +1906,7 @@
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT5</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT6</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT7</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT8</td></row>
 		<row><td>AlwaysInstall</td><td>Jint.dll2</td></row>
 		<row><td>AlwaysInstall</td><td>Microsoft.Samples.Debugging.dll2</td></row>
 		<row><td>AlwaysInstall</td><td>NetWebScript.Core.dll</td></row>
@@ -2214,6 +2217,7 @@
 		<row><td>ISX_DEFAULTCOMPONENT5</td><td/><td/><td>_071CE1B6_B013_4C38_98B9_72DDFF5CFFE1_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT6</td><td/><td/><td>_B9736FCE_34FB_4B11_8C0C_F931EAA370FA_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT7</td><td/><td/><td>_84952FEE_22C0_49D4_8CB4_476813EC8E10_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT8</td><td/><td/><td>_C7815CB7_7CED_4471_AF1F_6A781DFF965C_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Jint.dll2</td><td/><td/><td>_C24DCF89_9BCF_4FB6_A464_F4F30B2260F7_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Microsoft.Samples.Debugging.dll2</td><td/><td/><td>_C4DE8F21_DEFF_42DE_891B_5A6B3C5A04EB_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>NetWebScript.Core.dll</td><td/><td/><td>_1A943B90_A493_462C_924A_9459CA02AAAB_FILTER</td><td/><td/><td/><td/></row>
@@ -4637,6 +4641,30 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S0">Value</col>
 		<col def="s72">Component_</col>
 		<col def="I4">ISAttributes</col>
+		<row><td>Registry1</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}</td><td>Name</td><td>NetWebScript</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry10</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{0898B973-803F-4d43-82EC-A9044B873467}</td><td>Class</td><td>NetWebScript.Debug.Engine.NWSEngine</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry11</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{0898B973-803F-4d43-82EC-A9044B873467}</td><td>InProcServer32</td><td>[SystemFolder]mscoree.dll</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry12</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{0898B973-803F-4d43-82EC-A9044B873467}</td><td>CodeBase</td><td>[INSTALLDIR]bin\vsengine\NetWebScript.Debug.Engine.dll</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry13</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{9500DB29-25AB-462d-92B4-90588A6B00B2}</td><td>Assembly</td><td>NetWebScript.Debug.Engine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cdd82b6cc2610bf2</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry14</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{9500DB29-25AB-462d-92B4-90588A6B00B2}</td><td>Class</td><td>NetWebScript.Debug.Engine.NWSProgramProvider</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry15</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{9500DB29-25AB-462d-92B4-90588A6B00B2}</td><td>CodeBase</td><td>[INSTALLDIR]bin\vsengine\NetWebScript.Debug.Engine.dll</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry16</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{9500DB29-25AB-462d-92B4-90588A6B00B2}</td><td>InProcServer32</td><td>[SystemFolder]mscoree.dll</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry17</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{7B589914-6569-4aeb-BDED-EAFEE56E1667}</td><td>Assembly</td><td>NetWebScript.Debug.Engine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cdd82b6cc2610bf2</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry18</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{7B589914-6569-4aeb-BDED-EAFEE56E1667}</td><td>Class</td><td>NetWebScript.Debug.Engine.Port.NWSPortSupplier</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry19</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{7B589914-6569-4aeb-BDED-EAFEE56E1667}</td><td>CodeBase</td><td>[INSTALLDIR]bin\vsengine\NetWebScript.Debug.Engine.dll</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry20</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{7B589914-6569-4aeb-BDED-EAFEE56E1667}</td><td>InProcServer32</td><td>[SystemFolder]mscoree.dll</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry21</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}</td><td>Attach</td><td>#1</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry22</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}</td><td>AddressBP</td><td>#1</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry23</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}</td><td>CallstackBP</td><td>#1</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry24</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}</td><td>FunctionBP</td><td>#1</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry25</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}</td><td>AlwaysLoadLocal</td><td>#0</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry26</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}</td><td>AutoSelectPriority</td><td>#9</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry3</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\PortSupplier\{9D17E7CB-E7DB-4eb8-BF2C-DA2A454703AC}</td><td>Name</td><td>NetWebScript</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry4</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{0898B973-803F-4d43-82EC-A9044B873467}</td><td>Assembly</td><td>NetWebScript.Debug.Engine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cdd82b6cc2610bf2</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry5</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}</td><td>CLSID</td><td>{0898B973-803F-4d43-82EC-A9044B873467}</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry6</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}</td><td>ProgramProvider</td><td>{9500DB29-25AB-462d-92B4-90588A6B00B2}</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry8</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}</td><td>PortSupplier</td><td>{9D17E7CB-E7DB-4eb8-BF2C-DA2A454703AC}</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
+		<row><td>Registry9</td><td>2</td><td>SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\PortSupplier\{9D17E7CB-E7DB-4eb8-BF2C-DA2A454703AC}</td><td>CLSID</td><td>{7B589914-6569-4aeb-BDED-EAFEE56E1667}</td><td>ISX_DEFAULTCOMPONENT1</td><td>0</td></row>
 	</table>
 
 	<table name="RemoveFile">
