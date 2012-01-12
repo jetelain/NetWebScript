@@ -15,7 +15,12 @@ namespace NetWebScript.Equivalents
 		private readonly Date date; // the underlaying timestamp is UTC based
 		private readonly DateTimeKind kind;
 
-		private DateTimeEquiv(Date date, DateTimeKind kind)
+        public DateTimeEquiv()
+        {
+            date = new Date(0);
+        }
+
+        private DateTimeEquiv(Date date, DateTimeKind kind)
 		{
 			this.date = date;
 			this.kind = kind;
@@ -291,6 +296,121 @@ namespace NetWebScript.Equivalents
 		{
 			return (int)date.GetTime();
 		}
+
+        private static bool IsUTC(DateTimeStyles styles)
+        {
+            return (styles & DateTimeStyles.AssumeUniversal) != DateTimeStyles.None;
+        }
+
+        private static DateTimeKind GetKind(DateTimeStyles styles)
+        {
+            if ((styles & DateTimeStyles.AdjustToUniversal) != DateTimeStyles.None)
+            {
+                return DateTimeKind.Utc;
+            }
+            if ((styles & (DateTimeStyles.AssumeUniversal | DateTimeStyles.AssumeLocal)) != DateTimeStyles.None)
+            {
+                return DateTimeKind.Local;
+            }
+            return DateTimeKind.Unspecified;
+        }
+
+        private static string[] StandardFormats = { "f", "F", "d", "D", "t", "T", "g", "G", "M", "Y", "s" };
+
+
+        private static DateTimeEquiv ParseAny(string s, string[] formats, DateTimeFormatInfo info, DateTimeStyles styles)
+        {
+            var date = DateTimeFormat.ParseAny(info, s, formats, IsUTC(styles));
+            if (date == null)
+            {
+                throw new System.Exception("ParseError");
+            }
+            return new DateTimeEquiv(date, GetKind(styles));
+        }
+
+        private static bool TryParseAny(string s, string[] formats, DateTimeFormatInfo info, DateTimeStyles styles, out DateTime result)
+        {
+            var date = DateTimeFormat.ParseAny(info, s, formats, IsUTC(styles));
+            if (date != null)
+            {
+                result = new DateTimeEquiv(date, GetKind(styles));
+                return true;
+            }
+            result = default(DateTime);
+            return false;
+        }
+
+        private static DateTimeEquiv ParseOne(string s, string format, DateTimeFormatInfo info, DateTimeStyles styles)
+        {
+            var date = DateTimeFormat.Parse(info, s, format, IsUTC(styles));
+            if (date == null)
+            {
+                throw new System.Exception("ParseError");
+            }
+            return new DateTimeEquiv(date, GetKind(styles));
+        }
+
+        private static bool TryParseOne(string s, string format, DateTimeFormatInfo info, DateTimeStyles styles, out DateTime result)
+        {
+            var date = DateTimeFormat.Parse(info, s, format, IsUTC(styles));
+            if (date != null)
+            {
+                result = new DateTimeEquiv(date, GetKind(styles));
+                return true;
+            }
+            result = default(DateTime);
+            return false;
+        }
+
+        public static DateTimeEquiv Parse(string s)
+        {
+            return ParseAny(s, StandardFormats, DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None);
+        }
+
+        public static DateTime Parse(string s, IFormatProvider provider)
+        {
+            return ParseAny(s, StandardFormats, DateTimeFormatInfo.GetInstance(provider), DateTimeStyles.None);
+        }
+
+        public static DateTime Parse(string s, IFormatProvider provider, DateTimeStyles styles)
+        {
+            return ParseAny(s, StandardFormats, DateTimeFormatInfo.GetInstance(provider), styles);
+        }
+
+        public static DateTime ParseExact(string s, string format, IFormatProvider provider)
+        {
+            return ParseOne(s, format, DateTimeFormatInfo.GetInstance(provider), DateTimeStyles.None);
+        }
+
+        public static DateTime ParseExact(string s, string format, IFormatProvider provider, DateTimeStyles styles)
+        {
+            return ParseOne(s, format, DateTimeFormatInfo.GetInstance(provider), styles);
+        }
+
+        public static DateTime ParseExact(string s, string[] formats, IFormatProvider provider, DateTimeStyles styles)
+        {
+            return ParseAny(s, formats, DateTimeFormatInfo.GetInstance(provider), styles);
+        }
+
+        public static bool TryParse(string s, out DateTime result)
+        {
+            return TryParseAny(s, StandardFormats, DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None, out result);
+        }
+
+        public static bool TryParse(string s, IFormatProvider provider, DateTimeStyles styles, out DateTime result)
+        {
+            return TryParseAny(s, StandardFormats, DateTimeFormatInfo.GetInstance(provider), styles, out result);
+        }
+
+        public static bool TryParseExact(string s, string format, IFormatProvider provider, DateTimeStyles styles, out DateTime result)
+        {
+            return TryParseOne(s, format, DateTimeFormatInfo.GetInstance(provider), styles, out result);
+        }
+
+        public static bool TryParseExact(string s, string[] formats, IFormatProvider provider, DateTimeStyles styles, out DateTime result)
+        {
+            return TryParseAny(s, formats, DateTimeFormatInfo.GetInstance(provider), styles, out result);
+        }
 
 		[ScriptBody(Inline = "v")]
 		public static implicit operator DateTimeEquiv(DateTime v)

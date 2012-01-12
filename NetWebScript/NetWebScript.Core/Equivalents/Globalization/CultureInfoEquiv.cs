@@ -135,7 +135,8 @@ namespace NetWebScript.Equivalents.Globalization
                     ShortestDayNames = new[] { "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" },
                     ShortTimePattern = "HH:mm",
                     TimeSeparator = ":",
-                    YearMonthPattern = "yyyy MMMM"
+                    YearMonthPattern = "yyyy MMMM",
+                    Calendar = new CalendarEquiv() {  TwoDigitYearMax = 2029 }
                 }
             };
 

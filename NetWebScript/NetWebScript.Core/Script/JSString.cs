@@ -204,12 +204,12 @@ namespace NetWebScript.Script
 			return data.Substring(startIndex, endIndex - startIndex);
 		}
 
-		public string TolocaleLowerCase()
+		public string ToLocaleLowerCase()
 		{
 			return data.ToLower(CultureInfo.CurrentCulture);
 		}
 
-		public string TolocaleUpperCase()
+		public string ToLocaleUpperCase()
 		{
 			return data.ToUpper(CultureInfo.CurrentCulture);
 		}

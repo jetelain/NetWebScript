@@ -24,6 +24,12 @@ namespace NetWebScript.Equivalents.Text
             return this;
         }
 
+        public StringBuilderEquiv Append(char c)
+        {
+            data.Push(JSString.FromCharCode(c));
+            return this;
+        }
+
         public StringBuilderEquiv AppendFormat(IFormatProvider provider, string format, params object[] args)
         {
             ICustomFormatter customFormatter = null;

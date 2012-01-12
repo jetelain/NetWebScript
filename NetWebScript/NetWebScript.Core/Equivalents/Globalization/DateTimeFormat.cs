@@ -10,24 +10,35 @@ namespace NetWebScript.Equivalents.Globalization
     [ScriptAvailable]
     internal static class DateTimeFormat
     {
+        private static JSRegExp CreateDateTokenRegExp()
+        {
+            return new JSRegExp(@"'.*?[^\\]'|dddd|ddd|dd|d|MMMM|MMM|MM|M|yyyy|yy|y|hh|h|HH|H|mm|m|ss|s|tt|t|fff|ff|f|zzz|zz|z", "g");
+        }
 
-        internal static string FormatDate(JSString format, DateTimeFormatInfo dtf, Date date, DateTimeKind kind)
+        private static string GetExpandedFormat(JSString format, DateTimeFormatInfo dtf)
         {
             if (format == null)
             {
-                format = dtf.ShortDatePattern + " " + dtf.LongTimePattern;
+                return dtf.ShortDatePattern + " " + dtf.LongTimePattern;
             }
             else if (format.Length == 1)
             {
-                format = ExpandFormat((char)format.CharCodeAt(0), dtf);
+                return ExpandFormat((char)format.CharCodeAt(0), dtf);
             }
             else if (format.Length > 0 && format.CharCodeAt(0) == (int)'%')
             {
-                format = format.Substr(1);
+                return format.Substr(1);
             }
+            return format;
+        }
+
+        internal static string FormatDate(JSString format, DateTimeFormatInfo dtf, Date date, DateTimeKind kind)
+        {
+            format = GetExpandedFormat(format, dtf);
+
             bool localDate = kind != DateTimeKind.Utc;
 
-            var re = new JSRegExp(@"'.*?[^\\]'|dddd|ddd|dd|d|MMMM|MMM|MM|M|yyyy|yy|y|hh|h|HH|H|mm|m|ss|s|tt|t|fff|ff|f|zzz|zz|z", "g");
+            var re = CreateDateTokenRegExp();
             var sb = new StringBuilder();
             re.LastIndex = 0;
             while (true) {
@@ -49,12 +60,13 @@ namespace NetWebScript.Equivalents.Globalization
             return sb.ToString();
         }
 
+
         private static string ExpandFormat(char format, DateTimeFormatInfo dtf)
         {
             switch (format)
             {
                 case 'f': return dtf.LongDatePattern + " " + dtf.ShortTimePattern;
-                case 'F': return dtf.LongDatePattern + " " + dtf.LongTimePattern;
+                case 'F': return dtf.FullDateTimePattern;
 
                 case 'd': return dtf.ShortDatePattern;
                 case 'D': return dtf.LongDatePattern;
@@ -65,10 +77,8 @@ namespace NetWebScript.Equivalents.Globalization
                 case 'g': return dtf.ShortDatePattern + " " + dtf.ShortTimePattern; 
                 case 'G': return dtf.ShortDatePattern + " " + dtf.LongTimePattern;
 
-                //case 'R':
-                //case 'r':
-                //case 'u':
-                //case 'U':
+                case 'M': return dtf.MonthDayPattern;
+                case 'Y': return dtf.YearMonthPattern;
 
                 case 's': return dtf.SortableDateTimePattern;
             }
@@ -244,5 +254,130 @@ namespace NetWebScript.Equivalents.Globalization
                     return fs;
             }
         }
+
+        private static int AppendPreOrPostMatch ( string preMatch, StringBuilder strings ) 
+        {
+            var quoteCount = 0;
+		    var escaped = false;
+            var il = preMatch.Length;
+	        for ( var i = 0; i < il; i++ ) {
+		        var c = preMatch[i];
+		        switch ( c ) {
+			        case '\'':
+				        if ( escaped ) {
+					        strings.Append( "\'" );
+				        }
+				        else {
+					        quoteCount++;
+				        }
+				        escaped = false;
+				        break;
+			        case '\\':
+				        if ( escaped ) {
+					        strings.Append( "\\" );
+				        }
+				        escaped = !escaped;
+				        break;
+			        default:
+				        strings.Append( c );
+				        escaped = false;
+				        break;
+		        }
+	        }
+	        return quoteCount;
+        }
+
+        internal static DateTimeParseFormat CreateDateParseRegExp(DateTimeFormatInfo dtf, string format) 
+        {
+            var expFormat = JSRegExpHelper.Escape(GetExpandedFormat(format, dtf));
+		    var regexp = new StringBuilder();
+		    var groups = new JSArray<string>();
+		    var index = 0;
+		    var quoteCount = 0;
+		    var tokenRegExp = CreateDateTokenRegExp();
+            NetWebScript.Script.JSRegExp.ExecResult match;
+
+            regexp.Append("^");
+
+		    while ( (match = tokenRegExp.Exec(expFormat)) != null ) 
+            {
+                var preMatch = expFormat.Substring(index, match.Index - index);
+			    index = tokenRegExp.LastIndex;
+
+			    quoteCount += AppendPreOrPostMatch( preMatch, regexp );
+			    if ( (quoteCount % 2) == 1 ) {
+				    regexp.Append( match[0] );
+				    continue;
+			    }
+
+			    var m = match[ 0 ];
+				string add;
+			    switch ( m ) {
+				    case "dddd": case "ddd":
+				    case "MMMM": case "MMM":
+                    //case "gg": case "g":
+					    add = "(\\D+)";
+					    break;
+				    case "tt": case "t":
+					    add = "(\\D*)";
+					    break;
+				    case "yyyy":
+				    case "fff":
+				    case "ff":
+				    case "f":
+                        add = "(\\d{" + m.Length + "})";
+					    break;
+				    case "dd": case "d":
+				    case "MM": case "M":
+				    case "yy": case "y":
+				    case "HH": case "H":
+				    case "hh": case "h":
+				    case "mm": case "m":
+				    case "ss": case "s":
+					    add = "(\\d\\d?)";
+					    break;
+				    case "zzz":
+					    add = "([+-]?\\d\\d?:\\d{2})";
+					    break;
+				    case "zz": case "z":
+					    add = "([+-]?\\d\\d?)";
+					    break;
+				    case "/":
+                        add = "(" + JSRegExpHelper.Escape(dtf.DateSeparator) + ")";
+					    break;
+				    default:
+					    throw new System.Exception("Invalid date format pattern \'" + m + "\'.");
+			    }
+				regexp.Append( add );
+			    groups.Push( m );
+		    }
+		    AppendPreOrPostMatch( expFormat.Substring(index), regexp );
+		    regexp.Append( "$" );
+
+            var regexpStr = regexp.ToString().Replace(new JSRegExp(@"\s+", "g"), @"\s+");
+
+            return new DateTimeParseFormat(regexpStr, groups);
+	    }
+
+        internal static Date Parse(DateTimeFormatInfo dtf, string value, string format, bool isUTC)
+        {
+            return CreateDateParseRegExp(dtf, format).Parse(value, dtf, isUTC);
+        }
+
+        internal static Date ParseAny(DateTimeFormatInfo dtf, string value, string[] formats, bool isUTC)
+        {
+            Date date;
+            foreach (var format in formats)
+            {
+                date = CreateDateParseRegExp(dtf, format).Parse(value, dtf, isUTC);
+                if (date != null)
+                {
+                    return date;
+                }
+            }
+            return null;
+        }
+
+
     }
 }

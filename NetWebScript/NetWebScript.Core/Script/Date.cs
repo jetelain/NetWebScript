@@ -363,6 +363,21 @@ namespace NetWebScript.Script
         {
             return datetime;
         }
+
+        internal void SetFullYear(int year, int month, int date)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void SetHours(int hour, int min, int sec, int msec)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void SetHours(int hour, int min)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

@@ -29,6 +29,9 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
                     case "op_Equality":
                         name = "==";
                         break;
+                    case "op_Inequality":
+                        name = "!=";
+                        break;
                     case "op_GreaterThan":
                         name = ">";
                         break;

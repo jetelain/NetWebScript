@@ -69,11 +69,35 @@ namespace NetWebScript.Equivalents
             return str;
         }
 
-        //public static int Compare(string strA, string strB);
+        public static int Compare(string strA, string strB)
+        {
+            return CompareOrdinal(strA, strB);
+        }
 
-        //public static int Compare(string strA, string strB, bool ignoreCase);
+        public static int Compare(string strA, string strB, bool ignoreCase)
+        {
+            if (ignoreCase)
+            {
+                return CompareOrdinal(strA.ToUpper(), strB.ToUpper());
+            }
+            return CompareOrdinal(strA, strB);
+        }
 
-        //public static int Compare(string strA, string strB, StringComparison comparisonType);
+        public static int Compare(string strA, string strB, StringComparison comparisonType)
+        {
+            // FIXME: StringComparison.InvariantCulture and StringComparison.CurrentCulture does not behave the same way than in standard implementation
+
+            if (comparisonType == StringComparison.CurrentCultureIgnoreCase)
+            {
+                return CompareOrdinal(strA.ToUpper(), strB.ToUpper());
+            }
+            if (comparisonType == StringComparison.InvariantCultureIgnoreCase
+                || comparisonType == StringComparison.OrdinalIgnoreCase)
+            {
+                return CompareOrdinal(strA.ToUpperInvariant(), strB.ToUpperInvariant());
+            }
+            return CompareOrdinal(strA, strB);
+        }
 
         //public static int Compare(string strA, string strB, bool ignoreCase, CultureInfo culture);
 
@@ -96,9 +120,24 @@ namespace NetWebScript.Equivalents
 
         //public static int CompareOrdinal(string strA, int indexA, string strB, int indexB, int length);
 
-        //public int CompareTo(object value);
+        public int CompareTo(object value)
+        {
+            if (value == null)
+            {
+                return 1;
+            }
+            string strValue = value as String;
+            if (strValue != null)
+            {
+                return string.Compare(str, strValue);
+            }
+            throw new System.Exception("BadArgument");
+        }
 
-        //public int CompareTo(string strB);
+        public int CompareTo(string strB)
+        {
+            return string.Compare(str, strB);
+        }
 
         //public static string Concat(IEnumerable<string> values);
 
@@ -166,7 +205,7 @@ namespace NetWebScript.Equivalents
 
         public bool EndsWith(string value)
         {
-            return new JSRegExp(RegExpEscape(value)+"$").Test(str);
+            return new JSRegExp(JSRegExpHelper.Escape(value) + "$").Test(str);
         }
 
         //public bool EndsWith(string value, StringComparison comparisonType);
@@ -182,9 +221,32 @@ namespace NetWebScript.Equivalents
             return op_Equality(a, b);
         }
 
-        //public bool Equals(string value, StringComparison comparisonType);
+        public bool Equals(string value, StringComparison comparisonType)
+        {
+            if (value == null)
+            {
+                return false;
+            }
+            if (comparisonType == StringComparison.CurrentCultureIgnoreCase)
+            {
+                return op_Equality(this.ToUpper(), value.ToUpper());
+            }
+            if (comparisonType == StringComparison.InvariantCultureIgnoreCase
+                || comparisonType == StringComparison.OrdinalIgnoreCase)
+            {
+                return op_Equality(this.ToUpperInvariant(), value.ToUpperInvariant());
+            }
+            return op_Equality(str, value);
+        }
 
-        //public static bool Equals(string a, string b, StringComparison comparisonType);
+        public static bool Equals(string a, string b, StringComparison comparisonType)
+        {
+            if (a == null)
+            {
+                return b == null;
+            }
+            return a.Equals(b, comparisonType);
+        }
 
         public static string Format(string format, object arg0)
         {
@@ -402,12 +464,12 @@ namespace NetWebScript.Equivalents
 
         public string Replace(char oldChar, char newChar)
         {
-            return str.Replace(new JSRegExp(RegExpEscape(JSString.FromCharCode(oldChar)), "g"), JSString.FromCharCode(newChar));
+            return str.Replace(new JSRegExp(JSRegExpHelper.Escape(JSString.FromCharCode(oldChar)), "g"), JSString.FromCharCode(newChar));
         }
 
         public string Replace(string oldValue, string newValue)
         {
-            return str.Replace(new JSRegExp(RegExpEscape(oldValue), "g"), newValue);
+            return str.Replace(new JSRegExp(JSRegExpHelper.Escape(oldValue), "g"), newValue);
         }
 
         public string[] Split(params char[] separator)
@@ -421,7 +483,24 @@ namespace NetWebScript.Equivalents
 
         public string[] Split(char[] separator, int count)
         {
-            return str.Split(new JSRegExp(CharsRegexPatten(separator), "g"), count);
+            string[] array;
+            if (separator.Length == 1)
+            {
+                array = str.Split(JSString.FromCharCode(separator[0]), count);
+            }
+            else
+            {
+                array = str.Split(new JSRegExp(CharsRegexPatten(separator), "g"), count);
+            }
+            if (array.Length == count)
+            {
+                var length = Join("#", array).Length;
+                if (str.Length > length)
+                {
+                    array[count - 1] = array[count - 1] + str.Substr(length);
+                }
+            }
+            return array;
         }
 
         //public string[] Split(char[] separator, StringSplitOptions options);
@@ -434,7 +513,7 @@ namespace NetWebScript.Equivalents
 
         public bool StartsWith(string value)
         {
-            return new JSRegExp("^" + RegExpEscape(value)).Test(str);
+            return new JSRegExp("^" + JSRegExpHelper.Escape(value)).Test(str);
         }
 
         //public bool StartsWith(string value, StringComparison comparisonType);
@@ -447,7 +526,7 @@ namespace NetWebScript.Equivalents
 
         public string ToLower()
         {
-            return str.TolocaleLowerCase();
+            return str.ToLocaleLowerCase();
         }
 
         //public string ToLower(CultureInfo culture);
@@ -466,7 +545,7 @@ namespace NetWebScript.Equivalents
 
         public string ToUpper()
         {
-            return str.TolocaleUpperCase();
+            return str.ToLocaleUpperCase();
         }
 
         //public string ToUpper(CultureInfo culture);
@@ -510,17 +589,12 @@ namespace NetWebScript.Equivalents
 
         internal static string CharsRegexPatten(char[] trimChars)
         {
-            string expr = "[";
+            string expr = "";
             foreach (char c in trimChars)
             {
                 expr = expr + JSString.FromCharCode(c);
             }
-            return RegExpEscape(expr + "]");
-        }
-
-        internal static string RegExpEscape(JSString str)
-        {
-            return str.Replace(new JSRegExp("[-/\\\\^$*+?.()|[\\]{}]", "g"), "\\$&");
+            return "[" + JSRegExpHelper.Escape(expr) + "]";
         }
     }
 }

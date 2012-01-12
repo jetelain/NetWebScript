@@ -74,6 +74,9 @@ namespace NetWebScript.Test.Material.Tests
 			String a = "abcdef";
 			String b = a.Substring(2,2);
 			Assert.AreEqual("cd",b);
+
+            b = a.Substring(2);
+            Assert.AreEqual("cdef", b);
 		}
 
         [TestMethod]
@@ -170,5 +173,183 @@ namespace NetWebScript.Test.Material.Tests
             Assert.AreEqual("word", string.Concat(null, b));
             Assert.AreEqual("", string.Concat(null, null));
         }
+
+        [TestMethod]
+        public void String_Split_Chars()
+        {
+            var str = "a,b;c,d";
+
+            var array = str.Split(',');
+            Assert.AreEqual(3, array.Length);
+            Assert.AreEqual("a", array[0]);
+            Assert.AreEqual("b;c", array[1]);
+            Assert.AreEqual("d", array[2]);
+
+            array = str.Split('$');
+            Assert.AreEqual(1, array.Length);
+            Assert.AreEqual("a,b;c,d", array[0]);
+
+            array = str.Split(',', ';');
+            Assert.AreEqual(4, array.Length);
+            Assert.AreEqual("a", array[0]);
+            Assert.AreEqual("b", array[1]);
+            Assert.AreEqual("c", array[2]);
+            Assert.AreEqual("d", array[3]);
+
+            array = str.Split('$', '@');
+            Assert.AreEqual(1, array.Length);
+            Assert.AreEqual("a,b;c,d", array[0]);
+        }
+
+        [TestMethod]
+        public void String_Split_Chars_Count()
+        {
+            var str = "a,b;c,d";
+
+            var array = str.Split(new []{','}, 2);
+            Assert.AreEqual(2, array.Length);
+            Assert.AreEqual("a", array[0]);
+            Assert.AreEqual("b;c,d", array[1]);
+
+            array = str.Split(new []{'$'}, 2);
+            Assert.AreEqual(1, array.Length);
+            Assert.AreEqual("a,b;c,d", array[0]);
+
+            array = str.Split(new []{',', ';'},3);
+            Assert.AreEqual(3, array.Length);
+            Assert.AreEqual("a", array[0]);
+            Assert.AreEqual("b", array[1]);
+            Assert.AreEqual("c,d", array[2]);
+
+            array = str.Split(new[] { '$', '@' }, 3);
+            Assert.AreEqual(1, array.Length);
+            Assert.AreEqual("a,b;c,d", array[0]);
+        }
+
+        [TestMethod]
+        public void String_StartsWith()
+        {
+            Assert.IsTrue("Hello world !".StartsWith("Hello"));
+            Assert.IsFalse("Hello world !".StartsWith("world !"));
+        }
+
+        [TestMethod]
+        public void String_EndsWith()
+        {
+            Assert.IsTrue("Hello world !".EndsWith("world !"));
+            Assert.IsFalse("Hello world !".EndsWith("Hello"));
+        }
+
+        [TestMethod]
+        public void String_Equals_StringComparison()
+        {
+            var a = "aBc";
+            var b = "AbC";
+            var c = "c";
+            var d = "aBc";
+
+            Assert.IsTrue(string.Equals(a, d, StringComparison.CurrentCulture));
+            Assert.IsFalse(string.Equals(a, b, StringComparison.CurrentCulture));
+            Assert.IsFalse(string.Equals(null, a, StringComparison.CurrentCulture));
+            Assert.IsFalse(string.Equals(a, null, StringComparison.CurrentCulture));
+            Assert.IsTrue(string.Equals(null, null, StringComparison.CurrentCulture));
+            Assert.IsTrue(string.Equals(a, a, StringComparison.CurrentCulture));
+
+            Assert.IsTrue(string.Equals(a, d, StringComparison.InvariantCulture));
+            Assert.IsFalse(string.Equals(a, b, StringComparison.InvariantCulture));
+
+            Assert.IsTrue(string.Equals(a, d, StringComparison.Ordinal));
+            Assert.IsFalse(string.Equals(a, b, StringComparison.Ordinal));
+
+            Assert.IsTrue(string.Equals(a, d, StringComparison.CurrentCultureIgnoreCase));
+            Assert.IsTrue(string.Equals(a, b, StringComparison.CurrentCultureIgnoreCase));
+            Assert.IsFalse(string.Equals(a, c, StringComparison.CurrentCultureIgnoreCase));
+
+            Assert.IsTrue(string.Equals(a, d, StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsTrue(string.Equals(a, b, StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsFalse(string.Equals(a, c, StringComparison.InvariantCultureIgnoreCase));
+
+            Assert.IsTrue(string.Equals(a, d, StringComparison.OrdinalIgnoreCase));
+            Assert.IsTrue(string.Equals(a, b, StringComparison.OrdinalIgnoreCase));
+            Assert.IsFalse(string.Equals(a, c, StringComparison.OrdinalIgnoreCase));
+        }
+
+        [TestMethod]
+        public void String_Compare_StringComparison()
+        {
+            var a = "aB";
+            var b = "Ab";
+            var c = "bC";
+            var d = "Bc";
+            var e = "bA";
+
+            Assert.AreEqual(0, Math.Sign(string.Compare(a, a, StringComparison.Ordinal)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(a, b, StringComparison.Ordinal)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(a, c, StringComparison.Ordinal)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(a, d, StringComparison.Ordinal)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(b, a, StringComparison.Ordinal)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(b, c, StringComparison.Ordinal)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(b, d, StringComparison.Ordinal)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(c, a, StringComparison.Ordinal)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(c, b, StringComparison.Ordinal)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(c, d, StringComparison.Ordinal)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(d, a, StringComparison.Ordinal)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(d, b, StringComparison.Ordinal)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(d, c, StringComparison.Ordinal)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(d, e, StringComparison.Ordinal)));
+
+            Assert.AreEqual(0, Math.Sign(string.Compare(a, a, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(a, b, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(a, c, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(a, d, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(b, a, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(b, c, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(b, d, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(c, a, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(c, b, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(c, d, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(d, a, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(d, b, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(d, c, StringComparison.OrdinalIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(d, e, StringComparison.OrdinalIgnoreCase)));
+
+
+            Assert.AreEqual(0, Math.Sign(string.Compare(a, a, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(a, b, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(a, c, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(a, d, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(b, a, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(b, c, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(b, d, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(c, a, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(c, b, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(c, d, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(d, a, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(d, b, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(d, c, StringComparison.CurrentCultureIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(d, e, StringComparison.CurrentCultureIgnoreCase)));
+
+
+            Assert.AreEqual(0, Math.Sign(string.Compare(a, a, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(a, b, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(a, c, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(a, d, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(b, a, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(b, c, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(-1, Math.Sign(string.Compare(b, d, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(c, a, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(c, b, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(c, d, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(d, a, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(d, b, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(0, Math.Sign(string.Compare(d, c, StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(1, Math.Sign(string.Compare(d, e, StringComparison.InvariantCultureIgnoreCase)));
+
+            // FIXME:
+            // StringComparison.InvariantCulture and StringComparison.CurrentCulture does not behave the same way
+            // in CLR and in browser
+        }
+        
+
 	}
 }

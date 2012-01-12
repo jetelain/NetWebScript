@@ -14,7 +14,7 @@ namespace NetWebScript.Equivalents.Globalization
         public string[] AbbreviatedMonthGenitiveNames { get; set; }
         public string[] AbbreviatedMonthNames { get; set; }
         public string AMDesignator { get; set; }
-        //public System.Globalization.Calendar Calendar { get; set; }
+        public CalendarEquiv Calendar { get; set; }
         public System.Globalization.CalendarWeekRule CalendarWeekRule { get; set; }
         public string DateSeparator { get; set; }
         public string[] DayNames { get; set; }

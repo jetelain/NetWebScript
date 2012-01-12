@@ -48,8 +48,11 @@ namespace NetWebScript.JsClr.Ast
                 case BinaryOperator.GreaterThanOrEqual: // a >= b becomes a < b
                     return new BinaryExpression(IlOffset, BinaryOperator.LessThan, Right, Left);
 
+                case BinaryOperator.BitwiseAnd: // (a & b) (implicitly != 0) becomes (a & b) == 0
+                    return new BinaryExpression(IlOffset, BinaryOperator.ValueEquality, new LiteralExpression(0), this);
+
                 default:
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(Operator.ToString());
             }
         }
 

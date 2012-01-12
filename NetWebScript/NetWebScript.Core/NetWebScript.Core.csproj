@@ -74,9 +74,11 @@
     <Compile Include="Equivalents\CharEquiv.cs" />
     <Compile Include="Equivalents\DateTimeEquiv.cs" />
     <Compile Include="Equivalents\DoubleEquiv.cs" />
+    <Compile Include="Equivalents\Globalization\CalendarEquiv.cs" />
     <Compile Include="Equivalents\Globalization\CultureInfoEquiv.cs" />
     <Compile Include="Equivalents\Globalization\DateTimeFormat.cs" />
     <Compile Include="Equivalents\Globalization\DateTimeFormatInfoEquiv.cs" />
+    <Compile Include="Equivalents\Globalization\DateTimeParseFormat.cs" />
     <Compile Include="Equivalents\SingleEquiv.cs" />
     <Compile Include="Equivalents\Globalization\NumberFormatInfoEquiv.cs" />
     <Compile Include="Equivalents\Int16Equiv.cs" />
@@ -98,6 +100,7 @@
     <Compile Include="Script\HTML\Document.cs" />
     <Compile Include="Script\JQueryExt.cs" />
     <Compile Include="Script\JSMath.cs" />
+    <Compile Include="Script\JSRegExpHelper.cs" />
     <Compile Include="TypeModel\AnonymousObjectAttribute.cs" />
     <Compile Include="Equivalents\StringEquiv.cs" />
     <Compile Include="Equivalents\InvalidOperationException.cs" />
