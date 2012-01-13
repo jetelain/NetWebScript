@@ -60,6 +60,7 @@
     <Compile Include="Tests\ExportedTest.cs" />
     <Compile Include="Tests\Flow.cs" />
     <Compile Include="Tests\GeneratedTest.cs" />
+    <Compile Include="Tests\Globalization\DateTimeFormatTest.cs" />
     <Compile Include="Tests\Globalization\NumberFormatTest.cs" />
     <Compile Include="Tests\Int32Test.cs" />
     <Compile Include="Tests\Linq\EnumerableTest.cs" />

@@ -97,6 +97,7 @@
     <Compile Include="Runtime\Culture.cs" />
     <Compile Include="Runtime\ModuleInfo.cs" />
     <Compile Include="Runtime\Modules.cs" />
+    <Compile Include="Script\DateHelper.cs" />
     <Compile Include="Script\HTML\Document.cs" />
     <Compile Include="Script\JQueryExt.cs" />
     <Compile Include="Script\JSMath.cs" />

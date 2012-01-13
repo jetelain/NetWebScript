@@ -136,7 +136,8 @@ namespace NetWebScript.Equivalents.Globalization
                     ShortTimePattern = "HH:mm",
                     TimeSeparator = ":",
                     YearMonthPattern = "yyyy MMMM",
-                    Calendar = new CalendarEquiv() {  TwoDigitYearMax = 2029 }
+                    Calendar = new CalendarEquiv() {  TwoDigitYearMax = 2029 },
+                    MonthDayPattern = "MMMM dd"
                 }
             };
 

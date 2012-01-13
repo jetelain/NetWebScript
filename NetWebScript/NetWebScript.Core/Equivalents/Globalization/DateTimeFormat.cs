@@ -12,7 +12,7 @@ namespace NetWebScript.Equivalents.Globalization
     {
         private static JSRegExp CreateDateTokenRegExp()
         {
-            return new JSRegExp(@"'.*?[^\\]'|dddd|ddd|dd|d|MMMM|MMM|MM|M|yyyy|yy|y|hh|h|HH|H|mm|m|ss|s|tt|t|fff|ff|f|zzz|zz|z", "g");
+            return new JSRegExp(@"'.*?[^\\]'|/|dddd|ddd|dd|d|MMMM|MMM|MM|M|yyyy|yy|y|hh|h|HH|H|mm|m|ss|s|tt|t|fff|ff|f|zzz|zz|z", "g");
         }
 
         private static string GetExpandedFormat(JSString format, DateTimeFormatInfo dtf)
@@ -161,14 +161,22 @@ namespace NetWebScript.Equivalents.Globalization
                         res += dtf.TimeSeparator + "00";
                     }
                     return res;
+                case "/":
+                    return dtf.DateSeparator;
                 default:
-                    if (fs.CharAt(0) == "'")
-                    {
-                        return ((JSString)fs.Substr(1, fs.Length - 2)).Replace(new JSRegExp("\\'", "g"), "'");
-                    }
-                    return fs;
+                    return Literal(fs);
             }
         }
+
+        private static string Literal(string literal)
+        {
+            if (literal.StartsWith("'"))
+            {
+                return ((JSString)literal.Substring(1, literal.Length - 2)).Replace(new JSRegExp(@"\\(['\\])", "g"), "$1");
+            }
+            return literal;
+        }
+
 
         private static string PartLocalTime(JSString fs, DateTimeFormatInfo dtf, Date dt)
         {
@@ -246,69 +254,34 @@ namespace NetWebScript.Equivalents.Globalization
                         res += dtf.TimeSeparator + Math.Abs(dt.GetTimezoneOffset() % 60).ToString().PadLeft(2, '0');
                     }
                     return res;
+                case "/":
+                    return dtf.DateSeparator;
                 default:
-                    if (fs.CharAt(0) == "'")
-                    {
-                        return ((JSString)fs.Substr(1, fs.Length - 2)).Replace(new JSRegExp("\\'", "g"), "'");
-                    }
-                    return fs;
+                    return Literal(fs);
             }
-        }
-
-        private static int AppendPreOrPostMatch ( string preMatch, StringBuilder strings ) 
-        {
-            var quoteCount = 0;
-		    var escaped = false;
-            var il = preMatch.Length;
-	        for ( var i = 0; i < il; i++ ) {
-		        var c = preMatch[i];
-		        switch ( c ) {
-			        case '\'':
-				        if ( escaped ) {
-					        strings.Append( "\'" );
-				        }
-				        else {
-					        quoteCount++;
-				        }
-				        escaped = false;
-				        break;
-			        case '\\':
-				        if ( escaped ) {
-					        strings.Append( "\\" );
-				        }
-				        escaped = !escaped;
-				        break;
-			        default:
-				        strings.Append( c );
-				        escaped = false;
-				        break;
-		        }
-	        }
-	        return quoteCount;
         }
 
         internal static DateTimeParseFormat CreateDateParseRegExp(DateTimeFormatInfo dtf, string format) 
         {
-            var expFormat = JSRegExpHelper.Escape(GetExpandedFormat(format, dtf));
+            var expFormat = GetExpandedFormat(format, dtf);
 		    var regexp = new StringBuilder();
 		    var groups = new JSArray<string>();
 		    var index = 0;
-		    var quoteCount = 0;
-		    var tokenRegExp = CreateDateTokenRegExp();
+            var re = CreateDateTokenRegExp();
             NetWebScript.Script.JSRegExp.ExecResult match;
 
             regexp.Append("^");
 
-		    while ( (match = tokenRegExp.Exec(expFormat)) != null ) 
+            re.LastIndex = 0;
+            while (true)
             {
-                var preMatch = expFormat.Substring(index, match.Index - index);
-			    index = tokenRegExp.LastIndex;
-
-			    quoteCount += AppendPreOrPostMatch( preMatch, regexp );
-			    if ( (quoteCount % 2) == 1 ) {
-				    regexp.Append( match[0] );
-				    continue;
-			    }
+                index = re.LastIndex;
+                match = re.Exec(expFormat);
+                regexp.Append(JSRegExpHelper.Escape(expFormat.Substring(index, match != null ? match.Index - index : expFormat.Length - index)));
+                if (match == null)
+                {
+                    break;
+                }
 
 			    var m = match[ 0 ];
 				string add;
@@ -345,13 +318,18 @@ namespace NetWebScript.Equivalents.Globalization
 				    case "/":
                         add = "(" + JSRegExpHelper.Escape(dtf.DateSeparator) + ")";
 					    break;
-				    default:
-					    throw new System.Exception("Invalid date format pattern \'" + m + "\'.");
+                    default:
+                        add = JSRegExpHelper.Escape(Literal(m));
+                        m = null;
+                        break;
+                        
 			    }
 				regexp.Append( add );
-			    groups.Push( m );
+                if (m != null)
+                {
+                    groups.Push(m);
+                }
 		    }
-		    AppendPreOrPostMatch( expFormat.Substring(index), regexp );
 		    regexp.Append( "$" );
 
             var regexpStr = regexp.ToString().Replace(new JSRegExp(@"\s+", "g"), @"\s+");

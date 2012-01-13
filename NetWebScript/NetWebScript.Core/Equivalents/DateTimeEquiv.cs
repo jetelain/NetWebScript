@@ -431,5 +431,15 @@ namespace NetWebScript.Equivalents
 			}
 			return default(DateTime);
 		}
-	}
+
+        internal static DateTimeEquiv ToDateTime(Script.Date date)
+        {
+            return new DateTimeEquiv(date, DateTimeKind.Local);
+        }
+
+        internal static Date ToDate(DateTimeEquiv equiv)
+        {
+            return equiv.date;
+        }
+    }
 }

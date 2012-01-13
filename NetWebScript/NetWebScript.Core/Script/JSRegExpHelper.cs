@@ -15,6 +15,10 @@ namespace NetWebScript.Script
 		/// <returns></returns>
 		public static string Escape(JSString str)
 		{
+            if (str == null)
+            {
+                throw new System.Exception("ArgumentNullException");
+            }
 			return str.Replace(new JSRegExp("[-/\\\\^$*+?.()|[\\]{}]", "g"), "\\$&");
 		}
 

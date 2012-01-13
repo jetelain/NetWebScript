@@ -102,32 +102,32 @@ namespace NetWebScript.Script
 
 		public static bool operator ==(JSString s1, JSString s2)
 		{
-			return (string)s1 == (string)s2;
+			return string.Equals(s1, s2);
 		}
 
 		public static bool operator !=(JSString s1, JSString s2)
 		{
-			return (string)s1 != (string)s2;
+            return !string.Equals(s1, s2);
 		}
 
 		public static bool operator ==(JSString s1, object s2)
 		{
-			return (string)s1 == (s2 as string);
+			return string.Equals((string)s1, s2 as string);
 		}
 
 		public static bool operator !=(JSString s1, object s2)
 		{
-			return (string)s1 != (s2 as string);
+            return !string.Equals((string)s1, s2 as string);
 		}
 
 		public static bool operator >(JSString s1, JSString s2)
 		{
-			return ((string)s1).CompareTo((string)s2) > 0;
+			return string.CompareOrdinal(s1, s2) > 0;
 		}
 
 		public static bool operator <(JSString s1, JSString s2)
 		{
-			return ((string)s1).CompareTo((string)s2) < 0;
+            return string.CompareOrdinal(s1, s2) < 0;
 		}
 
 		public string Replace(JSRegExp regex, string replaceText)
@@ -236,7 +236,7 @@ namespace NetWebScript.Script
 		[ScriptBody(Inline="str")]
 		public static implicit operator JSString(string str)
 		{
-			if (str != null)
+            if ((object)str != null)
 			{
 				return new JSString(str);
 			}
@@ -246,7 +246,7 @@ namespace NetWebScript.Script
 		[ScriptBody(Inline = "str")]
 		public static implicit operator string(JSString str)
 		{
-			if (str != null)
+			if ((object)str != null)
 			{
 				return str.data;
 			}

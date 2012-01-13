@@ -33,27 +33,27 @@ namespace NetWebScript.Script
 
         public Date(int year, int month, int date)
         {
-            datetime = new DateTime(year, month, date, 0, 0, 0, DateTimeKind.Local);
+            datetime = new DateTime(year, month + 1, date, 0, 0, 0, DateTimeKind.Local);
         }
 
         public Date(int year, int month, int date, int hours)
         {
-            datetime = new DateTime(year, month, date, hours, 0, 0, DateTimeKind.Local);
+            datetime = new DateTime(year, month + 1, date, hours, 0, 0, DateTimeKind.Local);
         }
 
         public Date(int year, int month, int date, int hours, int minutes)
         {
-            datetime = new DateTime(year, month, date, hours, minutes, 0, DateTimeKind.Local);
+            datetime = new DateTime(year, month + 1, date, hours, minutes, 0, DateTimeKind.Local);
         }
 
         public Date(int year, int month, int date, int hours, int minutes, int seconds)
         {
-            datetime = new DateTime(year, month, date, hours, minutes, seconds, DateTimeKind.Local);
+            datetime = new DateTime(year, month + 1, date, hours, minutes, seconds, DateTimeKind.Local);
         }
 
         public Date(int year, int month, int date, int hours, int minutes, int seconds, int milliseconds)
         {
-            datetime = new DateTime(year, month, date, hours, minutes, seconds, milliseconds, DateTimeKind.Local);
+            datetime = new DateTime(year, month + 1, date, hours, minutes, seconds, milliseconds, DateTimeKind.Local);
         }
 
         public double Now()
@@ -313,37 +313,37 @@ namespace NetWebScript.Script
 
         private static double GetTime(DateTime datetime)
         {
-            return (double)(datetime - UnixEpox).TotalMilliseconds;
+            return (double)(datetime.ToUniversalTime() - UnixEpox).TotalMilliseconds;
         }
 
         [PreserveCase]
         public static double UTC(int year, int month, int day)
         {
-            return GetTime(new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc));
+            return GetTime(new DateTime(year, month + 1, day, 0, 0, 0, DateTimeKind.Utc));
         }
 
         [PreserveCase]
         public static double UTC(int year, int month, int day, int hours)
         {
-            return GetTime(new DateTime(year, month, day, hours, 0, 0, DateTimeKind.Utc));
+            return GetTime(new DateTime(year, month + 1, day, hours, 0, 0, DateTimeKind.Utc));
         }
 
         [PreserveCase]
         public static double UTC(int year, int month, int day, int hours, int minutes)
         {
-            return GetTime(new DateTime(year, month, day, hours, minutes, 0, DateTimeKind.Utc));
+            return GetTime(new DateTime(year, month + 1, day, hours, minutes, 0, DateTimeKind.Utc));
         }
 
         [PreserveCase]
         public static double UTC(int year, int month, int day, int hours, int minutes, int seconds)
         {
-            return GetTime(new DateTime(year, month, day, hours, minutes, seconds, DateTimeKind.Utc));
+            return GetTime(new DateTime(year, month + 1, day, hours, minutes, seconds, DateTimeKind.Utc));
         }
 
         [PreserveCase]
         public static double UTC(int year, int month, int day, int hours, int minutes, int seconds, int milliseconds)
         {
-            return GetTime(new DateTime(year, month, day, hours, minutes, seconds, milliseconds, DateTimeKind.Utc));
+            return GetTime(new DateTime(year, month + 1, day, hours, minutes, seconds, milliseconds, DateTimeKind.Utc));
         }
 
         [ImportedExtension]

@@ -33,7 +33,7 @@ namespace NetWebScript.Equivalents.Globalization
 
             int year = -1, month = 0, date = 1, weekDay = -1,
                 hour = 0, hourOffset, min = 0, sec = 0, msec = 0, tzMinOffset = 0;
-            bool pmHour = false;
+            bool pmHour = false, hasTimezone = false ;
             // iterate the format groups to extract and set the date fields.
             var jl = groups.Length;
             for (var j = 0; j < jl; j++)
@@ -130,6 +130,7 @@ namespace NetWebScript.Equivalents.Globalization
                             int minOffset = JSNumber.ParseInt(offsets[1], 10);
                             if (OutOfRange(minOffset, 0, 59)) return null;
                             tzMinOffset = (hourOffset * 60) + (matchGroup.StartsWith("-") ? -minOffset : minOffset);
+                            hasTimezone = true;
                             break;
                         case "z":
                         case "zz":
@@ -137,6 +138,7 @@ namespace NetWebScript.Equivalents.Globalization
                             hourOffset = matchInt;
                             if (OutOfRange(hourOffset, -12, 13)) return null;
                             tzMinOffset = hourOffset * 60;
+                            hasTimezone = true;
                             break;
                         //case "g": case "gg":
                         //    var eraName = matchGroup;
@@ -162,7 +164,7 @@ namespace NetWebScript.Equivalents.Globalization
 
             Date result;
 
-            if (tzMinOffset != 0)
+            if (hasTimezone)
             {
                 min = min - tzMinOffset;
 
