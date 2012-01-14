@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="PFiles">
+        <Directory Id="INSTALLDIR" Name="NetWebScript">
+          <Directory Id="BinFolder" Name="bin">
+            <Directory Id="UnitTestFolder" Name="unittest" />
+            <Directory Id="VSEngineFolder" Name="vsengine" />
+            <Directory Id="DebuggerFolder" Name="debugger" />
+          </Directory>
+          <Directory Id="LicensesFolder" Name="licenses" />
+        </Directory>
+      </Directory>
+      <Directory Id="VS10CSHARPWEBTEMPLATEFOLDER" Name="CSharpWebTemplate" />
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ApplicationProgramsFolder" Name="NetWebScript"/>
+      </Directory>
+    </Directory>
+
+    <DirectoryRef Id="BinFolder">
+      <Component Id="NetWebScript.Metadata" DiskId="1" Guid="{93075355-2437-414A-B6A1-1BE482815CE2}">
+        <File Id="NetWebScript.Metadata.dll" Name="NetWebScript.Metadata.dll" KeyPath="yes" Assembly=".net" Source="..\NetWebScript.Metadata\bin\Release\NetWebScript.Metadata.dll" />
+      </Component>
+      <Component Id="NetWebScript.Core" DiskId="1" Guid="{8DD56CFC-20E3-472B-B3D4-E58204719E6F}">
+        <File Id="NetWebScript.Core.dll" Name="NetWebScript.Core.dll" KeyPath="yes" Assembly=".net" Source="..\NetWebScript.Core\bin\Release\NetWebScript.Core.dll" />
+      </Component>
+      <Component Id="NetWebScript.Debugger" DiskId="1" Guid="{D641E8BA-F5FD-4ECF-BDFC-843490B0EE81}">
+        <File Id="NetWebScript.Debug.Server.dll" Name="NetWebScript.Debug.Server.dll" KeyPath="yes" Assembly=".net" Source="..\NetWebScript.Debug.Server\bin\Release\NetWebScript.Debug.Server.dll" />
+      </Component>
+      <Component Id="NetWebScript.Compiler" DiskId="1" Guid="{6DF09778-EBB5-4662-A0CC-AD07D95D7455}">
+        <File Id="Jint.dll" Name="Jint.dll" Source="..\NetWebScript\bin\Release\Jint.dll" />
+        <File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="..\NetWebScript\bin\Release\Antlr3.Runtime.dll" />
+        <File Id="Microsoft.Samples.Debugging.dll" Name="Microsoft.Samples.Debugging.dll" Source="..\NetWebScript\bin\Release\Microsoft.Samples.Debugging.dll" />
+        <File Id="NetWebScript.dll" Name="NetWebScript.dll" Source="..\NetWebScript\bin\Release\NetWebScript.dll" />
+        <File Id="nwsc.exe" Name="nwsc.exe" Source="..\NetWebScript.CompilerCLI\bin\Release\nwsc.exe" />
+        <Environment Id="NwsAppPath" Name="NwsAppPath" System="yes" Action="create" Value="[INSTALLDIR]" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="DebuggerFolder">
+      <Component Id="NetWebScript.DebuggerApp" DiskId="1" Guid="{2A146622-5453-4549-AD3D-BF0A79375E1B}">
+        <File Id="NetWebScript.Debug.App.exe" Name="NetWebScript.Debug.App.exe" Source="..\NetWebScript.Debug.App\bin\Release\NetWebScript.Debug.App.exe" />
+        <File Id="ICSharpCode.AvalonEdit.dll" Name="ICSharpCode.AvalonEdit.dll" Source="..\NetWebScript.Debug.App\bin\Release\ICSharpCode.AvalonEdit.dll" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="VSEngineFolder">
+      <Component Id="NetWebScript.VSEngine" DiskId="1" Guid="{50BACB30-C5B5-4F2B-A3A2-B5178C28195E}">
+        <File Id="NetWebScript.Debug.Engine.dll" Name="NetWebScript.Debug.Engine.dll" Source="..\NetWebScript.Debug.Engine\bin\Release\NetWebScript.Debug.Engine.dll" />
+        <RegistryValue Id="Registry1" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="Name" Value="NetWebScript" Type="string" />
+        <RegistryValue Id="Registry10" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{0898B973-803F-4d43-82EC-A9044B873467}" Name="Class" Value="NetWebScript.Debug.Engine.NWSEngine" Type="string" />
+        <RegistryValue Id="Registry11" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{0898B973-803F-4d43-82EC-A9044B873467}" Name="InProcServer32" Value="[SystemFolder]mscoree.dll" Type="string" />
+        <RegistryValue Id="Registry12" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{0898B973-803F-4d43-82EC-A9044B873467}" Name="CodeBase" Value="[INSTALLDIR]bin\vsengine\NetWebScript.Debug.Engine.dll" Type="string" />
+        <RegistryValue Id="Registry13" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{9500DB29-25AB-462d-92B4-90588A6B00B2}" Name="Assembly" Value="NetWebScript.Debug.Engine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cdd82b6cc2610bf2" Type="string" />
+        <RegistryValue Id="Registry14" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{9500DB29-25AB-462d-92B4-90588A6B00B2}" Name="Class" Value="NetWebScript.Debug.Engine.NWSProgramProvider" Type="string" />
+        <RegistryValue Id="Registry15" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{9500DB29-25AB-462d-92B4-90588A6B00B2}" Name="CodeBase" Value="[INSTALLDIR]bin\vsengine\NetWebScript.Debug.Engine.dll" Type="string" />
+        <RegistryValue Id="Registry16" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{9500DB29-25AB-462d-92B4-90588A6B00B2}" Name="InProcServer32" Value="[SystemFolder]mscoree.dll" Type="string" />
+        <RegistryValue Id="Registry17" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{7B589914-6569-4aeb-BDED-EAFEE56E1667}" Name="Assembly" Value="NetWebScript.Debug.Engine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cdd82b6cc2610bf2" Type="string" />
+        <RegistryValue Id="Registry18" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{7B589914-6569-4aeb-BDED-EAFEE56E1667}" Name="Class" Value="NetWebScript.Debug.Engine.Port.NWSPortSupplier" Type="string" />
+        <RegistryValue Id="Registry19" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{7B589914-6569-4aeb-BDED-EAFEE56E1667}" Name="CodeBase" Value="[INSTALLDIR]bin\vsengine\NetWebScript.Debug.Engine.dll" Type="string" />
+        <RegistryValue Id="Registry20" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{7B589914-6569-4aeb-BDED-EAFEE56E1667}" Name="InProcServer32" Value="[SystemFolder]mscoree.dll" Type="string" />
+        <RegistryValue Id="Registry21" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="Attach" Value="1" Type="integer" />
+        <RegistryValue Id="Registry22" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="AddressBP" Value="1" Type="integer" />
+        <RegistryValue Id="Registry23" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="CallstackBP" Value="1" Type="integer" />
+        <RegistryValue Id="Registry24" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="FunctionBP" Value="1" Type="integer" />
+        <RegistryValue Id="Registry25" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="AlwaysLoadLocal" Value="0" Type="integer" />
+        <RegistryValue Id="Registry26" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="AutoSelectPriority" Value="9" Type="integer" />
+        <RegistryValue Id="Registry3" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\PortSupplier\{9D17E7CB-E7DB-4eb8-BF2C-DA2A454703AC}" Name="Name" Value="NetWebScript" Type="string" />
+        <RegistryValue Id="Registry4" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{0898B973-803F-4d43-82EC-A9044B873467}" Name="Assembly" Value="NetWebScript.Debug.Engine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cdd82b6cc2610bf2" Type="string" />
+        <RegistryValue Id="Registry5" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="CLSID" Value="{0898B973-803F-4d43-82EC-A9044B873467}" Type="string" />
+        <RegistryValue Id="Registry6" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="ProgramProvider" Value="{9500DB29-25AB-462d-92B4-90588A6B00B2}" Type="string" />
+        <RegistryValue Id="Registry8" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="PortSupplier" Value="{9D17E7CB-E7DB-4eb8-BF2C-DA2A454703AC}" Type="string" />
+        <RegistryValue Id="Registry9" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\PortSupplier\{9D17E7CB-E7DB-4eb8-BF2C-DA2A454703AC}" Name="CLSID" Value="{7B589914-6569-4aeb-BDED-EAFEE56E1667}" Type="string" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="UnitTestFolder">
+      <Component Id="NetWebScript.VSUnitTest" DiskId="1" Guid="{972CA1CC-A0FD-4D51-9187-F471C10C40A7}">
+        <File Id="NetWebScript.UnitTestFramework.dll" Name="NetWebScript.UnitTestFramework.dll" Source="..\NetWebScript.UnitTestFramework\bin\Release\NetWebScript.UnitTestFramework.dll" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="LicensesFolder">
+      <Component Id="NetWebScript.Licenses" DiskId="1" Guid="{96D968B6-F7C7-41B7-BEF6-9FF1C8792EA5}">
+        <File Id="ICSharpCode.AvalonEdit.License.txt" Name="ICSharpCode.AvalonEdit.License.txt" Source="..\NetWebScript.Debug.App\Libs\ICSharpCode.AvalonEdit.License.txt" />
+        <File Id="ICSharpCode.AvalonEdit.Readme.txt" Name="ICSharpCode.AvalonEdit.Readme.txt" Source="..\NetWebScript.Debug.App\Libs\ICSharpCode.AvalonEdit.Readme.txt" />
+        <File Id="ControlFlowGraph.License.txt" Name="ControlFlowGraph.License.txt" Source="..\NetWebScript\ControlFlowGraph.License.txt" />
+        <File Id="JQuery.License.txt" Name="JQuery.License.txt" Source="..\NetWebScript\JQuery.License.txt" />
+        <File Id="NetWebScript.License.txt" Name="NetWebScript.License.txt" Source="..\NetWebScript.License.txt" />
+        <File Id="Microsoft.Samples.Debugging.License.rtf" Name="Microsoft.Samples.Debugging.License.rtf" Source="..\Microsoft.Samples.Debugging\Microsoft.Samples.Debugging.License.rtf" />
+        <File Id="Jint.License.txt" Name="Jint.License.txt" Source="..\Jint\Jint.License.txt" />
+        <File Id="Antlr3.Runtime.License.txt" Name="Antlr3.Runtime.License.txt" Source="..\Antlr3.Runtime\Antlr3.Runtime.License.txt" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="VS10CSHARPWEBTEMPLATEFOLDER">
+      <Component Id="NetWebScript.VSTemplates" DiskId="1" Guid="{CC4BCF38-BB47-4436-B4C6-A7872D98EA72}">
+        <File Id="NWSScriptApplicationProject40.zip" Name="NWSScriptApplicationProject40.zip" Source="..\NetWebScript.Templates\NWSScriptApplicationProject40.zip" />
+        <File Id="NWSWebApplicationProject40.zip" Name="NWSWebApplicationProject40.zip" Source="..\NetWebScript.Templates\NWSWebApplicationProject40.zip" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="NetWebScript.Shortcuts" Guid="{3C1E2946-7A00-48BC-9076-6F6A04366F91}">
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+        <Shortcut Name="NetWebScript Standalone Debugger" Target="[!NetWebScript.Debug.App.exe]" Id="NetWebScriptDebuggerShortcut" WorkingDirectory="DebuggerFolder"  />
+        <RegistryValue Root="HKCU" Key="Software\NetWebScript" Name="Installed" Type="integer" Value="1" KeyPath="yes"/>
+        <File Id="NetWebScriptOnlineDocumentation.url" Name="NetWebScript Online Documentation.url" Source="NetWebScript Online Documentation.url" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
