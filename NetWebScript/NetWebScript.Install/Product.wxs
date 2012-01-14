@@ -24,10 +24,13 @@
 
     <!-- Check for Visual Studio 10 -->
     <Property Id="VS10INSTALLFOLDER" Secure="yes">
-      <RegistrySearch Id="VS10InstallFolder" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0" Name="InstallDir" Type="directory" />
+      <RegistrySearch Id="VS10InstallFolder" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0" Name="InstallDir" Type="raw" />
     </Property>
     <Property Id="VS10TEMPLATEFOLDER" Secure="yes">
       <RegistrySearch Id="VS10TemplateFolder" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\VSTemplate\Project" Name="UserFolder" Type="directory" />
+    </Property>
+    <Property Id="VS10DEVENVEXE">
+      <RegistrySearch Id="VS10DevenvExe" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\Setup\VS" Name="EnvironmentPath" Type="raw" />
     </Property>
     <Property Id="VS10CSHARPWEBTEMPLATEFOLDER">
       <DirectorySearch Id="VS10CSharpWebTemplateFolder" Path="[VS10TEMPLATEFOLDER]CSharp\Web" />
@@ -58,7 +61,7 @@
         Level="1"
         InstallDefault="local">
         <Condition Level="0">
-          VS10INSTALLFOLDER=""
+          NOT VS10INSTALLFOLDER
         </Condition>
         <ComponentRef Id="NetWebScript.VSEngine" />
         <ComponentRef Id="NetWebScript.VSUnitTest" />
@@ -71,6 +74,14 @@
     <UIRef Id="WixUI_FeatureTree"/>
     
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    
+    <!-- Install templates after files installation -->
+    
+    <CustomAction Id="InstallVSTemplates" Property="VS10DEVENVEXE" ExeCommand="/InstallVSTemplates" Impersonate="no" Execute="deferred" />
+    <InstallExecuteSequence>
+      <Custom Action="InstallVSTemplates" Before="InstallFinalize">VS10INSTALLFOLDER&lt;&gt;"" AND NOT (!NetWebScript.VS2010 = -1)</Custom>
+    </InstallExecuteSequence>
+
 
   </Product>
 </Wix>

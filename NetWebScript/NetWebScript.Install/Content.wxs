@@ -93,6 +93,7 @@
       <Component Id="NetWebScript.VSTemplates" DiskId="1" Guid="{CC4BCF38-BB47-4436-B4C6-A7872D98EA72}">
         <File Id="NWSScriptApplicationProject40.zip" Name="NWSScriptApplicationProject40.zip" Source="..\NetWebScript.Templates\NWSScriptApplicationProject40.zip" />
         <File Id="NWSWebApplicationProject40.zip" Name="NWSWebApplicationProject40.zip" Source="..\NetWebScript.Templates\NWSWebApplicationProject40.zip" />
+      
       </Component>
     </DirectoryRef>
 
@@ -104,5 +105,6 @@
         <File Id="NetWebScriptOnlineDocumentation.url" Name="NetWebScript Online Documentation.url" Source="NetWebScript Online Documentation.url" />
       </Component>
     </DirectoryRef>
+
   </Fragment>
 </Wix>
