@@ -1,5 +1,14 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <!--   
+  NetWebScript Targets. 
+  
+  See http://netwebscript.codeplex.com/ for more informations.
+  See licenses\NetWebScript.License.txt for license.
+  
+  Note: Until Visual Studio is closed, compiler dlls are locked.
+  -->
+  
   <UsingTask TaskName="CompileScriptTask" AssemblyFile="NetWebScript.Task.dll" />
 
   <Target Name="NwsCompile">
@@ -12,6 +21,7 @@
       OutputPath="$(ProjectDir)"
       PrettyPrint="$(NwsPrettyPrint)"
       Assemblies="$(TargetPath)"
+      PageClassName="$(NwsEntryPointClass)"
       />
   </Target>
 

@@ -108,7 +108,7 @@ namespace NetWebScript.Diagnostics
 			}
 			else
 			{
-                Window.Alert("Debugger unavailable at Url='" + serverUrl + "' Status='" + xhr.Status + "' ResponseText='" + xhr.ResponseText + "'");
+                Window.Alert("Unable to attach to debugger. Ensures that debugger is started.\nUrl='" + serverUrl + "'\nStatus='" + xhr.Status + "'\nResponseText='" + xhr.ResponseText + "'");
 			}
 		}
 

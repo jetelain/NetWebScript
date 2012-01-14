@@ -1,0 +1,22 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--   
+  NetWebScript Developpement Targets. 
+  
+  Use the command line interface to avoid locking compiler dlls.
+  -->
+  
+  <Target Name="NwsCompile">
+    <PropertyGroup>
+      <NwsDebuggable Condition="'$(DebugType)' == 'full' and '$(NwsDebuggable)' == ''">true</NwsDebuggable>
+    </PropertyGroup>
+    <PropertyGroup>
+      <NwsCommand>$(NwsSolutionPath)\NetWebScript.CompilerCLI\bin\Debug\nwsc /name "$(AssemblyName)" /path "$(ProjectDir)." /add "$(TargetPath)"</NwsCommand>
+      <NwsCommand Condition="'$(NwsDebuggable)' == 'true'">$(NwsCommand) /debug</NwsCommand>
+      <NwsCommand Condition="'$(NwsPrettyPrint)' == 'true'">$(NwsCommand) /pretty</NwsCommand>
+      <NwsCommand Condition="'$(NwsEntryPointClass)' != ''">$(NwsCommand) /page "$(NwsEntryPointClass)"</NwsCommand>
+    </PropertyGroup>
+    <Exec WorkingDirectory="$(OutDir)" Command="$(NwsCommand)" />
+  </Target>
+
+</Project>
