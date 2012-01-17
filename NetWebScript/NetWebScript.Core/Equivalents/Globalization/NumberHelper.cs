@@ -64,9 +64,17 @@ namespace NetWebScript.Equivalents.Globalization
                 case 'n':
                 case 'N':
                     str = GroupIntegerNumber(((JSNumber)JSMath.Abs(value)).ToString(), info.NumberGroupSizes, info.NumberGroupSeparator);
+                    if (precision == -1)
+                    {
+                        precision = info.NumberDecimalDigits;
+                    }
+                    if (precision > 0)
+                    {
+                        str = str + info.NumberDecimalSeparator + "".PadRight(precision, '0');
+                    }
                     if (value < 0)
                     {
-                        str = info.NegativeSign + str;
+                        str = ApplyNumberNegativePattern(info.NumberNegativePattern, str, info.NegativeSign);
                     }
                     break;
                 default:
@@ -74,6 +82,24 @@ namespace NetWebScript.Equivalents.Globalization
             }
 
             return str;
+        }
+
+        private static string ApplyNumberNegativePattern(int pattern, string number, string negativeSign)
+        {
+            switch(pattern)
+            {
+                case 0:
+                    return "(" + number + ")";
+                case 1:
+                    return negativeSign + number;
+                case 2:
+                    return negativeSign + " " + number;
+                case 3:
+                    return number + negativeSign;
+                case 4:
+                    return number + " " + negativeSign;
+            }
+            throw new System.Exception("Invalid NumberNegativePattern");
         }
 
         public static string FormatFloat(JSNumber value, JSString format, NumberFormatInfo info)

@@ -54,6 +54,67 @@ namespace NetWebScript.Test.Material.Tests
             Assert.AreEqual("!349780423", d.ToString("d5", info));
         }
 
+        [TestMethod]
+        public void Int32_Format_Number()
+        {
+            int a = 32;
+            int b = -4;
+            int c = 328923876;
+            int d = -349780423;
+
+            NumberFormatInfo info = new NumberFormatInfo();
+            info.NegativeSign = "-";
+            info.NumberGroupSeparator = " ";
+            info.NumberGroupSizes = new[] { 3 };
+            info.NumberDecimalDigits = 2;
+            info.NumberDecimalSeparator = ".";
+            info.NumberNegativePattern = 1;
+
+            Assert.AreEqual("32.00", a.ToString("n", info));
+            Assert.AreEqual("-4.00", b.ToString("n", info));
+            Assert.AreEqual("328 923 876.00", c.ToString("n", info));
+            Assert.AreEqual("-349 780 423.00", d.ToString("n", info));
+
+            Assert.AreEqual("32.00000", a.ToString("n5", info));
+            Assert.AreEqual("-4.00000", b.ToString("n5", info));
+            Assert.AreEqual("328 923 876.00000", c.ToString("n5", info));
+            Assert.AreEqual("-349 780 423.00000", d.ToString("n5", info));
+
+            info.NegativeSign = "!";
+            info.NumberDecimalSeparator = ",";
+
+            Assert.AreEqual("32,00", a.ToString("n", info));
+            Assert.AreEqual("!4,00", b.ToString("n", info));
+            Assert.AreEqual("328 923 876,00", c.ToString("n", info));
+            Assert.AreEqual("!349 780 423,00", d.ToString("n", info));
+
+            Assert.AreEqual("32,00000", a.ToString("n5", info));
+            Assert.AreEqual("!4,00000", b.ToString("n5", info));
+            Assert.AreEqual("328 923 876,00000", c.ToString("n5", info));
+            Assert.AreEqual("!349 780 423,00000", d.ToString("n5", info));
+
+            info.NumberNegativePattern = 0;
+            info.NegativeSign = "-";
+            Assert.AreEqual("32,00", a.ToString("n", info));
+            Assert.AreEqual("(4,00)", b.ToString("n", info));
+
+            info.NumberNegativePattern = 2;
+            Assert.AreEqual("32,00", a.ToString("n", info));
+            Assert.AreEqual("- 4,00", b.ToString("n", info));
+
+            info.NumberNegativePattern = 3;
+            Assert.AreEqual("32,00", a.ToString("n", info));
+            Assert.AreEqual("4,00-", b.ToString("n", info));
+
+            info.NumberNegativePattern = 4;
+            Assert.AreEqual("32,00", a.ToString("n", info));
+            Assert.AreEqual("4,00 -", b.ToString("n", info));
+
+            info.NumberDecimalDigits = 0;
+            info.NumberNegativePattern = 1;
+            Assert.AreEqual("32", a.ToString("n", info));
+            Assert.AreEqual("-4", b.ToString("n", info));
+        }
 
         [TestMethod]
         public void Int32_Format_Hexa()
