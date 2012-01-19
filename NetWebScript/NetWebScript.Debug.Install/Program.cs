@@ -15,12 +15,14 @@ namespace NetWebScript.Debug.Install
                 {
                     Console.WriteLine("UnInstall");
                     Engine.Register.UnInstall();
+                    Launcher.Register.UnInstall();
                     Console.WriteLine("Done.");
                     return;
                 }
             }
             Console.WriteLine("Install");
             Engine.Register.Install();
+            Launcher.Register.Install();
             Console.WriteLine("Done.");
         }
     }

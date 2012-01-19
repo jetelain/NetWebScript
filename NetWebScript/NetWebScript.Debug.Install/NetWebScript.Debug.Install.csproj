@@ -96,6 +96,10 @@
       <Project>{CA40B2C8-D7D0-4AC3-94D3-B0BA5986EFBD}</Project>
       <Name>NetWebScript.Debug.Engine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NetWebScript.Debug.Launcher\NetWebScript.Debug.Launcher.csproj">
+      <Project>{39C7EA30-68C0-4421-9AF8-C8053B3A5CEF}</Project>
+      <Name>NetWebScript.Debug.Launcher</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

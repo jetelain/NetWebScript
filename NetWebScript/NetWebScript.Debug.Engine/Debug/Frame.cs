@@ -201,7 +201,7 @@ namespace NetWebScript.Debug.Engine.Debug
             pichError = 0;
             ppExpr = null;
 
-            if (Property != null)
+            if (Property != null && Property.Children != null)
             {
                 // Variables, paramètres
                 Property p = Property.Children.FirstOrDefault(c => c.DisplayName == pszCode);

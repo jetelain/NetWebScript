@@ -46,6 +46,7 @@
     <DirectoryRef Id="VSEngineFolder">
       <Component Id="NetWebScript.VSEngine" DiskId="1" Guid="{50BACB30-C5B5-4F2B-A3A2-B5178C28195E}">
         <File Id="NetWebScript.Debug.Engine.dll" Name="NetWebScript.Debug.Engine.dll" Source="..\NetWebScript.Debug.Engine\bin\Release\NetWebScript.Debug.Engine.dll" />
+        <File Id="NetWebScript.Debug.Launcher.dll" Name="NetWebScript.Debug.Launcher.dll" Source="..\NetWebScript.Debug.Launcher\bin\Release\NetWebScript.Debug.Launcher.dll" />
         <RegistryValue Id="Registry1" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="Name" Value="NetWebScript" Type="string" />
         <RegistryValue Id="Registry10" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{0898B973-803F-4d43-82EC-A9044B873467}" Name="Class" Value="NetWebScript.Debug.Engine.NWSEngine" Type="string" />
         <RegistryValue Id="Registry11" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\CLSID\{0898B973-803F-4d43-82EC-A9044B873467}" Name="InProcServer32" Value="[SystemFolder]mscoree.dll" Type="string" />
@@ -70,6 +71,16 @@
         <RegistryValue Id="Registry6" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="ProgramProvider" Value="{9500DB29-25AB-462d-92B4-90588A6B00B2}" Type="string" />
         <RegistryValue Id="Registry8" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\Engine\{88EBAE0F-1B09-4c57-9463-799D483E4097}" Name="PortSupplier" Value="{9D17E7CB-E7DB-4eb8-BF2C-DA2A454703AC}" Type="string" />
         <RegistryValue Id="Registry9" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\AD7Metrics\PortSupplier\{9D17E7CB-E7DB-4eb8-BF2C-DA2A454703AC}" Name="CLSID" Value="{7B589914-6569-4aeb-BDED-EAFEE56E1667}" Type="string" />
+
+        <RegistryValue Id="Registry27" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\Packages\{C3B2BB31-36EC-4967-BDC5-2DA982DE928D}" Name="Assembly" Value="NetWebScript.Debug.Launcher, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cdd82b6cc2610bf2" Type="string" />
+        <RegistryValue Id="Registry28" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\Packages\{C3B2BB31-36EC-4967-BDC5-2DA982DE928D}" Name="Class" Value="NetWebScript.Debug.Launcher.NwsFlavorPackage" Type="string" />
+        <RegistryValue Id="Registry29" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\Packages\{C3B2BB31-36EC-4967-BDC5-2DA982DE928D}" Name="CodeBase" Value="[INSTALLDIR]bin\vsengine\NetWebScript.Debug.Launcher.dll" Type="string" />
+        <RegistryValue Id="Registry30" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\Packages\{C3B2BB31-36EC-4967-BDC5-2DA982DE928D}" Name="InProcServer32" Value="[SystemFolder]mscoree.dll" Type="string" />
+
+        <RegistryValue Id="Registry31" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\Projects\{05A87499-F343-4FCA-BCD0-B90EF6FC4558}" Name="Name" Value="NetWebScript Flavor" Type="string" />
+        <RegistryValue Id="Registry32" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\Projects\{05A87499-F343-4FCA-BCD0-B90EF6FC4558}" Name="Package" Value="{C3B2BB31-36EC-4967-BDC5-2DA982DE928D}" Type="string" />
+
+
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="UnitTestFolder">
