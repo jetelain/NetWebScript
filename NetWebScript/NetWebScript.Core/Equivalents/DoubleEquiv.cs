@@ -21,7 +21,7 @@ namespace NetWebScript.Equivalents
 
         public override string ToString()
         {
-            return value.ToString();
+            return NumberFormat.FormatFloat(value, null, NumberFormatInfo.CurrentInfo);
         }
 
         public override bool Equals(object obj)
@@ -39,8 +39,17 @@ namespace NetWebScript.Equivalents
 
         public string ToString(string format, IFormatProvider provider)
         {
-            return NumberFormat.FormatFloat(value, format, (NumberFormatInfo)provider.GetFormat(typeof(NumberFormatInfo)));
+            return NumberFormat.FormatFloat(value, format, NumberFormatInfo.GetInstance(provider));
         }
 
+        public string ToString(IFormatProvider provider)
+        {
+            return NumberFormat.FormatFloat(value, null, NumberFormatInfo.GetInstance(provider));
+        }
+
+        public static double Parse(string s, IFormatProvider provider)
+        {
+            return NumberFormat.ParseFloat(s, NumberFormatInfo.GetInstance(provider));
+        }
     }
 }

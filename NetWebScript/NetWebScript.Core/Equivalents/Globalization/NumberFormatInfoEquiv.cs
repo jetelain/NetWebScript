@@ -24,11 +24,9 @@ namespace NetWebScript.Equivalents.Globalization
 
         public string CurrencySymbol { get; set; }
 
-        //public static NumberFormatInfoEquiv CurrentInfo { get; }
-
         public System.Globalization.DigitShapes DigitSubstitution { get; set; }
 
-        //public static NumberFormatInfoEquiv InvariantInfo { get; }
+        public static NumberFormatInfoEquiv InvariantInfo { get { return CultureInfoEquiv.InvariantCulture.NumberFormat; } }
 
         //public bool IsReadOnly { get; }
 

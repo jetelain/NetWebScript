@@ -28,12 +28,12 @@ namespace NetWebScript.JsClr.Compiler
         private readonly HashSet<Assembly> assemblies = new HashSet<Assembly>();
         private int index;
         private int indexMethods;
-        private readonly ScriptType debugger;
+        private readonly Instrumentation instrumentation;
 
         /// <summary>
         /// Instrument generated script to be debuggable
         /// </summary>
-        public bool Debuggable { get; private set; }
+        public Instrumentation Instrumentation { get { return instrumentation; } }
 
         /// <summary>
         /// Indent and add some commands on generated script to be human freindly
@@ -44,6 +44,10 @@ namespace NetWebScript.JsClr.Compiler
         /// Metadata of generated script
         /// </summary>
         public ModuleMetadata Metadata { get; set; }
+
+        public string ModuleName { get; set; }
+
+        public string ModuleFilename { get; set; }
 
         /// <summary>
         /// Creates a compiler using default script system.
@@ -69,9 +73,8 @@ namespace NetWebScript.JsClr.Compiler
 
             if (debuggable)
             {
-                debugger = (ScriptType)AddEntryPoint(typeof(NetWebScript.Diagnostics.Debugger));
+                instrumentation = new Instrumentation(this, typeof(NetWebScript.Diagnostics.Debugger));
                 PrettyPrint = true;
-                Debuggable = true;
             }
             else if (prettyPrint)
             {
@@ -220,7 +223,7 @@ namespace NetWebScript.JsClr.Compiler
 
             HashSet<Assembly> assemblies = new HashSet<Assembly>();
 
-            var moduleWriter = new ModuleWriter(writer, system, Debuggable, PrettyPrint);
+            var moduleWriter = new ModuleWriter(writer, system, PrettyPrint, instrumentation);
 
             foreach (var type in system.TypesToGenerate.ToArray())
             {
@@ -251,12 +254,7 @@ namespace NetWebScript.JsClr.Compiler
             {
                 writer.WriteLine("// ### Static constructors");
             }
-            if (debugger != null)
-            {
-                // Debugger static constructor must be call before anything else
-                WriteStaticCtorCall(writer, debugger);
-            }
-            foreach (var type in system.TypesToGenerate.Where(t => t.StaticConstructor != null && t != debugger).ToArray())
+            foreach (var type in system.TypesToGenerate.Where(t => t.StaticConstructor != null/* && t != debugger*/).ToArray())
             {
                 WriteStaticCtorCall(writer, type);
             }

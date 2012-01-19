@@ -7,7 +7,7 @@ using NetWebScript.Script.Xml;
 
 namespace NetWebScript.Diagnostics
 {
-    [ScriptAvailable, Exported(IgnoreNamespace=true, Name="$dbg")]
+    [ScriptAvailable]
 	public static class Debugger
 	{
 		private static string serverUrl = "http://localhost:9090/";
@@ -17,6 +17,7 @@ namespace NetWebScript.Diagnostics
 		private static int stepDeep = 0;
         private static int timer;
         private static bool detached = false;
+        private static bool active;
 
 		[DebuggerHidden]
 		private static void Break(string cmd, string id)
@@ -75,6 +76,7 @@ namespace NetWebScript.Diagnostics
 		[DebuggerHidden]
 		public static void Start()
 		{
+            active = true;
 			//FIXME: $.support.cors = true;
             JQuery.Support["cors"] = true;
 			var success = true;
@@ -339,7 +341,10 @@ namespace NetWebScript.Diagnostics
 		[DebuggerHidden]
 		public static void E(string name, object context)
 		{
-			callStack.Push(new StackFrame() { Id = callStack.Length, Name = name, Context = context });
+            if (active)
+            {
+                callStack.Push(new StackFrame() { Id = callStack.Length, Name = name, Context = context });
+            }
 		}
 
 		/// <summary>
@@ -348,10 +353,12 @@ namespace NetWebScript.Diagnostics
 		/// <param name="v">Value to return as-is</param>
 		/// <returns>Value of <paramref name="v"/></returns>
 		[DebuggerHidden]
-        public static object L(object v)
+        public static void L()
 		{
-			callStack.Pop();
-			return v;
+            if (active)
+            {
+                callStack.Pop();
+            }
 		}
 
 		[DebuggerHidden]
@@ -495,18 +502,25 @@ namespace NetWebScript.Diagnostics
 		[DebuggerHidden]
 		public static bool P(string id)
 		{
-			if ( callStack.Length > 0) 
-			{
-				callStack[callStack.Length-1].Point = id;
-			}
-			if ( stepDeep>0 && stepDeep >= callStack.Length ) 
-			{
-				Break("steped", id);
-			}
-			else if (breakPoints[id] != Script.JSObject.Undefined) 
-			{
-				Break("reached", id);
-			}
+            if (active)
+            {
+                if (callStack.Length > 0)
+                {
+                    callStack[callStack.Length - 1].Point = id;
+                }
+                if (stepDeep > 0 && stepDeep >= callStack.Length)
+                {
+                    active = false;
+                    Break("steped", id);
+                    active = true;
+                }
+                else if (breakPoints[id] != Script.JSObject.Undefined)
+                {
+                    active = false;
+                    Break("reached", id);
+                    active = true;
+                }
+            }
 			return true;
 		}
 	}

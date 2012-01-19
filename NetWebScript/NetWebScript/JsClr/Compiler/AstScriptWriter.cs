@@ -14,28 +14,25 @@ using NetWebScript.Metadata;
 namespace NetWebScript.JsClr.Compiler
 {
     internal class AstScriptWriter : IScriptStatementVisitor<JsToken>, IRootInvoker
-	{
+    {
         private readonly ScriptSystem system;
         private readonly MethodBaseMetadata methodMetadata;
         private readonly MethodScriptAst method;
         private readonly bool isctor;
         private readonly bool pretty;
+        private readonly Instrumentation instrumentation;
 
-        public AstScriptWriter(ScriptSystem system, MethodScriptAst method, MethodBaseMetadata methodMetadata, bool pretty)
-		{
+        public AstScriptWriter(ScriptSystem system, MethodScriptAst method, MethodBaseMetadata methodMetadata, bool pretty, Instrumentation instrumentation)
+        {
             this.system = system;
             this.pretty = pretty;
-            if (!Attribute.IsDefined(method.Method, typeof(DebuggerHiddenAttribute)) && !(method.Method.IsStatic && method.Method is ConstructorInfo))
+            if (instrumentation != null && methodMetadata != null && !Attribute.IsDefined(method.Method, typeof(DebuggerHiddenAttribute)))
             {
                 this.methodMetadata = methodMetadata;
+                this.instrumentation = instrumentation;
             }
             this.method = method;
             isctor = method.Method is ConstructorInfo && !method.Method.IsStatic;
-		}
-
-        public bool IsDebug
-        {
-            get { return methodMetadata != null; }
         }
 
         internal string VariableName(LocalVariable variable)
@@ -49,7 +46,7 @@ namespace NetWebScript.JsClr.Compiler
 
         internal string VariableReference(LocalVariable variable)
         {
-            if (IsDebug)
+            if (instrumentation != null && instrumentation.CaptureMethodContext)
             {
                 return "t." + VariableName(variable);
             }
@@ -63,7 +60,7 @@ namespace NetWebScript.JsClr.Compiler
 
         internal string ArgumentReference(ParameterInfo variable)
         {
-            if (IsDebug)
+            if (instrumentation != null && instrumentation.CaptureMethodContext)
             {
                 return "t." + ArgumentName(variable);
             }
@@ -206,10 +203,6 @@ namespace NetWebScript.JsClr.Compiler
             JsTokenWriter writer = new JsTokenWriter();
             if (returnStatement.Value == null)
             {
-                if (IsDebug)
-                {
-                   writer.Write("$dbg.L();");
-                }
                 if (isctor)
                 {
                     writer.Write("return this");
@@ -222,16 +215,7 @@ namespace NetWebScript.JsClr.Compiler
             else
             {
                 writer.Write("return ");
-                if (IsDebug)
-                {
-                    writer.Write("$dbg.L(");
-                    writer.WriteCommaSeparated(returnStatement.Value.Accept(this));
-                    writer.Write(")");
-                }
-                else
-                {
-                    writer.WriteCommaSeparated(returnStatement.Value.Accept(this));
-                }
+                writer.WriteCommaSeparated(returnStatement.Value.Accept(this));
             }
             return writer.ToToken(JsPrecedence.Statement);
         }
@@ -240,16 +224,7 @@ namespace NetWebScript.JsClr.Compiler
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.Write("throw ");
-            if (IsDebug)
-            {
-                writer.Write("$dbg.L(");
-                writer.WriteCommaSeparated(throwStatement.Value.Accept(this));
-                writer.Write(")");
-            }
-            else
-            {
-                writer.WriteCommaSeparated(throwStatement.Value.Accept(this));
-            }
+            writer.WriteCommaSeparated(throwStatement.Value.Accept(this));
             return writer.ToToken(JsPrecedence.Statement);
         }
 
@@ -355,29 +330,37 @@ namespace NetWebScript.JsClr.Compiler
             var ast = method;
             JsTokenWriter writer = new JsTokenWriter();
             writer.WriteLine("{");
-            if (IsDebug)
+            if (instrumentation != null)
             {
-                writer.Write("var t={");
-                bool first = true;
-                if (!ast.Method.IsStatic)
+                if (instrumentation.CaptureMethodContext)
                 {
-                    first = false;
-                    writer.Write("$this:this");
-                }
-                foreach (var arg in ast.Arguments)
-                {
-                    if (first)
+                    writer.Write("var t={");
+                    bool first = true;
+                    if (!ast.Method.IsStatic)
                     {
                         first = false;
+                        writer.Write("$this:this");
                     }
-                    else
+                    foreach (var arg in ast.Arguments)
                     {
-                        writer.Write(',');
+                        if (first)
+                        {
+                            first = false;
+                        }
+                        else
+                        {
+                            writer.Write(',');
+                        }
+                        writer.Write("{0}:{0}", ArgumentName(arg));
                     }
-                    writer.Write("{0}:{0}", ArgumentName(arg));
+                    writer.WriteLine("};");
                 }
-                writer.WriteLine("};");
-                writer.WriteLine("$dbg.E('{0}',t);", methodMetadata.Id);
+                else
+                {
+                    writer.WriteLine("var t=null;");
+                }
+                writer.WriteLine("{0}.{1}('{2}',t);", instrumentation.EnterMethod.Owner.TypeId, instrumentation.EnterMethod.ImplId, methodMetadata.Id);
+                writer.WriteLine("try {");
             }
             else if (ast.Variables.Count > 0)
             {
@@ -397,7 +380,7 @@ namespace NetWebScript.JsClr.Compiler
                 }
                 writer.WriteLine(";");
             }
-            if (methodMetadata != null)
+            if (methodMetadata != null && instrumentation != null && instrumentation.CaptureMethodContext)
             {
                 foreach (var v in ast.Variables)
                 {
@@ -409,13 +392,15 @@ namespace NetWebScript.JsClr.Compiler
                 }
             }
             writer.WriteIndented(pretty, ast.Statements.Select(s => s.Accept(this)));
-            if (IsDebug)
-            {
-                writer.WriteLine("$dbg.L();");
-            }
             if (isctor)
             {
                 writer.WriteLine("return this;");
+            }
+            if (instrumentation != null)
+            {
+                writer.WriteLine("} finally {");
+                writer.WriteLine("{0}.{1}();",  instrumentation.LeaveMethod.Owner.TypeId, instrumentation.LeaveMethod.ImplId);
+                writer.WriteLine("}");
             }
             writer.Write("}");
             targetwriter.Write(writer.ToString());
@@ -423,7 +408,7 @@ namespace NetWebScript.JsClr.Compiler
 
         public JsToken Visit(ScriptDebugPointExpression point)
         {
-            if (!IsDebug)
+            if (instrumentation == null)
             {
                 if (point.Value != null)
                 {
@@ -432,7 +417,7 @@ namespace NetWebScript.JsClr.Compiler
                 return null;
             }
             JsTokenWriter builder = new JsTokenWriter();
-            builder.Write("$dbg.P");
+            builder.Write("{0}.{1}", instrumentation.Point.Owner.TypeId, instrumentation.Point.ImplId);
             builder.WriteOpenArgs();
             builder.Write("'" + AddDebugPoint(point.Point).Id + "'");
             builder.WriteCloseArgs();
@@ -446,24 +431,11 @@ namespace NetWebScript.JsClr.Compiler
             return builder.ToToken(JsPrecedence.FunctionCall); 
         }
 
-        public String DebugPointCall(PdbSequencePoint point)
-        {
-            if (!IsDebug)
-            {
-                throw new InvalidOperationException();
-            }
-            JsTokenWriter builder = new JsTokenWriter();
-            builder.Write("$dbg.P");
-            builder.WriteOpenArgs();
-            builder.Write("'" + AddDebugPoint(point).Id + "'");
-            builder.WriteCloseArgs();
-            return builder.ToString();
-        }
-
         public JsToken Visit(ScriptCurrentExceptionExpression currentExceptionExpression)
         {
             return JsToken.Name("$e");
         }
+
         private DebugPointMetadata AddDebugPoint(PdbSequencePoint point)
         {
             var meta = new DebugPointMetadata();

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NetWebScript.Page;
 using System.IO;
-using NetWebScript.JsClr.Runtime;
+using System.Linq;
 using System.Reflection;
+using NetWebScript.JsClr.Runtime;
+using NetWebScript.Page;
 using NetWebScript.Remoting.Serialization;
 
 namespace NetWebScript.JsClr.Compiler
@@ -31,6 +30,8 @@ namespace NetWebScript.JsClr.Compiler
         public string OutputPath { get; set; }
 
         public string Page { get; set; }
+
+        public Uri JQueryUri { get; set; }
 
         public bool Compile()
         {
@@ -70,25 +71,24 @@ namespace NetWebScript.JsClr.Compiler
                 return false;
             }
 
-
-
-            using (var writer = new StreamWriter(new FileStream(Path.Combine(OutputPath, CoreRuntime.JQueryFilename), FileMode.Create, FileAccess.Write)))
+            if (JQueryUri == null)
             {
-                CoreRuntime.WriteJQuery(writer);
-            }
+                JQueryUri = new Uri(CoreRuntime.JQueryFilename, UriKind.RelativeOrAbsolute);
 
+                using (var output = new FileStream(Path.Combine(OutputPath, CoreRuntime.JQueryFilename), FileMode.Create, FileAccess.Write))
+                {
+                    CoreRuntime.WriteJQuery(output);
+                }
+            }
+            
             using (var writer = new StreamWriter(new FileStream(Path.Combine(OutputPath, Name + ".js"), FileMode.Create, FileAccess.Write)))
             {
-                //CoreRuntime.WriteRuntime(writer, compiler.Debuggable);
                 compiler.Write(writer);
                 writer.WriteLine("Modules.Reg('{0}','0.0.0.0','{0}.js','{1}');",Name, compiler.Metadata.Timestamp);
-                if (compiler.Debuggable)
+                if (compiler.Instrumentation != null)
                 {
                     writer.WriteLine("$(document).ready(function(){");
-                    if (compiler.Debuggable)
-                    {
-                        writer.WriteLine("$dbg.Start();");
-                    }
+                    writer.WriteLine("{0}.{1}();", compiler.Instrumentation.Start.Owner.TypeId, compiler.Instrumentation.Start.ImplId);
                     writer.WriteLine("});");
                 }
             }
@@ -129,14 +129,14 @@ namespace NetWebScript.JsClr.Compiler
             return false;
         }
 
-        private static void WritePage(TextWriter writer, string name, ModuleCompiler compiler, Type scriptPageType, IScriptPageFactory factory)
+        private void WritePage(TextWriter writer, string name, ModuleCompiler compiler, Type scriptPageType, IScriptPageFactory factory)
         {
 
             writer.WriteLine("<!DOCTYPE html>");
             writer.WriteLine("<html>");
             writer.WriteLine("<head>");
             writer.WriteLine("<title>{0}</title>", name);
-            writer.WriteLine("<script type=\"text/javascript\" src=\"{0}\"></script>", CoreRuntime.JQueryFilename);
+            writer.WriteLine("<script type=\"text/javascript\" src=\"{0}\"></script>", JQueryUri.OriginalString);
             writer.WriteLine("<script type=\"text/javascript\" src=\"{0}.js\"></script>", name);
             writer.WriteLine("<script type=\"text/javascript\">");
             writer.WriteLine("$(document).ready(function(){");

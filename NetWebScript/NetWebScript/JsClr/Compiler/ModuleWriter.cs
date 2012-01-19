@@ -17,16 +17,16 @@ namespace NetWebScript.JsClr.Compiler
     {
         private readonly TextWriter writer;
         private readonly ScriptSystem system;
-        private readonly bool debuggable;
         private readonly bool pretty;
         private readonly IScriptMethodBase createTypeMethod;
+        private readonly Instrumentation instrumentation;
 
-        public ModuleWriter(TextWriter writer, ScriptSystem system, bool debuggable, bool pretty)
+        public ModuleWriter(TextWriter writer, ScriptSystem system, bool pretty, Instrumentation instrumentation)
         {
             this.writer = writer;
             this.system = system;
-            this.debuggable = debuggable;
             this.pretty = pretty;
+            this.instrumentation = instrumentation;
             createTypeMethod = system.GetScriptMethod(new Func<string, Type, Type[], Type>(TypeSystemHelper.CreateType).Method);
         }
 
@@ -247,7 +247,7 @@ namespace NetWebScript.JsClr.Compiler
                 return;
             }
 
-            var astWriter = new AstScriptWriter(system, method.Ast, debuggable ? meta : null, pretty);
+            var astWriter = new AstScriptWriter(system, method.Ast, meta, pretty, instrumentation);
 
             writer.Write("function(");
             bool first = true;

@@ -207,7 +207,7 @@ namespace NetWebScript.Equivalents.Globalization
             return numberString.Substring(0, stringIndex + 1) + groupSep + ret;	
         }
 
-        public static JSNumber ParseInteger(JSString str, NumberFormatInfo info)
+        internal static JSNumber ParseInteger(JSString str, NumberFormatInfo info)
         {
             if (info.NegativeSign != "-")
             {
@@ -220,7 +220,7 @@ namespace NetWebScript.Equivalents.Globalization
             return JSNumber.ParseInt(str);
         }
 
-        public static JSNumber ParseInteger(JSString str, NumberStyles style, NumberFormatInfo info)
+        internal static JSNumber ParseInteger(JSString str, NumberStyles style, NumberFormatInfo info)
         {
             if (style == NumberStyles.Integer)
             {
@@ -229,5 +229,21 @@ namespace NetWebScript.Equivalents.Globalization
             throw new System.NotImplementedException();
         }
 
+
+        internal static JSNumber ParseFloat(JSString str, NumberFormatInfo numberFormatInfo)
+        {
+            // FIXME: Implement the .Net spec
+            return JSNumber.ParseFloat(str);
+        }
+
+        internal static JSNumber ParseFloat(JSString str, NumberStyles style, NumberFormatInfo info)
+        {
+            // FIXME: Implement the .Net spec
+            if (style == NumberStyles.Integer)
+            {
+                return ParseInteger(str, info);
+            }
+            return JSNumber.ParseFloat(str);
+        }
     }
 }
