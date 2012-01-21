@@ -38,15 +38,18 @@ namespace NetWebScript.JsClr.AstBuilder.PdbInfo
         private void LoadData(string filename)
         {
             ISymbolReader reader = SymbolAccess.GetReaderForFile(filename);
-            foreach (Type t in assembly.GetTypes())
+            if (reader != null)
             {
-                foreach (MethodInfo methodReflection in t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
+                foreach (Type t in assembly.GetTypes())
                 {
-                    int token = methodReflection.MetadataToken;
-                    ISymbolMethod methodSymbol = reader.GetMethod(new SymbolToken(token));
-                    if (methodSymbol != null)
+                    foreach (MethodInfo methodReflection in t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
                     {
-                        methods.Add(token, new PdbMethod(methodSymbol));
+                        int token = methodReflection.MetadataToken;
+                        ISymbolMethod methodSymbol = reader.GetMethod(new SymbolToken(token));
+                        if (methodSymbol != null)
+                        {
+                            methods.Add(token, new PdbMethod(methodSymbol));
+                        }
                     }
                 }
             }

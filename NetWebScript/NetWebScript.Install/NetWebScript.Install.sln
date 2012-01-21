@@ -31,12 +31,30 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Task", "..\NetWebScript.Task\NetWebScript.Task.csproj", "{38E96A60-BCD9-4714-A660-4CAC418AF95F}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "NetWebScript.Install", "NetWebScript.Install.wixproj", "{280926AA-DFFD-4344-A57A-F4002653DFD8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{39C7EA30-68C0-4421-9AF8-C8053B3A5CEF} = {39C7EA30-68C0-4421-9AF8-C8053B3A5CEF}
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236} = {AC84A932-5A99-43C0-AE21-B2C2F8BE6236}
+		{38E96A60-BCD9-4714-A660-4CAC418AF95F} = {38E96A60-BCD9-4714-A660-4CAC418AF95F}
+		{65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2} = {65F3CA6C-9075-4A3B-963A-08E1E0CBB1A2}
+		{588FE57F-4673-4753-B6B9-D1A56A63B277} = {588FE57F-4673-4753-B6B9-D1A56A63B277}
+		{E1A592BD-2909-4925-B02D-258D3314EAB8} = {E1A592BD-2909-4925-B02D-258D3314EAB8}
+		{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32} = {A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}
+		{A65F49C8-A32A-41FA-BBCF-16621FEEA418} = {A65F49C8-A32A-41FA-BBCF-16621FEEA418}
+		{CA40B2C8-D7D0-4AC3-94D3-B0BA5986EFBD} = {CA40B2C8-D7D0-4AC3-94D3-B0BA5986EFBD}
+		{C556C9CE-C34D-4785-A8F4-206C1F3ECE2B} = {C556C9CE-C34D-4785-A8F4-206C1F3ECE2B}
+		{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8} = {CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}
+		{A131E7E5-98D1-45DD-9C07-EA63AA69F291} = {A131E7E5-98D1-45DD-9C07-EA63AA69F291}
+		{DBF3AEF6-9D13-4E03-899B-561BCFDD9920} = {DBF3AEF6-9D13-4E03-899B-561BCFDD9920}
+		{221C14F9-1DE0-47E3-AC55-9DA6D548F064} = {221C14F9-1DE0-47E3-AC55-9DA6D548F064}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Debug.Launcher", "..\NetWebScript.Debug.Launcher\NetWebScript.Debug.Launcher.csproj", "{39C7EA30-68C0-4421-9AF8-C8053B3A5CEF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Templates", "..\NetWebScript.Templates\NetWebScript.Templates.csproj", "{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 15
+		SccNumberOfProjects = 16
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs26
 		SccLocalPath0 = .
@@ -81,6 +99,9 @@ Global
 		SccProjectUniqueName14 = ..\\NetWebScript.Debug.Launcher\\NetWebScript.Debug.Launcher.csproj
 		SccProjectName14 = ../NetWebScript.Debug.Launcher
 		SccLocalPath14 = ..\\NetWebScript.Debug.Launcher
+		SccProjectUniqueName15 = ..\\NetWebScript.Templates\\NetWebScript.Templates.csproj
+		SccProjectName15 = ../NetWebScript.Templates
+		SccLocalPath15 = ..\\NetWebScript.Templates
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -231,6 +252,16 @@ Global
 		{39C7EA30-68C0-4421-9AF8-C8053B3A5CEF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{39C7EA30-68C0-4421-9AF8-C8053B3A5CEF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{39C7EA30-68C0-4421-9AF8-C8053B3A5CEF}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}.Debug|x86.ActiveCfg = Debug|x86
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}.Debug|x86.Build.0 = Debug|x86
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}.Release|Any CPU.ActiveCfg = Debug|x86
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}.Release|Mixed Platforms.ActiveCfg = Debug|x86
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}.Release|Mixed Platforms.Build.0 = Debug|x86
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}.Release|x86.ActiveCfg = Debug|x86
+		{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}.Release|x86.Build.0 = Debug|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

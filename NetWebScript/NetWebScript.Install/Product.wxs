@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <?define productVersion      = "0.1"?>
+  <?define productFullVersion  = "0.1.0.0"?>
+  
   <Product Id="5bfa7780-726c-4eb5-b3f8-9623c6f06cdb"
-           Name="NetWebScript"
+           Name="NetWebScript $(var.productVersion)"
            Language="1033"
-           Version="0.1.0.0"
+           Version="$(var.productFullVersion)"
            Manufacturer="netwebscript.codeplex.com"
            UpgradeCode="e4e90e53-ae7c-479c-829c-4b523b378dcb">
     
@@ -12,29 +16,15 @@
       Compressed="yes" />
     
     <!-- Check For .NET 4 Full -->
-    <Property Id="NETFRAMEWORK40FULL" Secure="yes">
-      <RegistrySearch Id="NetFramework40Full" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Install" Type="raw" />
-    </Property>
-    <Property Id="NETFRAMEWORK40FULLVERSION" Secure="yes">
-      <RegistrySearch Id="NetFramework40FullVersion" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Version" Type="raw" />
-    </Property>
+    <PropertyRef Id="NETFRAMEWORK40FULL" />
     <Condition Message="This setup requires the .NET 4.0 Full Framework to be installed.">
-      Installed OR NETFRAMEWORK40FULL		
+      Installed OR NETFRAMEWORK40FULL
     </Condition>
 
     <!-- Check for Visual Studio 10 -->
-    <Property Id="VS10INSTALLFOLDER" Secure="yes">
-      <RegistrySearch Id="VS10InstallFolder" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0" Name="InstallDir" Type="raw" />
-    </Property>
-    <Property Id="VS10TEMPLATEFOLDER" Secure="yes">
-      <RegistrySearch Id="VS10TemplateFolder" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\VSTemplate\Project" Name="UserFolder" Type="directory" />
-    </Property>
-    <Property Id="VS10DEVENVEXE">
-      <RegistrySearch Id="VS10DevenvExe" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\Setup\VS" Name="EnvironmentPath" Type="raw" />
-    </Property>
-    <Property Id="VS10CSHARPWEBTEMPLATEFOLDER">
-      <DirectorySearch Id="VS10CSharpWebTemplateFolder" Path="[VS10TEMPLATEFOLDER]CSharp\Web" />
-    </Property>
+    <PropertyRef Id="VS2010DEVENV" />
+    <PropertyRef Id="VS2010_PROJECTTEMPLATES_DIR" />
+    <CustomActionRef Id="VS2010InstallVSTemplates" />
     
     <!-- NetWebScript can be installed only for all users -->
     <Property Id="ALLUSERS">1</Property>
@@ -48,8 +38,9 @@
              Absent="disallow"
              ConfigurableDirectory="INSTALLDIR">
 
-      <ComponentRef Id="NetWebScript.Metadata" />
-      <ComponentRef Id="NetWebScript.Core" />
+      <ComponentRef Id="NetWebScript.MetadataGAC" />
+      <ComponentRef Id="NetWebScript.CoreGAC" />
+      <ComponentRef Id="NetWebScript.Runtime" />
       <ComponentRef Id="NetWebScript.Compiler" />
       <ComponentRef Id="NetWebScript.Debugger" />
       <ComponentRef Id="NetWebScript.DebuggerApp" />
@@ -61,7 +52,7 @@
         Level="1"
         InstallDefault="local">
         <Condition Level="0">
-          NOT VS10INSTALLFOLDER
+          NOT VS2010DEVENV
         </Condition>
         <ComponentRef Id="NetWebScript.VSEngine" />
         <ComponentRef Id="NetWebScript.VSUnitTest" />
@@ -77,9 +68,9 @@
     
     <!-- Install templates after files installation -->
     
-    <CustomAction Id="InstallVSTemplates" Property="VS10DEVENVEXE" ExeCommand="/InstallVSTemplates" Impersonate="no" Execute="deferred" />
+    <!--<CustomAction Id="InstallVSTemplates" Property="VS10DEVENVEXE" ExeCommand="/InstallVSTemplates" Impersonate="no" Execute="deferred" />-->
     <InstallExecuteSequence>
-      <Custom Action="InstallVSTemplates" Before="InstallFinalize">VS10INSTALLFOLDER&lt;&gt;"" AND NOT (!NetWebScript.VS2010 = -1)</Custom>
+      <Custom Action="VS2010InstallVSTemplates" Before="InstallFinalize">VS2010DEVENV&lt;&gt;"" AND NOT (!NetWebScript.VS2010 = -1)</Custom>
     </InstallExecuteSequence>
 
 

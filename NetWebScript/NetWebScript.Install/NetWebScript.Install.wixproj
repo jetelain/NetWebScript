@@ -33,6 +33,10 @@
     <Content Include="NetWebScript Online Documentation.url" />
   </ItemGroup>
   <ItemGroup>
+    <WixExtension Include="WixVSExtension">
+      <HintPath>$(WixExtDir)\WixVSExtension.dll</HintPath>
+      <Name>WixVSExtension</Name>
+    </WixExtension>
     <WixExtension Include="WixUIExtension">
       <HintPath>C:\Program Files\Windows Installer XML v3.5\bin\\WixUIExtension.dll</HintPath>
       <Name>WixUIExtension</Name>

@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <ProjectGuid>{AC84A932-5A99-43C0-AE21-B2C2F8BE6236}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="NWSScriptApplicationProject40\Application.cs" />
+    <None Include="NWSScriptApplicationProject40\Properties\AssemblyInfo.cs" />
+    <None Include="NWSWebApplicationProject40\Default.cs" />
+    <None Include="NWSWebApplicationProject40\Properties\AssemblyInfo.cs" />
+    <None Include="NWSScriptApplicationProject40\Default.aspx" />
+    <None Include="NWSScriptApplicationProject40\NWSScriptApplicationProject40.vstemplate" />
+    <None Include="NWSScriptApplicationProject40\WebApplication.csproj" />
+    <Content Include="NWSWebApplicationProject40\Default.html" />
+    <None Include="NWSWebApplicationProject40\NWSWebApplicationProject40.vstemplate" />
+    <None Include="NWSWebApplicationProject40\WebApplication.csproj" />
+    <None Include="NWSScriptApplicationProject40\Web.config" />
+    <None Include="NWSScriptApplicationProject40\Web.Debug.config" />
+    <None Include="NWSScriptApplicationProject40\Web.Release.config" />
+    <None Include="NWSWebApplicationProject40\Web.config" />
+    <None Include="NWSWebApplicationProject40\Web.Debug.config" />
+    <None Include="NWSWebApplicationProject40\Web.Release.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\ExtensionPack\4.0\MSBuild.ExtensionPack.tasks" />
+  <Target Name="Default" DependsOnTargets="NWSScriptApplicationProject40;NWSWebApplicationProject40" />
+  <Target Name="Rebuild" DependsOnTargets="Clean;Default" />
+  <Target Name="Clean">
+    <Delete Files="Release\NWSScriptApplicationProject40.zip;Release\NWSWebApplicationProject40.zip" />
+  </Target>
+  <Target Name="NWSScriptApplicationProject40">
+    <PropertyGroup>
+      <SourceDirectory>NWSScriptApplicationProject40\</SourceDirectory>
+    </PropertyGroup>
+    <ItemGroup>
+      <FilesScript Include="$(SourceDirectory)*" />
+      <FilesScript Include="$(SourceDirectory)Properties\*" />
+    </ItemGroup>
+    <MakeDir Directories="Release" />
+    <MSBuild.ExtensionPack.Compression.Zip RemoveRoot="$(SourceDirectory)" TaskAction="Create" CompressFiles="@(FilesScript)" ZipFileName="Release\NWSScriptApplicationProject40.zip" />
+  </Target>
+  <Target Name="NWSWebApplicationProject40">
+    <PropertyGroup>
+      <SourceDirectory>NWSWebApplicationProject40\</SourceDirectory>
+    </PropertyGroup>
+    <ItemGroup>
+      <FilesWeb Include="$(SourceDirectory)*" />
+      <FilesWeb Include="$(SourceDirectory)Properties\*" />
+    </ItemGroup>
+    <MSBuild.ExtensionPack.Compression.Zip RemoveRoot="$(SourceDirectory)" TaskAction="Create" CompressFiles="@(FilesWeb)" ZipFileName="Release\NWSWebApplicationProject40.zip" />
+  </Target>
+</Project>

@@ -5,6 +5,7 @@
       <Directory Id="ProgramFilesFolder" Name="PFiles">
         <Directory Id="INSTALLDIR" Name="NetWebScript">
           <Directory Id="BinFolder" Name="bin">
+            <Directory Id="RuntimeFolder" Name="runtime" />
             <Directory Id="UnitTestFolder" Name="unittest" />
             <Directory Id="VSEngineFolder" Name="vsengine" />
             <Directory Id="DebuggerFolder" Name="debugger" />
@@ -12,18 +13,32 @@
           <Directory Id="LicensesFolder" Name="licenses" />
         </Directory>
       </Directory>
-      <Directory Id="VS10CSHARPWEBTEMPLATEFOLDER" Name="CSharpWebTemplate" />
+      <Directory Id="VS2010_PROJECTTEMPLATES_DIR" Name="Templates">
+        <Directory Id="TemplatesCSharp" Name="CSharp">
+          <Directory Id="TemplatesFolder" Name="Web" />
+        </Directory>
+      </Directory>
       <Directory Id="ProgramMenuFolder" Name="Programs">
         <Directory Id="ApplicationProgramsFolder" Name="NetWebScript"/>
       </Directory>
     </Directory>
-
-    <DirectoryRef Id="BinFolder">
-      <Component Id="NetWebScript.Metadata" DiskId="1" Guid="{93075355-2437-414A-B6A1-1BE482815CE2}">
-        <File Id="NetWebScript.Metadata.dll" Name="NetWebScript.Metadata.dll" KeyPath="yes" Assembly=".net" Source="..\NetWebScript.Metadata\bin\Release\NetWebScript.Metadata.dll" />
+    
+    <DirectoryRef Id="RuntimeFolder">
+      <Component Id="NetWebScript.Runtime" DiskId="1" Guid="{7FC8AAEA-7CEA-45FA-8F91-9911C9A5A9D2}">
+        <File Id="NetWebScript.Metadata.dll" Name="NetWebScript.Metadata.dll" Source="..\NetWebScript.Metadata\bin\Release\NetWebScript.Metadata.dll" />
+        <File Id="NetWebScript.Metadata.xml" Name="NetWebScript.Metadata.xml" Source="..\NetWebScript.Metadata\bin\Release\NetWebScript.Metadata.xml" />
+        <File Id="NetWebScript.Core.dll" Name="NetWebScript.Core.dll" Source="..\NetWebScript.Core\bin\Release\NetWebScript.Core.dll" />
+        <File Id="NetWebScript.Core.xml" Name="NetWebScript.Core.xml" Source="..\NetWebScript.Core\bin\Release\NetWebScript.Core.xml" />
+        <RegistryValue Id="NetWebScript.Runtime" Root="HKLM" Key="SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\NetWebScript" Value="[RuntimeFolder]" Type="string" />
       </Component>
-      <Component Id="NetWebScript.Core" DiskId="1" Guid="{8DD56CFC-20E3-472B-B3D4-E58204719E6F}">
-        <File Id="NetWebScript.Core.dll" Name="NetWebScript.Core.dll" KeyPath="yes" Assembly=".net" Source="..\NetWebScript.Core\bin\Release\NetWebScript.Core.dll" />
+    </DirectoryRef>
+    
+    <DirectoryRef Id="BinFolder">
+      <Component Id="NetWebScript.MetadataGAC" DiskId="1" Guid="{93075355-2437-414A-B6A1-1BE482815CE2}">
+        <File Id="GAC.NetWebScript.Metadata.dll" Name="NetWebScript.Metadata.dll" KeyPath="yes" Assembly=".net" Source="..\NetWebScript.Metadata\bin\Release\NetWebScript.Metadata.dll" />
+      </Component>
+      <Component Id="NetWebScript.CoreGAC" DiskId="1" Guid="{8DD56CFC-20E3-472B-B3D4-E58204719E6F}">
+        <File Id="GAC.NetWebScript.Core.dll" Name="NetWebScript.Core.dll" KeyPath="yes" Assembly=".net" Source="..\NetWebScript.Core\bin\Release\NetWebScript.Core.dll" />
       </Component>
       <Component Id="NetWebScript.Debugger" DiskId="1" Guid="{D641E8BA-F5FD-4ECF-BDFC-843490B0EE81}">
         <File Id="NetWebScript.Debug.Server.dll" Name="NetWebScript.Debug.Server.dll" KeyPath="yes" Assembly=".net" Source="..\NetWebScript.Debug.Server\bin\Release\NetWebScript.Debug.Server.dll" />
@@ -34,6 +49,8 @@
         <File Id="Microsoft.Samples.Debugging.dll" Name="Microsoft.Samples.Debugging.dll" Source="..\NetWebScript\bin\Release\Microsoft.Samples.Debugging.dll" />
         <File Id="NetWebScript.dll" Name="NetWebScript.dll" Source="..\NetWebScript\bin\Release\NetWebScript.dll" />
         <File Id="nwsc.exe" Name="nwsc.exe" Source="..\NetWebScript.CompilerCLI\bin\Release\nwsc.exe" />
+        <File Id="NetWebScript.Task.dll" Name="NetWebScript.Task.dll" Source="..\NetWebScript.Task\bin\Release\NetWebScript.Task.dll" />
+        <File Id="NetWebScript.targets"  Name="NetWebScript.targets"  Source="..\NetWebScript.Task\bin\Release\NetWebScript.targets" />
         <Environment Id="NwsAppPath" Name="NwsAppPath" System="yes" Action="create" Value="[INSTALLDIR]" />
       </Component>
     </DirectoryRef>
@@ -100,10 +117,10 @@
         <File Id="Antlr3.Runtime.License.txt" Name="Antlr3.Runtime.License.txt" Source="..\Antlr3.Runtime\Antlr3.Runtime.License.txt" />
       </Component>
     </DirectoryRef>
-    <DirectoryRef Id="VS10CSHARPWEBTEMPLATEFOLDER">
+    <DirectoryRef Id="TemplatesFolder">
       <Component Id="NetWebScript.VSTemplates" DiskId="1" Guid="{CC4BCF38-BB47-4436-B4C6-A7872D98EA72}">
-        <File Id="NWSScriptApplicationProject40.zip" Name="NWSScriptApplicationProject40.zip" Source="..\NetWebScript.Templates\NWSScriptApplicationProject40.zip" />
-        <File Id="NWSWebApplicationProject40.zip" Name="NWSWebApplicationProject40.zip" Source="..\NetWebScript.Templates\NWSWebApplicationProject40.zip" />
+        <File Id="NWSScriptApplicationProject40.zip" Name="NWSScriptApplicationProject40.zip" Source="..\NetWebScript.Templates\Release\NWSScriptApplicationProject40.zip" />
+        <File Id="NWSWebApplicationProject40.zip" Name="NWSWebApplicationProject40.zip" Source="..\NetWebScript.Templates\Release\NWSWebApplicationProject40.zip" />
       
       </Component>
     </DirectoryRef>
