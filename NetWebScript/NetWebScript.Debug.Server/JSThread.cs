@@ -319,7 +319,7 @@ namespace NetWebScript.Debug.Server
                 XmlElement node = document.SelectSingleNode("/Dump/P") as XmlElement;
                 if (node != null)
                 {
-                    waiter.Data = new JSData(this, node, expression, "result");
+                    waiter.Data = new JSData(this, node, expression, "result", false, false);
                 }
                 else
                 {

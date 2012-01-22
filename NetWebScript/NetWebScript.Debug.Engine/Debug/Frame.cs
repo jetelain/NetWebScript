@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.Debugger.Interop;
 using NetWebScript.Debug.Engine.Script;
-using System.Diagnostics;
-using NetWebScript.Metadata;
 using NetWebScript.Debug.Server;
 
 namespace NetWebScript.Debug.Engine.Debug
@@ -17,7 +13,7 @@ namespace NetWebScript.Debug.Engine.Debug
         private readonly JSModuleDebugPoint point;
         private readonly String name;
         private readonly DocumentContext docContext;
-
+        private readonly JSStackFrame jsFrame;
 
         public Frame(ScriptProgram program, ScriptThread thread, JSModuleDebugPoint point, string name)
         {
@@ -35,6 +31,7 @@ namespace NetWebScript.Debug.Engine.Debug
             this.point = jsFrame.ModulePoint;
             this.docContext = new DocumentContext(point.Point);
             this.name = jsFrame.DisplayName;
+            this.jsFrame = jsFrame;
             if (jsFrame.Locals != null)
             {
                 this.Property = new Property(this, jsFrame.Locals);
@@ -46,7 +43,7 @@ namespace NetWebScript.Debug.Engine.Debug
             get { return thread; }
         }
 
-        internal Property Property { get; set; }
+        private Property Property { get; set; }
 
         private string DisplayName
         {
@@ -195,22 +192,53 @@ namespace NetWebScript.Debug.Engine.Debug
 
         #region IDebugExpressionContext2 Members
 
+        private static JSData Lookup ( JSData parent, string name)
+        {
+            if (parent != null && parent.Children != null)
+            {
+                return parent.Children.FirstOrDefault(c => c.DisplayName == name);
+            }
+            return null;
+        }
+
         public int ParseText(string pszCode, enum_PARSEFLAGS dwFlags, uint nRadix, out IDebugExpression2 ppExpr, out string pbstrError, out uint pichError)
         {
             pbstrError = "";
             pichError = 0;
             ppExpr = null;
 
-            if (Property != null && Property.Children != null)
+            if (jsFrame != null && !string.IsNullOrEmpty(pszCode))
             {
-                // Variables, paramètres
-                Property p = Property.Children.FirstOrDefault(c => c.DisplayName == pszCode);
-                if (p != null)
+                string[] tokens = pszCode.Split('.');
+
+                // Variables, parameters
+                var result = Lookup(jsFrame.Locals, tokens[0]);
+
+                if (result == null)
                 {
-                    ppExpr = new TrivialExpression(p);
-                    return Constants.S_OK;
+                    // Instance members
+                    result = Lookup(jsFrame.Instance, tokens[0]);
                 }
 
+                if (result == null)
+                {
+                    // Static members
+                    result = Lookup(jsFrame.Static, tokens[0]);
+                }
+
+                if (result != null)
+                {
+                    for (int i = 1; i < tokens.Length; ++i)
+                    {
+                        result = Lookup(result, tokens[i]);
+                    }
+                }
+
+                if (result != null)
+                {
+                    ppExpr = new TrivialExpression(new Property(this, result));
+                    return Constants.S_OK;
+                }
             }
             pbstrError = "Unsupported Expression";
             pichError = (uint)pbstrError.Length;

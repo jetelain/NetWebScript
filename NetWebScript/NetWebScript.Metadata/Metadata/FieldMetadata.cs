@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
+
 namespace NetWebScript.Metadata
 {
     public class FieldMetadata
@@ -16,5 +13,8 @@ namespace NetWebScript.Metadata
 
         [XmlAttribute]
         public string CRef { get; set; }
+
+        [XmlAttribute(AttributeName="CGen")]
+        public bool CompilerGenerated { get; set; }
     }
 }

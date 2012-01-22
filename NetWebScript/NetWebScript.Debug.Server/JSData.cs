@@ -13,9 +13,16 @@ namespace NetWebScript.Debug.Server
     {
         private readonly string path;
 
-        internal JSData(JSThread thread, XmlElement element, string path, string displayName)
+        public const string SpecialNameInstance = "this";
+
+        public const string SpecialNameStaticMembers = "static";
+
+        internal JSData(JSThread thread, XmlElement element, string path, string displayName, bool special, bool compilerGenerated)
         {
             this.path = path;
+
+            IsSpecial = special;
+            IsCompilerGenerated = compilerGenerated;
 
             DisplayName = displayName;
             Value = element.GetAttribute("Value");
@@ -67,8 +74,29 @@ namespace NetWebScript.Debug.Server
                 foreach (XmlElement subelement in list)
                 {
                     var name = subelement.GetAttribute("Name");
-                    var displayName = GetDisplayName(methodMetadata, name);
-                    children.Add(new JSData(thread, subelement, CombinePath(path, name), displayName));
+                    var displayName = name;
+                    var special = false ;
+                    var compilerGenerated = false;
+                    if (name == "$this")
+                    {
+                        special = true;
+                        displayName = SpecialNameInstance;
+                    }
+                    else if (name == "$static")
+                    {
+                        special = true;
+                        displayName = SpecialNameStaticMembers;
+                    }
+                    else
+                    {
+                        var meta = GetVariableMetadata(methodMetadata, name);
+                        if (meta != null)
+                        {
+                            compilerGenerated = meta.CompilerGenerated;
+                            displayName = meta.CName;
+                        }
+                    }
+                    children.Add(new JSData(thread, subelement, CombinePath(path, name), displayName, special, compilerGenerated));
                 }
                 return children;
             }
@@ -86,8 +114,15 @@ namespace NetWebScript.Debug.Server
                     var name = subelement.GetAttribute("Name");
                     if (!name.StartsWith("$", StringComparison.Ordinal))
                     {
-                        var displayName = GetDisplayName(thread, type, name);
-                        children.Add(new JSData(thread, subelement, CombinePath(path, name), displayName));
+                        var compilerGenerated = false;
+                        var displayName = name;
+                        var metadata = GetFieldMetadata(thread, type, name);
+                        if (metadata != null)
+                        {
+                            displayName = CRefToolkit.GetDisplayName(metadata.CRef);
+                            compilerGenerated = metadata.CompilerGenerated;
+                        }
+                        children.Add(new JSData(thread, subelement, CombinePath(path, name), displayName, false, compilerGenerated));
                     }
                 }
                 return children;
@@ -96,42 +131,38 @@ namespace NetWebScript.Debug.Server
         }
 
 
-        private static string GetDisplayName(MethodBaseMetadata method, string name)
+        private static VariableMetadata GetVariableMetadata(MethodBaseMetadata method, string name)
         {
-            if (name == "$this")
-            {
-                return "this";
-            }
             if (method != null)
             {
                 var variable = method.Variables.FirstOrDefault(v => v.Name == name);
                 if (variable != null)
                 {
-                    return variable.CName;
+                    return variable;
                 }
             }
-            return name;
+            return null;
         }
 
-        private static string GetDisplayName(JSThread thread, TypeMetadata type, string name)
+        private static FieldMetadata GetFieldMetadata(JSThread thread, TypeMetadata type, string name)
         {
             if (type != null)
             {
                 var field = type.Fields.FirstOrDefault(f => f.Name == name);
                 if (field != null)
                 {
-                    return CRefToolkit.GetDisplayName(field.CRef);
+                    return field;
                 }
                 if (!string.IsNullOrEmpty(type.BaseTypeName))
                 {
                     var baseType = thread.GetTypeById(type.BaseTypeName);
                     if (baseType != null)
                     {
-                        return GetDisplayName(thread, baseType, name);
+                        return GetFieldMetadata(thread, baseType, name);
                     }
                 }
             }
-            return name;
+            return null;
         }
 
         /// <summary>
@@ -171,6 +202,16 @@ namespace NetWebScript.Debug.Server
         {
             get { return ShouldRetreiveChildren || (Children != null && Children.Count > 0); }
         }
+
+        /// <summary>
+        /// Is property a special "object" (instance, static members etc.)
+        /// </summary>
+        public bool IsSpecial { get; private set; }
+
+        /// <summary>
+        /// Property, or variable, has been generated by compiler
+        /// </summary>
+        public bool IsCompilerGenerated { get; private set; }
 
         /// <summary>
         /// Merge with retreived data from runtime.

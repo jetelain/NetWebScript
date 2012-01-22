@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NetWebScript.Metadata;
 
 namespace NetWebScript.Debug.Server
@@ -13,6 +11,8 @@ namespace NetWebScript.Debug.Server
         private readonly string name;
         private readonly string displayName;
         private readonly JSData locals;
+        private readonly JSData instance;
+        private readonly JSData statics;
 
         internal JSStackFrame(JSThread thread, JSModuleDebugPoint point, string name, MethodBaseMetadata metadata, JSData locals)
         {
@@ -27,6 +27,11 @@ namespace NetWebScript.Debug.Server
             {
                 displayName = metadata.CRef;
             }
+            if (locals != null && locals.Children != null)
+            {
+                instance = locals.Children.FirstOrDefault(p => p.IsSpecial && p.DisplayName == JSData.SpecialNameInstance);
+                statics = locals.Children.FirstOrDefault(p => p.IsSpecial && p.DisplayName == JSData.SpecialNameStaticMembers);
+            }
         }
 
         public string DisplayName
@@ -37,6 +42,16 @@ namespace NetWebScript.Debug.Server
         public JSData Locals
         {
             get { return locals; }
+        }
+
+        public JSData Instance
+        {
+            get { return instance; }
+        }
+
+        public JSData Static
+        {
+            get { return statics; }
         }
 
         public JSDebugPoint Point

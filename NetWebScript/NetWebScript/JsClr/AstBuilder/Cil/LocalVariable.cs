@@ -31,6 +31,11 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
         public bool AllowRef { get; internal set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public bool IsCompilerGenerated { get; internal set; }
+
+        /// <summary>
         /// Create a "fictive" <see cref="LocalVariable"/>.
         /// </summary>
         internal LocalVariable(string name, Type localType)
@@ -38,6 +43,7 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
             LocalIndex = -1;
             Name = name;
             LocalType = localType;
+            IsCompilerGenerated = true;
         }
 
         /// <summary>
@@ -58,9 +64,14 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
                     Name = varpdb.Name;
                 }
             }
-            if ( Name == null || Name.Contains('$') || Name.Contains('<') )
+            if (Name == null || Name.Contains('$') || Name.Contains('<'))
             {
                 Name = String.Format("v{0}", LocalIndex);
+                IsCompilerGenerated = true;
+            }
+            else
+            {
+                IsCompilerGenerated = false;
             }
         }
     }

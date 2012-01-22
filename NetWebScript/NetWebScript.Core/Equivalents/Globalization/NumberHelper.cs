@@ -118,9 +118,9 @@ namespace NetWebScript.Equivalents.Globalization
             }
             if (format == null || format == "g" || format == "G")
             {
-                if (NeedNormalizeDecimal(info))
+                if (NeedLocalizeDecimal(info))
                 {
-                    return NormalizeDecimal(info, value.ToString());
+                    return LocalizeDecimal(info, value.ToString());
                 }
                 return value.ToString();
             }
@@ -148,9 +148,9 @@ namespace NetWebScript.Equivalents.Globalization
                     {
                         str = str.ToUpperInvariant();
                     }
-                    if (NeedNormalizeDecimal(info))
+                    if (NeedLocalizeDecimal(info))
                     {
-                        str = NormalizeDecimal(info, str);
+                        str = LocalizeDecimal(info, str);
                     }
                     break;
                 default:
@@ -159,18 +159,37 @@ namespace NetWebScript.Equivalents.Globalization
             return str;
         }
 
-        private static bool NeedNormalizeDecimal(NumberFormatInfo info)
+        private static bool NeedLocalizeDecimal(NumberFormatInfo info)
         {
             return info.NumberDecimalSeparator != "." || info.NegativeSign != "-" || info.PositiveSign != "+";
         }
 
-        private static JSString NormalizeDecimal(NumberFormatInfo info, JSString str)
+        private static JSString LocalizeDecimal(NumberFormatInfo info, JSString str)
         {
-            return str.Replace(new JSRegExp(@"\.\-\+", "g"), s =>
+            return str.Replace(new JSRegExp(@"[\.\-\+]", "g"), s =>
             {
                 if (s == ".") return info.NumberDecimalSeparator;
                 if (s == "-") return info.NegativeSign;
                 return info.PositiveSign;
+            });
+        }
+
+        private static JSString UnlocalizeDecimal(NumberFormatInfo info, JSString str)
+        {
+            return str.Replace(new JSRegExp("[" + JSRegExpHelper.Escape(info.NumberDecimalSeparator + info.NegativeSign + info.PositiveSign)+"]", "g"), s =>
+            {
+                if (s == info.NumberDecimalSeparator) return ".";
+                if (s == info.NegativeSign) return "-";
+                return "+";
+            });
+        }
+
+        private static JSString UnlocalizeInteger(NumberFormatInfo info, JSString str)
+        {
+            return str.Replace(new JSRegExp("["+JSRegExpHelper.Escape(info.NegativeSign + info.PositiveSign)+"]", "g"), s =>
+            {
+                if (s == info.NegativeSign) return "-";
+                return "+";
             });
         }
 
@@ -207,15 +226,25 @@ namespace NetWebScript.Equivalents.Globalization
             return numberString.Substring(0, stringIndex + 1) + groupSep + ret;	
         }
 
+        private static string Prepare ( string str, NumberStyles style )
+        {
+            if ((style & NumberStyles.AllowLeadingWhite) != NumberStyles.None)
+            {
+                str = str.TrimStart(null);
+            }
+            if ((style & NumberStyles.AllowTrailingWhite) != NumberStyles.None)
+            {
+                str = str.TrimEnd(null);
+            }
+            return str;
+        }
+
+
         internal static JSNumber ParseInteger(JSString str, NumberFormatInfo info)
         {
-            if (info.NegativeSign != "-")
+            if (info.NegativeSign != "-" || info.PositiveSign != "+")
             {
-                str = str.Replace(info.NegativeSign, "-");
-            }
-            if (info.PositiveSign != "+")
-            {
-                str = str.Replace(info.PositiveSign, "+");
+                str = UnlocalizeInteger(info, str);
             }
             return JSNumber.ParseInt(str);
         }
@@ -226,12 +255,15 @@ namespace NetWebScript.Equivalents.Globalization
             {
                 return ParseInteger(str, info);
             }
+            str = Prepare(str, style);
             throw new System.NotImplementedException();
         }
 
 
         internal static JSNumber ParseFloat(JSString str, NumberFormatInfo numberFormatInfo)
         {
+            // [ws][sign][integral-digits[,]]integral-digits[.[fractional-digits]][E[sign]exponential-digits][ws] 
+
             // FIXME: Implement the .Net spec
             return JSNumber.ParseFloat(str);
         }
@@ -243,6 +275,8 @@ namespace NetWebScript.Equivalents.Globalization
             {
                 return ParseInteger(str, info);
             }
+            str = Prepare(str, style);
+
             return JSNumber.ParseFloat(str);
         }
     }

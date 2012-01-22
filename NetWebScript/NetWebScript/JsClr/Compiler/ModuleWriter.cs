@@ -10,6 +10,7 @@ using NetWebScript.Metadata;
 using NetWebScript.JsClr.TypeSystem.Imported;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -49,6 +50,10 @@ namespace NetWebScript.JsClr.Compiler
             var meta = new FieldMetadata();
             meta.Name = field.SlodId;
             meta.CRef = CRefToolkit.GetCRef(field.Field);
+            if (field.Field != null)
+            {
+                meta.CompilerGenerated = Attribute.IsDefined(field.Field, typeof(CompilerGeneratedAttribute));
+            }
             type.Fields.Add(meta);
             return meta;
         }

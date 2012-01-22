@@ -374,7 +374,7 @@ namespace NetWebScript.Diagnostics
 				element.SetAttribute("Point", frame.Point);
 				if (i == callStack.Length - 1)
 				{
-					element.AppendChild(DumpObject(frame.Context, doc, 0));
+                    element.AppendChild(DumpAny(frame.Context, doc, -1)); // 3 levels dump
 				}
 				doc.DocumentElement.AppendChild(element);
 			}
@@ -385,7 +385,7 @@ namespace NetWebScript.Diagnostics
 		private static string DumpResult(object obj)
 		{
 			var doc = XmlToolkit.CreateDocument("Dump");
-			doc.DocumentElement.AppendChild(DumpObject(obj, doc, 0));
+			doc.DocumentElement.AppendChild(DumpAny(obj, doc, 0)); // 2 levels dump
 			return XmlToolkit.ToXml(doc);
 		}
 
@@ -402,9 +402,88 @@ namespace NetWebScript.Diagnostics
 			}
 		}
 
+        [DebuggerHidden]
+        private static void DumpObject(IXmlElement node, object obj, IXmlDocument doc, int depth)
+        {
+            var typename = Unsafe.GetScriptTypeName(obj);
+            if (typename == "function")
+            {
+                var type = JSObject.Get(obj, "$n");
+                if (type != JSObject.Undefined)
+                {
+                    typename = ToStringSafe(type);
+                }
+            }
+            node.SetAttribute("Type", typename);
+
+            if (depth == 2)
+            {
+                node.SetAttribute("Retreive", "true");
+                return;
+            }
+            
+            foreach (var key in Unsafe.GetAll(obj))
+            {
+                var value = JSObject.Get(obj, key);
+
+                if ( JQuery.IsFunction(value) && JSObject.Get(value,"$n") == JSObject.Undefined)
+                {
+                    continue;
+                }
+
+                if (key == "$this")
+                {
+                    IXmlElement dump = DumpAny(value, doc, 0);
+                    dump.SetAttribute("Name", key);
+                    node.AppendChild(dump);
+                }
+                else
+                {
+                    IXmlElement vnode = DumpAny(value, doc, depth + 1);
+                    vnode.SetAttribute("Name", key);
+                    node.AppendChild(vnode);
+                }
+            }
+        }
+
+        [DebuggerHidden]
+        private static void DumpArray(IXmlElement node, object obj, IXmlDocument doc, int depth)
+        {
+            node.SetAttribute("Type", "array");
+
+            if (depth == 2)
+            {
+                node.SetAttribute("Retreive", "true");
+                return;
+            }
+
+            JSArray<object> array = (JSArray<object>)obj;
+
+            if (array.Length > 50)
+            {
+                node.SetAttribute("Partial", "50");
+            }
+
+            var vnode = doc.CreateElement("P");
+            vnode.SetAttribute("Value", ToStringSafe(array.Length));
+            vnode.SetAttribute("Type", "number");
+            vnode.SetAttribute("Name", "Length");
+            node.AppendChild(vnode);
+
+            int index = 0;
+            while (index < 50 && index < array.Length)
+            {
+                vnode = DumpAny(array[index], doc, depth + 1);
+                vnode.SetAttribute("Name", "[" + index + "]");
+                node.AppendChild(vnode);
+                index++;
+            }
+
+
+        }
 
 		[DebuggerHidden]
-		private static IXmlElement DumpObject(object obj, IXmlDocument doc, int depth)
+		private static IXmlElement DumpAny(object obj, IXmlDocument doc, int depth)
 		{
             if (obj == null || obj == JSObject.Undefined)
             {
@@ -416,63 +495,29 @@ namespace NetWebScript.Diagnostics
 
 			var node = doc.CreateElement("P");
 			node.SetAttribute("Value", ToStringSafe(obj));
-			node.SetAttribute("Type", Unsafe.GetScriptTypeName(obj));
-
-            if (JQuery.IsArray(obj))
+            try
             {
-                if (depth == 3)
+                if (JQuery.IsArray(obj))
                 {
-                    node.SetAttribute("Retreive", "true");
-                    return node;
+                    DumpArray(node, obj, doc, depth);
                 }
-
-                JSArray<object> array = (JSArray<object>)obj;
-
-                if (array.Length > 50)
+                else
                 {
-                    node.SetAttribute("Partial", "50");
-                }
-
-                var vnode = doc.CreateElement("P");
-                vnode.SetAttribute("Value", ToStringSafe(array.Length));
-                vnode.SetAttribute("Type", "number");
-                vnode.SetAttribute("Name", "Length");
-                node.AppendChild(vnode);
-
-                int index = 0;
-                while (index < 50 && index < array.Length)
-                {
-                    vnode = DumpObject(array[index], doc, depth + 1);
-                    vnode.SetAttribute("Name", "[" + index + "]");
-                    node.AppendChild(vnode);
-                    index++;
+                    var type = JSObject.TypeOf(obj);
+                    if (type == "object" || type == "function")
+                    {
+                        DumpObject(node, obj, doc, depth);
+                    }
                 }
             }
-            else if (JSObject.TypeOf(obj) == "object")
-			{
-                if (depth == 3)
-                {
-                    node.SetAttribute("Retreive", "true");
-                    return node;
-                }
-
-				foreach (var key in Unsafe.GetFields(obj))
-				{
-					var value = JSObject.Get(obj, key);
-					if (key == "$this")
-					{
-						var dump = DumpObject(value, doc, 0);
-						dump.SetAttribute("Name", "this");
-						node.AppendChild(dump);
-					}
-					else
-					{
-                        IXmlElement vnode = DumpObject(value, doc, depth + 1);
-						vnode.SetAttribute("Name", key);
-						node.AppendChild(vnode);
-					}
-				}
-			}
+            catch
+            {
+                var vnode = doc.CreateElement("P");
+                vnode.SetAttribute("Value", "(exception catched)");
+                vnode.SetAttribute("Type", "unknown");
+                vnode.SetAttribute("Name", "$dumpFailed");
+                node.AppendChild(vnode);
+            }
 
 			return node;
 		}

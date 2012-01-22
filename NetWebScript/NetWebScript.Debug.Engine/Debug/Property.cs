@@ -18,7 +18,9 @@ namespace NetWebScript.Debug.Engine.Debug
 
             if (jSData.Children != null)
             {
-                Children = jSData.Children.Select(c => new Property(frame, c)).ToList();
+                Children = jSData.Children
+                    .Where(c => !c.IsCompilerGenerated && (!c.IsSpecial || c.DisplayName == JSData.SpecialNameInstance))
+                    .Select(c => new Property(frame, c)).ToList();
             }
         }
 

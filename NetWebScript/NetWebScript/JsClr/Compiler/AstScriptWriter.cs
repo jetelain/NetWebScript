@@ -335,23 +335,14 @@ namespace NetWebScript.JsClr.Compiler
                 if (instrumentation.CaptureMethodContext)
                 {
                     writer.Write("var t={");
-                    bool first = true;
+                    writer.Write("$static:{0}", methodMetadata.Type.Name);
                     if (!ast.Method.IsStatic)
                     {
-                        first = false;
-                        writer.Write("$this:this");
+                        writer.Write(",$this:this");
                     }
                     foreach (var arg in ast.Arguments)
                     {
-                        if (first)
-                        {
-                            first = false;
-                        }
-                        else
-                        {
-                            writer.Write(',');
-                        }
-                        writer.Write("{0}:{0}", ArgumentName(arg));
+                        writer.Write(",{0}:{0}", ArgumentName(arg));
                     }
                     writer.WriteLine("};");
                 }
@@ -384,11 +375,11 @@ namespace NetWebScript.JsClr.Compiler
             {
                 foreach (var v in ast.Variables)
                 {
-                    methodMetadata.Variables.Add(new VariableMetadata() { Name = VariableName(v), CName = v.Name });
+                    methodMetadata.Variables.Add(new VariableMetadata() { Name = VariableName(v), CName = v.Name, CompilerGenerated = v.IsCompilerGenerated });
                 }
                 foreach (var arg in ast.Arguments)
                 {
-                    methodMetadata.Variables.Add(new VariableMetadata() { Name = ArgumentName(arg), CName = arg.Name });
+                    methodMetadata.Variables.Add(new VariableMetadata() { Name = ArgumentName(arg), CName = arg.Name, CompilerGenerated = false });
                 }
             }
             writer.WriteIndented(pretty, ast.Statements.Select(s => s.Accept(this)));

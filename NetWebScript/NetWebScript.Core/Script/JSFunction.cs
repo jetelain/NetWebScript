@@ -79,5 +79,8 @@ namespace NetWebScript.Script
         {
             get { return method; }
         }
+
+        [IntrinsicProperty]
+        public object Prototype { get; set; }
     }
 }
