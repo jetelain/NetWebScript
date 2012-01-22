@@ -508,6 +508,10 @@ namespace NetWebScript.Diagnostics
                     {
                         DumpObject(node, obj, doc, depth);
                     }
+                    else
+                    {
+                        node.SetAttribute("Type", Unsafe.GetScriptTypeName(obj));
+                    }
                 }
             }
             catch
