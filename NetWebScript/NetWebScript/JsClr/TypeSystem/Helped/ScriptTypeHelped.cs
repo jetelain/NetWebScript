@@ -6,114 +6,68 @@ using NetWebScript.JsClr.TypeSystem.Invoker;
 using System.Reflection;
 using System.Diagnostics.Contracts;
 using NetWebScript.JsClr.TypeSystem.Serializers;
+using NetWebScript.Metadata;
 
 namespace NetWebScript.JsClr.TypeSystem.Helped
 {
-    class ScriptTypeHelped : IScriptType
+    class ScriptTypeHelped : ScriptTypeBase
     {
-        protected readonly Type type;
         protected readonly IScriptType helper;
-        protected readonly List<IScriptMethod> methods = new List<IScriptMethod>();
-        protected readonly List<IScriptConstructor> constructors = new List<IScriptConstructor>();
-        protected readonly List<IScriptField> fields = new List<IScriptField>();
+        protected readonly IValueSerializer serializer;
+        protected readonly ITypeBoxing boxing;
 
-        public ScriptTypeHelped(ScriptSystem system, Type type, Type helperType)
+        public ScriptTypeHelped(ScriptSystem system, Type type, Type helperType) : base(system, type)
         {
-            this.type = type;
             this.helper = system.GetScriptType(helperType);
             if (this.helper == null)
             {
                 throw new Exception(string.Format("Type '{0}' asked by '{1}' must be script available.", type.FullName, helperType.FullName));
             }
-            Serializer = DefaultSerializer.GetSerializer(system, type) ?? helper.Serializer;
+            serializer = DefaultSerializer.GetSerializer(system, type) ?? helper.Serializer;
             if (type.IsValueType)
             {
                 if (Serializer != null)
                 {
-                    Boxing = new TypeBoxing(helperType);
+                    boxing = new TypeBoxing(helperType);
                 }
                 else
                 {
-                    Boxing = new NoneTypeBoxing();
+                    boxing = new NoneTypeBoxing();
                 }
             }
-            
+
+            InitBaseType(true);
+            InitInterfaces();
         }
 
         #region IScriptType Members
 
-        public IScriptConstructor GetScriptConstructor(System.Reflection.ConstructorInfo method)
+        protected sealed override IScriptConstructor CreateScriptConstructor(ConstructorInfo ctor)
         {
-            var scriptCtor = constructors.FirstOrDefault(m => m.Method == method);
-            if (scriptCtor == null)
-            {
-                scriptCtor = CreateScriptConstructorHelper(method, this, helper);
-                if (scriptCtor != null)
-                {
-                    constructors.Add(scriptCtor);
-                }
-            }
-            return scriptCtor;
+            return CreateScriptConstructorHelper(ctor, this, helper);
         }
 
-        public IScriptMethod GetScriptMethod(MethodInfo method)
+        protected sealed override IScriptField CreateScriptField(FieldInfo field)
         {
-            Contract.Requires(method.DeclaringType == type);
-            var scriptMethod = methods.FirstOrDefault(m => m.Method == method);
-            if (scriptMethod == null)
-            {
-                scriptMethod = CreateScriptMethodHelper(method, this, helper);
-                if (scriptMethod != null)
-                {
-                    methods.Add(scriptMethod);
-                }
-            }
-            return scriptMethod;
+            return CreateScriptFieldHelper(field, this, helper);
         }
 
-        //public IScriptMethodBase GetScriptMethodBase(System.Reflection.MethodBase method)
-        //{
-        //    Contract.Requires(method.DeclaringType == type);
-        //    var info = method as MethodInfo;
-        //    if (info != null)
-        //    {
-        //        return GetScriptMethod(info);
-        //    }
-        //    return GetScriptConstructor((ConstructorInfo)method);
-        //}
-
-        public IScriptField GetScriptField(System.Reflection.FieldInfo field)
+        protected sealed override IScriptMethod CreateScriptMethod(MethodInfo method)
         {
-            Contract.Requires(field.DeclaringType == type);
-            var scriptField = fields.FirstOrDefault(m => m.Field == field);
-            if (scriptField == null)
-            {
-                scriptField = CreateScriptFieldHelper(field, this, helper);
-                if (scriptField != null)
-                {
-                    fields.Add(scriptField);
-                }
-            }
-            return scriptField;
+            return CreateScriptMethodHelper(method, this, helper);
         }
 
-        
-        public Type Type
-        {
-            get { return type; }
-        }
-        
         public IScriptType Equivalent
         {
             get { return helper; }
         }
 
-        public virtual string TypeId
+        public override string TypeId
         {
             get { return helper.TypeId; }
         }
 
-        public virtual ITypeBoxing Boxing { get; set; }
+        public override ITypeBoxing Boxing { get { return boxing; } }
 
         #endregion
 
@@ -244,28 +198,20 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
             return null;
         }
 
-        public bool HaveCastInformation
+        public override bool HaveCastInformation
         {
             get { return helper.HaveCastInformation; }
         }
 
-        public virtual IValueSerializer Serializer
+        public override IValueSerializer Serializer
         {
-            get;
-            set;
+            get { return serializer; }
         }
 
-        public IScriptConstructor DefaultConstructor
+        public override TypeMetadata Metadata
         {
-            get
-            {
-                var ctor = type.GetConstructor(Type.EmptyTypes);
-                if (ctor != null)
-                {
-                    return GetScriptConstructor(ctor);
-                }
-                return helper.DefaultConstructor;
-            }
+            get { return null; }
         }
+
     }
 }

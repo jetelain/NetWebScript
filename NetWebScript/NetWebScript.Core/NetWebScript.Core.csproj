@@ -96,7 +96,7 @@
     <Compile Include="Equivalents\UInt32Equiv.cs" />
     <Compile Include="Equivalents\UInt64Equiv.cs" />
     <Compile Include="Equivalents\ByteEquiv.cs" />
-    <Compile Include="Runtime\Culture.cs" />
+    <Compile Include="Globalization\Culture.cs" />
     <Compile Include="Runtime\ModuleInfo.cs" />
     <Compile Include="Runtime\Modules.cs" />
     <Compile Include="Script\DateHelper.cs" />
@@ -109,6 +109,7 @@
     <Compile Include="Equivalents\InvalidOperationException.cs" />
     <Compile Include="Equivalents\NotSupportedException.cs" />
     <Compile Include="Equivalents\Threading\Thread.cs" />
+    <Compile Include="Globalization\CulturesAttribute.cs" />
     <Compile Include="TypeModel\ExportedAttribute.cs" />
     <Compile Include="Equivalents\Collections\Generic\DefaultEqualityComparer.cs" />
     <Compile Include="Equivalents\Collections\Generic\Dictionary.cs" />

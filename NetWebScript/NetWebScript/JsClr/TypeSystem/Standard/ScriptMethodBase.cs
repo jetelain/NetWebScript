@@ -1,16 +1,19 @@
 ﻿using System.Reflection;
 using NetWebScript.JsClr.ScriptAst;
 using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.Metadata;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
-    public abstract class ScriptMethodBase : IScriptMethodBase
+    public abstract class ScriptMethodBase : IScriptMethodBase, IScriptMethodBaseDeclaration
     {
         private readonly MethodBase method;
         private readonly string impl;
         private readonly IScriptType owner;
         private readonly string body;
         private readonly IMethodInvoker invoker;
+        private readonly MethodBaseMetadata metadata;
 
         protected ScriptMethodBase(ScriptSystem system, IScriptType owner, MethodBase method, string body, bool isGlobal)
         {
@@ -19,7 +22,23 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             this.impl = system.CreateImplementationId();
             this.body = body;
             this.invoker = isGlobal ? (IMethodInvoker)GlobalsInvoker.Instance : (IMethodInvoker)StandardInvoker.Instance;
+            metadata = CreateMetadata();
         }
+
+        private MethodBaseMetadata CreateMetadata()
+        {
+            if (owner.Metadata == null)
+            {
+                return null;
+            }
+            var meta = new MethodBaseMetadata();
+            meta.Type = owner.Metadata;
+            meta.Name = ImplId;
+            meta.CRef = CRefToolkit.GetCRef(Method);
+            owner.Metadata.Methods.Add(meta);
+            return meta;
+        }
+
 
         /// <summary>
         /// Identifier of implementation (name to use for an explicit call of method)
@@ -53,7 +72,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         /// <summary>
         /// If <see cref="HasNativeBody"/>, the method script body in the form "function(...){...}".
         /// </summary>
-        internal string NativeBody
+        public string NativeBody
         {
             get { return body; }
         }
@@ -63,9 +82,24 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         /// In that case, we will not generate script from CIL for this method, 
         /// and simply use the provided body script.
         /// </summary>
-        internal bool HasNativeBody
+        public bool HasNativeBody
         {
             get { return body != null; }
+        }
+
+        public MethodBaseMetadata Metadata
+        {
+            get { return metadata; }
+        }
+
+        public string PrettyName
+        {
+            get { return method.ToString(); }
+        }
+
+        public bool IsStatic
+        {
+            get { return method.IsStatic; }
         }
     }
 }

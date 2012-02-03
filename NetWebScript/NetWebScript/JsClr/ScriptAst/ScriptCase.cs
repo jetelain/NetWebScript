@@ -4,15 +4,15 @@ namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class ScriptCase
     {
-        public ScriptCase ( object value, List<ScriptStatement> statements )
+        public ScriptCase(ScriptLiteralExpression value, List<ScriptStatement> statements)
         {
             Value = value;
             Statements = statements;
         }
 
-        public static readonly object DefaultCase = NetWebScript.JsClr.Ast.Case.DefaultCase;
+        public static readonly ScriptLiteralExpression DefaultCase = new ScriptLiteralExpression(null,null,null);
 
-        public object Value { get; internal set; }
+        public ScriptLiteralExpression Value { get; internal set; }
 
         public List<ScriptStatement> Statements { get; internal set; }
     }

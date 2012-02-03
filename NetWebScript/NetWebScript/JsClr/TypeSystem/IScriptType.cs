@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.Metadata;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem
 {
@@ -9,6 +11,8 @@ namespace NetWebScript.JsClr.TypeSystem
         IScriptConstructor GetScriptConstructor(ConstructorInfo method);
 
         IScriptMethod GetScriptMethod(MethodInfo method);
+
+        IScriptMethod GetScriptMethodIfUsed(MethodInfo method);
 
         IScriptField GetScriptField(FieldInfo field);
 
@@ -33,5 +37,14 @@ namespace NetWebScript.JsClr.TypeSystem
         /// Default constructor of type if any (may be null).
         /// </summary>
         IScriptConstructor DefaultConstructor { get; }
+
+        /// <summary>
+        /// Optional runtime metadata
+        /// </summary>
+        TypeMetadata Metadata { get; }
+
+        void RegisterChildType(IScriptType type);
+
+        IScriptType BaseType { get; }
     }
 }

@@ -15,16 +15,18 @@ namespace NetWebScript.JsClr.Compiler
 {
     internal class AstScriptWriter : IScriptStatementVisitor<JsToken>, IRootInvoker
     {
-        private readonly ScriptSystem system;
         private readonly MethodBaseMetadata methodMetadata;
         private readonly MethodScriptAst method;
         private readonly bool isctor;
         private readonly bool pretty;
         private readonly Instrumentation instrumentation;
 
-        public AstScriptWriter(ScriptSystem system, MethodScriptAst method, MethodBaseMetadata methodMetadata, bool pretty, Instrumentation instrumentation)
+        public AstScriptWriter()
         {
-            this.system = system;
+        }
+
+        public AstScriptWriter(MethodScriptAst method, MethodBaseMetadata methodMetadata, bool pretty, Instrumentation instrumentation)
+        {
             this.pretty = pretty;
             if (instrumentation != null && methodMetadata != null && !Attribute.IsDefined(method.Method, typeof(DebuggerHiddenAttribute)))
             {
@@ -183,7 +185,15 @@ namespace NetWebScript.JsClr.Compiler
 
         public JsToken Visit(ScriptLiteralExpression literalExpression)
         {
-            return Literal(literalExpression.Type, literalExpression.Value);
+            if (literalExpression.Value == null)
+            {
+                return JsToken.Name("null");
+            }
+            if (literalExpression.Type == null || literalExpression.Type.Serializer == null)
+            {
+                throw new InvalidOperationException("Value => " + literalExpression.Value); // Error should have been rised by DependenciesFinder
+            }
+            return literalExpression.Type.Serializer.LiteralValue(literalExpression.Type, literalExpression.Value, this);
         }
 
         public JsToken Visit(ScriptMethodInvocationExpression methodInvocationExpression)
@@ -245,7 +255,7 @@ namespace NetWebScript.JsClr.Compiler
                 else
                 {
                     writer.Write("case ");
-                    writer.Write(Literal(@case.Value).Text);
+                    writer.Write(Visit(@case.Value).Text);
                     writer.WriteLine(":");
                 }
                 writer.WriteIndented(pretty, @case.Statements.Select(s => s.Accept(this)));
@@ -279,6 +289,7 @@ namespace NetWebScript.JsClr.Compiler
             writer.WriteInBlock(pretty, whileStatement.Body.Select(s => s.Accept(this)));
             return writer.ToFullStatement();
         }
+
         public JsToken Visit(ScriptDoWhileStatement whileStatement)
         {
             JsTokenWriter writer = new JsTokenWriter();
@@ -289,40 +300,13 @@ namespace NetWebScript.JsClr.Compiler
             writer.WriteLine(")");
             return writer.ToFullStatement();
         }
+
         public JsToken Visit(ScriptConditionExpression conditionExpression)
         {
             return JsToken.Condition(
                 conditionExpression.Condition.Accept(this), 
                 conditionExpression.Then.Accept(this), 
                 conditionExpression.Else.Accept(this));
-        }
-
-        internal JsToken Write(ScriptExpression expression)
-        {
-            return expression.Accept(this);
-        }
-
-        private JsToken Literal(IScriptType scriptType, object value)
-        {
-            if (value == null)
-            {
-                return JsToken.Name("null");
-            }
-            if (scriptType == null || scriptType.Serializer == null)
-            {
-                throw new InvalidOperationException("Value => "+value); // Error should have been rised by DependenciesFinder
-            }
-            return scriptType.Serializer.LiteralValue(scriptType, value, this);
-        }
-
-        internal JsToken Literal(object value)
-        {
-            if (value == null)
-            {
-                return JsToken.Name("null");
-            }
-            var scriptType = system.GetScriptType(value.GetType());
-            return Literal(scriptType, value);
         }
 
         internal void WriteBody(TextWriter targetwriter)

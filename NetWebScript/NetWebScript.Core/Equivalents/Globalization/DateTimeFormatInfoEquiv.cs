@@ -91,5 +91,35 @@ namespace NetWebScript.Equivalents.Globalization
             }
             return CurrentInfo;
         }
+
+        public DateTimeFormatInfoEquiv()
+        {
+
+        }
+
+        [ScriptBody(Inline = "info")]
+        public DateTimeFormatInfoEquiv(DateTimeFormatInfo info)
+        {
+            AbbreviatedDayNames = info.AbbreviatedDayNames;
+            AbbreviatedMonthNames = info.AbbreviatedMonthNames;
+            AMDesignator = info.AMDesignator;
+            CalendarWeekRule = info.CalendarWeekRule;
+            DateSeparator = info.DateSeparator;
+            DayNames = info.DayNames;
+            FirstDayOfWeek = info.FirstDayOfWeek;
+            FullDateTimePattern = info.FullDateTimePattern;
+            LongDatePattern = info.LongDatePattern;
+            LongTimePattern = info.LongTimePattern;
+            MonthNames = info.MonthNames;
+            PMDesignator = info.PMDesignator;
+            ShortDatePattern = info.ShortDatePattern;
+            ShortestDayNames = info.ShortestDayNames;
+            ShortTimePattern = info.ShortTimePattern;
+            TimeSeparator = info.TimeSeparator;
+            YearMonthPattern = info.YearMonthPattern;
+            //FIXME: Calendar = new CalendarEquiv() { TwoDigitYearMax = 2029 },
+            MonthDayPattern = info.MonthDayPattern;
+        }
+
     }
 }

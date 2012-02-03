@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
@@ -37,10 +38,19 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                 {
                     var targetMethod = map.TargetMethods[i];
 
-                    IScriptMethod interfaceScriptMethod = scriptItf.GetScriptMethod(interfaceMethod);
+                    IScriptMethod interfaceScriptMethod = scriptItf.GetScriptMethodIfUsed(interfaceMethod);
                     if (interfaceScriptMethod != null)
                     {
-                        IScriptMethod targetScriptMethod = (IScriptMethod)system.GetScriptMethod(targetMethod);
+                        IScriptMethod targetScriptMethod;
+                        if ( targetMethod.DeclaringType == scriptType.Type)
+                        {
+                            targetScriptMethod = scriptType.GetScriptMethod(targetMethod);
+                        }
+                        else
+                        {
+                            targetScriptMethod = system.GetScriptMethod(targetMethod);
+                        }
+                        
                         if (targetScriptMethod == null)
                         {
                             throw new Exception(string.Format("'{0}' cannot implements interface '{1}' : method '{2}' is not script available.", scriptType.Type.FullName, scriptItf.Type.FullName, targetMethod.ToString()));
@@ -72,6 +82,21 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         public IDictionary<string, IScriptMethod> Mapping
         {
             get { return mapping; }
+        }
+
+        public IEnumerable<ScriptSlotImplementation> InterfacesMapping
+        {
+            get
+            {
+                foreach (var pair in mapping)
+                {
+                    yield return new ScriptSlotImplementation()
+                    {
+                        SlotId = pair.Key,
+                        ImplId = pair.Value.ImplId
+                    };
+                }
+            }
         }
 
     }

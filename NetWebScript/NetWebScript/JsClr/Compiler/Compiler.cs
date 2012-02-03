@@ -6,6 +6,7 @@ using System.Reflection;
 using NetWebScript.JsClr.Runtime;
 using NetWebScript.Page;
 using NetWebScript.Remoting.Serialization;
+using System.Globalization;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -41,10 +42,12 @@ namespace NetWebScript.JsClr.Compiler
             var assemblies = AssembliesPath.Select(n => Assembly.LoadFrom(n)).ToArray();
 
             var compiler = new ModuleCompiler(Debug, Pretty);
+            var cultures = new CulturesCompiler();
 
             foreach (var assembly in assemblies)
             {
                 compiler.AddAssembly(assembly);
+                cultures.AddAssembly(assembly);
             }
 
             if (!string.IsNullOrEmpty(Page))
@@ -71,6 +74,9 @@ namespace NetWebScript.JsClr.Compiler
                 return false;
             }
 
+            compiler.ModuleName = Name;
+            compiler.ModuleFilename = Name + ".js";
+
             if (JQueryUri == null)
             {
                 JQueryUri = new Uri(CoreRuntime.JQueryFilename, UriKind.RelativeOrAbsolute);
@@ -84,14 +90,9 @@ namespace NetWebScript.JsClr.Compiler
             using (var writer = new StreamWriter(new FileStream(Path.Combine(OutputPath, Name + ".js"), FileMode.Create, FileAccess.Write)))
             {
                 compiler.Write(writer);
-                writer.WriteLine("Modules.Reg('{0}','0.0.0.0','{0}.js','{1}');",Name, compiler.Metadata.Timestamp);
-                if (compiler.Instrumentation != null)
-                {
-                    writer.WriteLine("$(document).ready(function(){");
-                    writer.WriteLine("{0}.{1}();", compiler.Instrumentation.Start.Owner.TypeId, compiler.Instrumentation.Start.ImplId);
-                    writer.WriteLine("});");
-                }
             }
+
+            cultures.WriteFiles(OutputPath, Name, compiler.Metadata);
 
             using (var writer = new StreamWriter(new FileStream(Path.Combine(OutputPath, Name + ".js.xml"), FileMode.Create, FileAccess.Write)))
             {
@@ -102,10 +103,9 @@ namespace NetWebScript.JsClr.Compiler
             {
                 using (var writer = new StreamWriter(new FileStream(Path.Combine(OutputPath, Name + ".html"), FileMode.Create, FileAccess.Write)))
                 {
-                    WritePage(writer, Name, compiler, pageType, factory);
+                    WritePage(writer, Name, compiler, pageType, factory, cultures.Cultures);
                 }
             }
-
 
             return true;
         }
@@ -129,7 +129,7 @@ namespace NetWebScript.JsClr.Compiler
             return false;
         }
 
-        private void WritePage(TextWriter writer, string name, ModuleCompiler compiler, Type scriptPageType, IScriptPageFactory factory)
+        private void WritePage(TextWriter writer, string name, ModuleCompiler compiler, Type scriptPageType, IScriptPageFactory factory, IEnumerable<CultureInfo> cultures)
         {
 
             writer.WriteLine("<!DOCTYPE html>");
@@ -138,6 +138,10 @@ namespace NetWebScript.JsClr.Compiler
             writer.WriteLine("<title>{0}</title>", name);
             writer.WriteLine("<script type=\"text/javascript\" src=\"{0}\"></script>", JQueryUri.OriginalString);
             writer.WriteLine("<script type=\"text/javascript\" src=\"{0}.js\"></script>", name);
+            foreach (var culture in cultures)
+            {
+                writer.WriteLine("<script type=\"text/javascript\" src=\"{0}/{1}.js\"></script>", culture.Name, name);
+            }
             writer.WriteLine("<script type=\"text/javascript\">");
             writer.WriteLine("$(document).ready(function(){");
             if (factory != null)

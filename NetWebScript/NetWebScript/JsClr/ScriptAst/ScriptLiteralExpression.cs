@@ -8,6 +8,8 @@ namespace NetWebScript.JsClr.ScriptAst
     {
         private readonly IScriptType type;
 
+        public static readonly ScriptLiteralExpression NullValue = new ScriptLiteralExpression(null, null, null);
+
         public ScriptLiteralExpression(int? ilOffset, object value, IScriptType type)
             : base(ilOffset)
         {

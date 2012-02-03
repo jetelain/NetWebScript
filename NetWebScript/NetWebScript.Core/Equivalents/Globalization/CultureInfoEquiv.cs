@@ -143,5 +143,30 @@ namespace NetWebScript.Equivalents.Globalization
 
             cultures = new JSArray<CultureInfoEquiv>();
         }
+        
+        private CultureInfoEquiv()
+        {
+
+        }
+
+        public CultureInfoEquiv(string name)
+        {
+            var data = GetCulture(name);
+            if (data == null)
+            {
+                throw new System.Exception("CultureNotFoundException");
+            }
+            Name = data.Name;
+            DateTimeFormat = data.DateTimeFormat;
+            NumberFormat = data.NumberFormat;
+        }
+
+        [ScriptBody(Inline = "info")]
+        public CultureInfoEquiv(CultureInfo info)
+        {
+            Name = info.Name;
+            DateTimeFormat = new DateTimeFormatInfoEquiv(info.DateTimeFormat);
+            NumberFormat = new NumberFormatInfoEquiv(info.NumberFormat);
+        }
     }
 }

@@ -3,57 +3,71 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NetWebScript.JsClr.AstBuilder;
-using NetWebScript.JsClr.TypeSystem.Anonymous;
 using NetWebScript.JsClr.TypeSystem.Helped;
 using NetWebScript.JsClr.TypeSystem.Imported;
-using NetWebScript.JsClr.TypeSystem.Native;
 using NetWebScript.JsClr.TypeSystem.Standard;
-using NetWebScript.Script;
+using NetWebScript.Metadata;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem
 {
     public class ScriptSystem
     {
-        private readonly string moduleId;
+        private readonly ModuleMetadata moduleMetadata;
+
+        private readonly StandardScriptTypeProvider stdProvider;
+        private readonly EquivalentScriptTypeProvider equivProvider;
+        private readonly EnumScriptTypeProvider enumProvider;
+        private readonly List<IScriptTypeProvider> providers = new List<IScriptTypeProvider>();
+             
         private readonly IdentifierGenerator slot = new IdentifierGenerator();
         private readonly IdentifierGenerator impl = new IdentifierGenerator();
         private readonly IdentifierGenerator type = new IdentifierGenerator();
         private readonly List<IScriptType> types = new List<IScriptType>();
-        private readonly List<ScriptType> typesToGenerate = new List<ScriptType>();
-        private readonly List<ScriptMethod> methodsToGenerate = new List<ScriptMethod>();
-        private readonly List<ScriptEnumType> enumsToGenerate = new List<ScriptEnumType>();
-        private readonly List<ScriptTypeHelped> equivalents = new List<ScriptTypeHelped>();
-        private readonly HashSet<Type> implicitScriptAvailable = new HashSet<Type>();
-        private readonly Dictionary<Type, Type> scriptEquivalent = new Dictionary<Type, Type>();
 
-        public ScriptSystem(string moduleId) 
+        private readonly Queue<ScriptMethodBase> astToGenerate = new Queue<ScriptMethodBase>();
+        private bool isSealed = false;
+
+
+        public ScriptSystem()
         {
-            this.moduleId = moduleId;
+            moduleMetadata = new ModuleMetadata();
+            moduleMetadata.Name = "a";
+
+            providers.Add(new NativeScriptTypeProvider(this));
+
+            enumProvider = new EnumScriptTypeProvider(this);
+            providers.Add(enumProvider);
+
+            providers.Add(new AnonymousScriptTypeProvider());
+
+            providers.Add(new ImportedScriptTypeProvider(this));
+
+            stdProvider = new StandardScriptTypeProvider(this);
+            providers.Add(stdProvider);
+
+            equivProvider = new EquivalentScriptTypeProvider(this);
+            providers.Add(equivProvider);
         }
 
-        public ScriptSystem() : this("a")
+        internal ModuleMetadata Metadata 
         {
-
-        }
-
-        internal string ModuleId
-        {
-            get { return moduleId; }
+            get { return moduleMetadata; }
         }
 
         internal string CreateTypeId()
         {
-            return moduleId+ "T" + type.TakeOne();
+            return moduleMetadata.Name + "T" + type.TakeOne();
         }
 
         internal string CreateImplementationId()
         {
-            return moduleId + "I" + impl.TakeOne();
+            return moduleMetadata.Name + "I" + impl.TakeOne();
         }
 
         internal string CreateSplotId()
         {
-            return moduleId + "S" + slot.TakeOne();
+            return moduleMetadata.Name + "S" + slot.TakeOne();
         }
 
         internal static bool IsNumberType ( Type type )
@@ -71,146 +85,38 @@ namespace NetWebScript.JsClr.TypeSystem
                 type == typeof(byte);
         }
 
-        protected virtual IScriptType CreateType(Type type)
+        private IScriptType CreateType(Type type)
         {
-            if (type.IsArray)
+            IScriptType scriptType;
+            foreach (var provider in providers)
             {
-                if (GetScriptType(type.GetElementType()) != null)
+                if (provider.TryCreate(type, out scriptType))
                 {
-                    return new ArrayType(this, type);
-                }
-                return null; // If element type is not script available, corresponding array is not available
-            }
-
-            if (type.IsEnum) 
-            {
-                // All enums are automaticly script avaiblable
-                var scriptEnumType = new ScriptEnumType(this, type);
-                enumsToGenerate.Add(scriptEnumType);
-                return scriptEnumType;
-            }
-            else if (!type.IsValueType)
-            {
-                if (type == typeof(object))
-                {
-                    return new ObjectType(this);
-                }
-                if (typeof(Delegate).IsAssignableFrom(type))
-                {
-                    return new DelegateType(this, type);
-                }
-                if (typeof(Type).IsAssignableFrom(type))
-                {
-                    return new FunctionType(this, type);
-                }
-                var imported = (ImportedAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedAttribute), false);
-                if (imported != null)
-                {
-                    return new ImportedType(this, type, imported);
-                }
-                var anonymous = (AnonymousObjectAttribute)Attribute.GetCustomAttribute(type, typeof(AnonymousObjectAttribute));
-                if (anonymous != null)
-                {
-                    return new AnonymousType(type, anonymous.Convention);
-                }
-                if (IsScriptAvailable(type))
-                {
-                    var extender = (ImportedExtenderAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedExtenderAttribute));
-                    if (extender != null)
-                    {
-                        var scriptExtType = new ScriptExtenderType(this, type, extender.ExtendedType);
-                        typesToGenerate.Add(scriptExtType);
-                        return scriptExtType;
-                    }
-                    var scriptType = new ScriptType(this, type);
-                    typesToGenerate.Add(scriptType);
                     return scriptType;
                 }
             }
- 
-            Type helperType = GetEquivalent(type);
-            if (helperType != null)
-            {
-                var helped = new ScriptTypeHelped(this, type, helperType);
-                equivalents.Add(helped);
-                
-                return helped;
-            }
-
             return null;
-        }
-
-        private Type GetEquivalent(Type type)
-        {
-            Type helperType;
-            if (scriptEquivalent.TryGetValue(type, out helperType))
-            {
-                return helperType;
-            }
-            if (type.IsGenericType)
-            {
-                if (scriptEquivalent.TryGetValue(type.GetGenericTypeDefinition(), out helperType))
-                {
-                    return helperType.MakeGenericType(type.GetGenericArguments());
-                }
-            }
-            if ( type.DeclaringType != null )
-            {
-                Type declaring = GetEquivalent(type.DeclaringType);
-                if (declaring != null)
-                {
-                    if (type.IsGenericType)
-                    {
-                        return declaring.GetNestedType(type.Name).MakeGenericType(type.GetGenericArguments());
-                    }
-                    else
-                    {
-                        return declaring.GetNestedType(type.Name);
-                    }
-                }
-            }
-            if (typeof(MethodInfo).IsAssignableFrom(type) && type != typeof(MethodInfo))
-            {
-                return GetEquivalent(typeof(MethodInfo));
-            }
-            return null;
-        }
-
-        private bool IsScriptAvailable(Type type)
-        {
-            if (Attribute.IsDefined(type, typeof(ScriptAvailableAttribute)) || Attribute.IsDefined(type.Assembly, typeof(ScriptAvailableAttribute)))
-            {
-                return true;
-            }
-            if (type.DeclaringType != null && IsScriptAvailable(type.DeclaringType))
-            {
-                return true;
-            }
-            if (implicitScriptAvailable.Contains(type))
-            {
-                return true;
-            }
-            if (type.IsGenericType && implicitScriptAvailable.Contains(type.GetGenericTypeDefinition()))
-            {
-                return true;
-            }
-            return false;
         }
 
         public IScriptType GetScriptType(Type type)
         {
             if (type.IsGenericTypeDefinition || type.ContainsGenericParameters)
             {
-                throw new Exception("You should never do this");
+                throw new ArgumentException("Only closed constructed types can have a script version.", "type");
             }
 
             var scriptType = types.FirstOrDefault(t => t.Type == type);
-            if (scriptType != null) {
+            if (scriptType != null) 
+            {
                 return scriptType;
             }
-            scriptType = CreateType(type);
-            if (scriptType != null) {
-                types.Add(scriptType);
+            if (!isSealed)
+            {
+                scriptType = CreateType(type);
+                if (scriptType != null)
+                {
+                    types.Add(scriptType);
+                }
             }
             return scriptType;
         }
@@ -229,27 +135,19 @@ namespace NetWebScript.JsClr.TypeSystem
             return null;
         }
 
-        internal List<ScriptType> TypesToGenerate
+        internal IEnumerable<ScriptType> TypesToWrite
         {
-            get { return typesToGenerate; }
+            get { return stdProvider.TypesToWrite; }
         }
 
-        internal IEnumerable<ImportedType> ImportedTypes
+        internal IEnumerable<IScriptTypeDeclarationWriter> TypesToDeclare
         {
-            get { return types.OfType<ImportedType>(); }
+            get { return types.OfType<IScriptTypeDeclarationWriter>().Where(t => !t.IsEmpty); }
         }
 
-        internal List<ScriptEnumType> EnumToGenerate
+        internal Queue<ScriptMethodBase> AstToGenerate
         {
-            get { return enumsToGenerate; }
-        }
-        internal List<ScriptMethod> MethodsToGenerate
-        {
-            get { return methodsToGenerate; }
-        }
-        internal List<ScriptTypeHelped> Equivalents
-        {
-            get { return equivalents; }
+            get { return astToGenerate; }
         }
 
         internal IScriptMethodBase GetScriptMethodBase(MethodBase methodBase)
@@ -262,7 +160,7 @@ namespace NetWebScript.JsClr.TypeSystem
             return GetScriptConstructor((ConstructorInfo)methodBase);
         }
 
-        internal IScriptMethodBase GetScriptMethod(MethodInfo methodInfo)
+        internal IScriptMethod GetScriptMethod(MethodInfo methodInfo)
         {
             var type = GetScriptType(methodInfo.DeclaringType);
             if (type != null)
@@ -306,30 +204,25 @@ namespace NetWebScript.JsClr.TypeSystem
 
         public void ImportAssemblyMappings(Assembly assembly)
         {
-            foreach (ForceScriptAvailableAttribute force in Attribute.GetCustomAttributes(assembly, typeof(ForceScriptAvailableAttribute)))
+            foreach (var provider in providers)
             {
-                implicitScriptAvailable.Add(force.Type);
-            }
-            foreach (Type type in assembly.GetTypes())
-            {
-                var attr = (ScriptEquivalentAttribute)Attribute.GetCustomAttribute(type, typeof(ScriptEquivalentAttribute), false);
-                if (attr != null)
-                {
-                    if (scriptEquivalent.ContainsKey(attr.Type))
-                    {
-                        throw new Exception(string.Format("Type '{0}' has more than one equivalent : at least '{1}' and '{2}'", attr.Type, type.FullName, scriptEquivalent[attr.Type].FullName));
-                    }
-                    else
-                    {
-                        scriptEquivalent.Add(attr.Type, type);
-                    }
-                }
+                provider.RegisterAssembly(assembly);
             }
         }
 
         public virtual MethodAst GetMethodAst(IScriptMethodBase scriptMethod, MethodBase methodBase)
         {
             return MethodAst.GetMethodAst(methodBase);
+        }
+
+        internal bool IsSealed
+        {
+            get { return isSealed; }
+        }
+
+        internal void Seal()
+        {
+            isSealed = true;
         }
     }
 }

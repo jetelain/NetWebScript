@@ -12,7 +12,7 @@ namespace NetWebScript.Remoting
 {
     public class RemotingScriptSystem : ScriptSystem
     {
-        public RemotingScriptSystem(string moduleId) :base(moduleId)
+        public RemotingScriptSystem()
         {
         }
 

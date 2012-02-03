@@ -98,5 +98,43 @@ namespace NetWebScript.Equivalents.Globalization
             }
             return CurrentInfo;
         }
+
+        public NumberFormatInfoEquiv()
+        {
+
+        }
+
+        [ScriptBody(Inline = "info")]
+        public NumberFormatInfoEquiv(NumberFormatInfo info)
+        {
+            CurrencyDecimalDigits = info.CurrencyDecimalDigits;
+            CurrencyDecimalSeparator = info.CurrencyDecimalSeparator;
+            CurrencyGroupSeparator = info.CurrencyGroupSeparator;
+            CurrencyGroupSizes = info.CurrencyGroupSizes;
+            CurrencyNegativePattern = info.CurrencyNegativePattern;
+            CurrencyPositivePattern = info.CurrencyPositivePattern;
+            CurrencySymbol = info.CurrencySymbol;
+            DigitSubstitution = info.DigitSubstitution;
+            NaNSymbol = info.NaNSymbol;
+            NegativeInfinitySymbol = info.NegativeInfinitySymbol;
+            NegativeSign = info.NegativeSign;
+            NumberDecimalDigits = info.NumberDecimalDigits;
+            NumberDecimalSeparator = info.NumberDecimalSeparator;
+            NumberGroupSeparator = info.NumberGroupSeparator;
+            NumberGroupSizes = info.NumberGroupSizes;
+            NumberNegativePattern = info.NumberNegativePattern;
+            PercentDecimalDigits = info.PercentDecimalDigits;
+            PercentDecimalSeparator = info.PercentDecimalSeparator;
+            PercentGroupSeparator = info.PercentGroupSeparator;
+            PercentGroupSizes = info.PercentGroupSizes;
+            PercentNegativePattern = info.PercentNegativePattern;
+            PercentPositivePattern = info.PercentPositivePattern;
+            PercentSymbol = info.PercentSymbol;
+            PerMilleSymbol = info.PerMilleSymbol;
+            PositiveInfinitySymbol = info.PositiveInfinitySymbol;
+            PositiveSign = info.PositiveSign;
+        }
+
+
     }
 }

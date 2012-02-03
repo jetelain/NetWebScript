@@ -4,13 +4,16 @@ using System.Reflection;
 using NetWebScript.JsClr.Ast;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using ScriptEnum = NetWebScript.Equivalents.Enum;
+using NetWebScript.Metadata;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
-    class ScriptEnumType : IScriptType, ITypeBoxing
+    class ScriptEnumType : IScriptType, ITypeBoxing, IScriptTypeDeclarationWriter
     {
         private readonly Type type;
         private readonly string typeId;
+        private readonly IScriptMethodBase createEnumType;
 
         private static readonly MethodInfo EnumBox = new Func<Type, double, NetWebScript.Equivalents.Enum>(NetWebScript.Equivalents.Enum.ToObject).Method;
 
@@ -18,7 +21,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         {
             this.type = type;
             this.typeId = system.CreateTypeId();
-            system.GetScriptType(typeof(NetWebScript.Equivalents.Enum));
+            this.createEnumType = system.GetScriptMethod(new Func<string, NetWebScript.Equivalents.Enum.EnumData[], Type>(NetWebScript.Equivalents.Enum.CreateEnumType).Method);
         }
 
         #region IScriptType Members
@@ -96,6 +99,58 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         public IScriptConstructor DefaultConstructor
         {
             get { return null; }
+        }
+
+        public TypeMetadata Metadata
+        {
+            get { return null; }
+        }
+
+        public void WriteDeclaration(System.IO.TextWriter writer, WriterContext context)
+        {
+            writer.Write("{2}={0}.{1}('{2}',[", createEnumType.Owner.TypeId, createEnumType.ImplId, TypeId);
+            bool first = true;
+            foreach (var field in Type.GetFields(BindingFlags.Public | BindingFlags.Static))
+            {
+                if (first)
+                {
+                    first = false;
+                    writer.WriteLine();
+                }
+                else
+                {
+                    writer.WriteLine(",");
+                }
+                writer.Write("{{v:{0},n:'{1}'}}", Convert.ToInt32(field.GetValue(null)), field.Name);
+            }
+            writer.WriteLine("]);");
+        }
+
+        public bool IsEmpty
+        {
+            get { return false; }
+        }
+
+        public string PrettyName
+        {
+            get { return type.FullName; }
+        }
+
+
+        public void RegisterChildType(IScriptType type)
+        {
+            throw new NotSupportedException();
+        }
+
+        public IScriptType BaseType
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+
+        public IScriptMethod GetScriptMethodIfUsed(MethodInfo method)
+        {
+            return null; // No method is declared by an enum type
         }
     }
 }

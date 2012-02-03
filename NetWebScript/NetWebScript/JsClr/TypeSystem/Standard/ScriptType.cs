@@ -5,30 +5,29 @@ using System.Text;
 using System.Reflection;
 using NetWebScript.JsClr.TypeSystem.Inlined;
 using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.Metadata;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
-    public class ScriptType : IScriptType
+    public class ScriptType : ScriptTypeBase, IScriptTypeDeclaration, IScriptTypeDeclarationWriter
     {
-        private readonly Type type;
         private readonly string typeId;
-        private readonly List<IScriptMethodBase> methods = new List<IScriptMethodBase>();
-        private readonly List<IScriptField> fields = new List<IScriptField>();
-        private readonly IScriptType baseType;
-        private readonly List<IScriptType> interfaces = new List<IScriptType>();
-        private readonly ScriptSystem system;
         private readonly bool isGlobals;
 
         private readonly CaseConvention exportCaseConvention;
+
         private readonly bool isExported;
         private readonly string exportedName;
         private readonly string exportedNamespace;
-        private readonly ScriptConstructor staticConstructor;
+        private IScriptConstructor exportedConstructor;
 
-        public ScriptType(ScriptSystem system, Type type)
+        private readonly IScriptConstructor staticScriptConstructor;
+        private readonly TypeMetadata metadata;
+
+
+        public ScriptType(ScriptSystem system, Type type) : base(system, type)
         {
-            this.system = system;
-
             if (!type.IsGenericType)
             {
                 // Generic types are not allowed to be exported !
@@ -55,86 +54,86 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                     }
                 }
             }
-           
-            if (type.BaseType != null && type != typeof(NetWebScript.Equivalents.ObjectHelper) && type != typeof(NetWebScript.Script.TypeSystemHelper))
-            {
-                this.baseType = system.GetScriptType(type.BaseType);
-                if (this.baseType == null)
-                {
-                    throw new Exception(string.Format("'{0}' cannot be ScriptAvailable, because its base type '{1}' is not ScriptAvailable, Imported or native.", type.FullName, type.BaseType.FullName));
-                }
-            }
 
-            // Look for interfaces
-            foreach (var itf in type.GetInterfaces())
-            {
-                system.GetScriptType(itf);
-            }
-
-            this.type = type;
             this.typeId = system.CreateTypeId();
-
             isGlobals = Attribute.IsDefined(type, typeof(GlobalsAttribute));
 
-            foreach (var method in type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
+            InitBaseType(false);
+            InitInterfaces();
+
+            this.metadata = CreateTypeMetadata();
+
+            var staticCtor = type.GetConstructor(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, Type.EmptyTypes, null);
+            if ( staticCtor != null )
             {
-                if (!method.IsGenericMethodDefinition)
+                staticScriptConstructor = GetScriptConstructor(staticCtor);
+            }
+
+            if (type.IsInterface)
+            {
+                // Generic methods within an interface is not supported.
+                // It would require to force generation of concreate method in all types
+                // implementing interface.
+                foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
                 {
-                    CreateMethod(method, false);
-                }
-                else 
-                {
-                    if (type.IsInterface)
+                    if (method.IsGenericMethodDefinition)
                     {
-                        // Generic methods within an interface is not supported.
-                        // It would require to force generation of concreate method in all types
-                        // implementing interface.
                         throw new NotSupportedException("An interface should have generic method.");
                     }
                 }
             }
-
-            foreach (var ctor in type.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
-            {
-                var sctor = new ScriptConstructor(system, this, ctor);
-                methods.Add(sctor);
-
-                if (ctor.IsStatic)
-                {
-                    staticConstructor = sctor;
-                }
-            }
-
+            
             if (isExported)
             {
-                var pubCtors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
-                if (pubCtors.Length > 1)
+                EnsurePublicMembersForExport();
+            }
+
+
+        }
+
+        private void EnsurePublicMembersForExport()
+        {
+            var pubCtors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            if (pubCtors.Length > 1)
+            {
+                throw new Exception(string.Format("Type '{0}' is exported, it cannot have more than one public constructor", type.FullName));
+            }
+
+            foreach (var ctor in pubCtors)
+            {
+               exportedConstructor = GetScriptConstructor(ctor);
+            }
+
+            foreach (var method in type.GetMethods( BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
+            {
+                if (!method.IsGenericMethodDefinition)
                 {
-                    throw new Exception(string.Format("Type '{0}' is exported, it cannot have more than one public constructor", type.FullName));
+                    GetScriptMethod(method);
                 }
             }
 
-            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public))
             {
                 if (field.DeclaringType == type)
                 {
-                    var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(field, typeof(ScriptBodyAttribute));
-                    if (native != null)
-                    {
-                        fields.Add(new InlinedField(this, field, native.Inline));
-                    }
-                    else
-                    {
-                        string exported = null;
-                        if (isExported && field.IsPublic && !field.IsStatic)
-                        {
-                            exported = CaseToolkit.GetMemberName(exportCaseConvention, field.Name);
-                            // FIXME: check for conflicts
-                        }
-                        fields.Add(new ScriptField(system, this, field, exported));
-                    }
+                    GetScriptField(field);
                 }
             }
+        }
+
+
+        private TypeMetadata CreateTypeMetadata()
+        {
+            var meta = new TypeMetadata();
+            meta.Module = system.Metadata;
+            meta.Name = TypeId;
+            meta.CRef = CRefToolkit.GetCRef(Type);
+            if (BaseType != null)
+            {
+                meta.BaseTypeName = BaseType.TypeId;
+            }
+            system.Metadata.Types.Add(meta);
+            return meta;
         }
 
         internal ScriptInterfaceMapping GetMapping()
@@ -142,83 +141,59 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             return new ScriptInterfaceMapping(system, this);
         }
 
-        private IScriptMethod CreateMethod(MethodInfo method, bool late)
+        protected sealed override IScriptConstructor CreateScriptConstructor(ConstructorInfo ctor)
         {
-            IScriptMethod scriptMethod;
+            var scriptCtor = new ScriptConstructor(system, this, ctor);
+            system.AstToGenerate.Enqueue(scriptCtor);
+            return scriptCtor;
+        }
+
+        protected sealed override IScriptMethod CreateScriptMethod(MethodInfo method)
+        {
             var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(method, typeof(ScriptBodyAttribute));
             if (native != null && !string.IsNullOrEmpty(native.Inline))
             {
-                scriptMethod = new InlinedMethod(this, method, native.Inline);
+                return new InlinedMethod(this, method, native.Inline);
             }
-            else 
+
+            string exported = null;
+            if (isExported && method.IsPublic && !method.IsStatic)
             {
-                string exported = null;
-                if (isExported && method.IsPublic && !method.IsStatic)
-                {
-                    // Static methods will have correct name on the export object
-                    exported = CaseToolkit.GetMemberName(exportCaseConvention, method.Name);
-                    // FIXME: check for conflicts
-                }
-                var body = native != null ? native.Body : null;
-                var generated = new ScriptMethod(system, this, method, body, exported);
-                if (late)
-                {
-                    system.MethodsToGenerate.Add(generated);
-                }
-                scriptMethod = generated;
+                // Static methods will have correct name on the export object
+                exported = CaseToolkit.GetMemberName(exportCaseConvention, method.Name);
+                // FIXME: check for conflicts
             }
-            methods.Add(scriptMethod);
-            return scriptMethod;
+            var body = native != null ? native.Body : null;
+            var generated = new ScriptMethod(system, this, method, body, exported);
+            system.AstToGenerate.Enqueue(generated);
+            return generated;
         }
 
-        public IScriptMethod GetScriptMethod(MethodInfo method)
+        protected sealed override IScriptField CreateScriptField(FieldInfo field)
         {
-            var result = (IScriptMethod)GetScriptMethodBase(method);
-            if (result == null && method.IsGenericMethod)
+            var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(field, typeof(ScriptBodyAttribute));
+            if (native != null)
             {
-                return CreateMethod(method, true);
+                return new InlinedField(this, field, native.Inline);
             }
-            return result;
-        }
 
-        public IScriptConstructor GetScriptConstructor(ConstructorInfo method)
-        {
-            return (IScriptConstructor)GetScriptMethodBase(method);
-        }
-
-        private IScriptMethodBase GetScriptMethodBase(MethodBase method)
-        {
-            if (method.ReflectedType != method.DeclaringType)
+            string exported = null;
+            if (isExported && field.IsPublic && !field.IsStatic)
             {
-                method = method.DeclaringType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly).First(m => m.MethodHandle == method.MethodHandle);
+                exported = CaseToolkit.GetMemberName(exportCaseConvention, field.Name);
+                // FIXME: check for conflicts
             }
-
-            return methods.FirstOrDefault(m => m.Method == method);
+            return new ScriptField(system, this, field, exported);
         }
 
-        public IScriptField GetScriptField(FieldInfo field)
-        {
-            return fields.FirstOrDefault(f => f.Field == field);
-        }
-
-        public Type Type
-        {
-            get { return type; }
-        }
-
-        public string TypeId
+        public override string TypeId
         {
             get { return typeId; }
         }
 
-        internal IEnumerable<ScriptMethodBase> Methods
-        {
-            get { return methods.OfType<ScriptMethodBase>(); }
-        }
-
         internal virtual IEnumerable<ScriptMethodBase> MethodsToWrite
         {
-            get { return Methods; }
+            get { return methods.OfType<ScriptMethodBase>(); }
         }
 
         internal IEnumerable<ScriptField> Fields
@@ -226,19 +201,19 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             get { return fields.OfType<ScriptField>(); }
         }
 
-        public ITypeBoxing Boxing
+        public override ITypeBoxing Boxing
         {
             get { return null; }
         }
 
-        public IValueSerializer Serializer
+        public override IValueSerializer Serializer
         {
             get { return null; }
         }
 
-        public IScriptType BaseType
+        public IScriptConstructor ExportedConstructor
         {
-            get { return baseType; }
+            get { return exportedConstructor; }
         }
 
         public IList<IScriptType> Interfaces
@@ -251,7 +226,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             get { return isGlobals; }
         }
 
-        public bool HaveCastInformation
+        public override bool HaveCastInformation
         {
             get { return true; }
         }
@@ -276,23 +251,72 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             get { return exportCaseConvention; }
         }
 
+        public IScriptConstructor StaticConstructor
+        {
+            get { return staticScriptConstructor; }
+        }
 
-        public IScriptConstructor DefaultConstructor
+        public override TypeMetadata Metadata
+        {
+            get { return metadata; }
+        }
+
+        public bool CreateType
+        {
+            get { return !IsGlobals; }
+        }
+
+        public string PrettyName
+        {
+            get { return type.FullName; }
+        }
+
+        public string BaseTypeId
         {
             get 
-            {
-                var ctor = type.GetConstructor(Type.EmptyTypes);
-                if (ctor != null)
+            { 
+                if ( baseType != null )
                 {
-                    return GetScriptConstructor(ctor);
+                    return baseType.TypeId;
                 }
                 return null;
             }
         }
 
-        public IScriptConstructor StaticConstructor
+        public IEnumerable<string> InterfacesTypeIds
         {
-            get { return staticConstructor; }
+            get { return interfaces.Select(i => i.TypeId); }
         }
+
+        public IEnumerable<IScriptMethodBaseDeclaration> Constructors
+        {
+            get { return constructors.Cast<IScriptMethodBaseDeclaration>(); }
+        }
+
+        public virtual IEnumerable<IScriptMethodDeclaration> Methods
+        {
+            get { return methods.OfType<ScriptMethod>().Where(m => !m.Method.IsAbstract).Cast<IScriptMethodDeclaration>(); }
+        }
+
+        IEnumerable<IScriptFieldDeclaration> IScriptTypeDeclaration.Fields
+        {
+            get { return fields.OfType<IScriptFieldDeclaration>(); }
+        }
+
+        public IEnumerable<ScriptSlotImplementation> InterfacesMapping
+        {
+            get { return GetMapping().InterfacesMapping; }
+        }
+
+        public bool IsEmpty
+        {
+            get { return false; }
+        }
+
+        public void WriteDeclaration(System.IO.TextWriter writer, WriterContext context)
+        {
+            context.StandardDeclarationWriter.WriteDeclaration(writer, context, this);
+        }
+
     }
 }

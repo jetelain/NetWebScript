@@ -157,6 +157,18 @@ namespace NetWebScript.JsClr.Compiler
                         AddError(literalExpression, string.Format("Type '{0}' is not script available. You can not make references to that type.", literalType.FullName));
                     }
                 }
+                else
+                {
+                    MethodBase literalMethod = literalExpression.Value as MethodBase;
+                    if (literalMethod != null)
+                    {
+                        var targetmethod = system.GetScriptMethodBase(literalMethod);
+                        if (targetmethod == null)
+                        {
+                            AddError(literalExpression, string.Format("Method '{0}' of type '{1}' is not script available. You can not make references to that method.", literalMethod, literalMethod.DeclaringType.FullName));
+                        }
+                    }
+                }
             }
             return new ScriptLiteralExpression(literalExpression.IlOffset, literalExpression.Value, type);
         }
@@ -423,11 +435,30 @@ namespace NetWebScript.JsClr.Compiler
             return new ScriptReturnStatement(Visit(returnStatement.Value));
         }
 
+        private ScriptLiteralExpression CreateCaseLiteral(object value)
+        {
+            if (value == Case.DefaultCase)
+            {
+                return ScriptCase.DefaultCase;
+            }
+            if (value == null)
+            {
+                return new ScriptLiteralExpression(null, null, null);
+            }
+            Type literalType = value.GetType();
+            var type = system.GetScriptType(literalType);
+            if (type == null || type.Serializer == null)
+            {
+                throw new InvalidOperationException();
+            }
+            return new ScriptLiteralExpression(null, value, type);
+        }
+
         public ScriptStatement Visit(SwitchStatement switchStatement)
         {
             return new ScriptSwitchStatement(
-                Visit(switchStatement.Value), 
-                switchStatement.Cases.Select(c => new ScriptCase(c.Value, Visit(c.Statements))).ToList());
+                Visit(switchStatement.Value),
+                switchStatement.Cases.Select(c => new ScriptCase(CreateCaseLiteral(c.Value), Visit(c.Statements))).ToList());
         }
 
         public ScriptStatement Visit(ThisReferenceExpression thisReferenceExpression)

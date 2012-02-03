@@ -6,23 +6,31 @@ using NetWebScript.JsClr.TypeSystem.Imported;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
-    public class ScriptExtenderType : ScriptType
+    class ScriptExtenderType : ScriptType, IScriptTypeExtender
     {
+        private readonly ImportedType extended;
+
         public ScriptExtenderType(ScriptSystem system, Type type, Type extendedType)
             : base(system, type)
         {
-            var extended = (ImportedType)system.GetScriptType(extendedType);
-            extended.AddExtensions(Methods.Where(m => !m.Method.IsStatic).OfType<ScriptMethod>());
+            extended = (ImportedType)system.GetScriptType(extendedType);
+            extended.AddExtender(this);
 
             // TODO: transfert interfaces impl
         }
 
-        internal override IEnumerable<ScriptMethodBase> MethodsToWrite
+        public override IEnumerable<ScriptWriter.Declaration.IScriptMethodDeclaration> Methods
         {
             get
             {
-                return Methods.Where(m => m.Method.IsStatic);
+                return base.Methods.Where(m => m.IsStatic);
             }
+        }
+
+
+        public IEnumerable<ScriptMethod> Extensions
+        {
+            get { return methods.Where(m => !m.Method.IsStatic).OfType<ScriptMethod>(); }
         }
     }
 }

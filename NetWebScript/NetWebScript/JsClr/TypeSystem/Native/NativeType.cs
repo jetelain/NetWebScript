@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.Metadata;
 
 namespace NetWebScript.JsClr.TypeSystem.Native
 {
@@ -79,6 +80,28 @@ namespace NetWebScript.JsClr.TypeSystem.Native
                 }
                 return null;
             }
+        }
+
+        public TypeMetadata Metadata
+        {
+            get { return null; }
+        }
+
+
+        public void RegisterChildType(IScriptType type)
+        {
+
+        }
+
+        public IScriptType BaseType
+        {
+            get { return null; }
+        }
+
+
+        public IScriptMethod GetScriptMethodIfUsed(System.Reflection.MethodInfo method)
+        {
+            return (IScriptMethod)GetScriptMethodBase(method);
         }
     }
 }

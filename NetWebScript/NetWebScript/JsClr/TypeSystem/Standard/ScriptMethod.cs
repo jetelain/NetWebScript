@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
-    class ScriptMethod : ScriptMethodBase, IScriptMethod
+    class ScriptMethod : ScriptMethodBase, IScriptMethod, IScriptMethodDeclaration
     {
         private readonly string vslot;
+        private readonly bool isGlobal;
 
         internal ScriptMethod(ScriptSystem system, ScriptType owner, MethodInfo method, string body, string exportedName)
             : this(system, owner, method, body, exportedName, owner.IsGlobals)
@@ -18,6 +20,8 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         internal ScriptMethod(ScriptSystem system, IScriptType owner, MethodInfo method, string body, string exportedName, bool isGlobal)
             : base(system, owner, method, body, isGlobal)
         {
+            this.isGlobal = isGlobal;
+
             if (method.IsVirtual)
             {
                 var baseMethod = method.GetBaseDefinition();
@@ -55,5 +59,10 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             get { return vslot; }
         }
 
+
+        public bool IsGlobal
+        {
+            get { return isGlobal; }
+        }
     }
 }

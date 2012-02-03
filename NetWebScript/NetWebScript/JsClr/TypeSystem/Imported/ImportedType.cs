@@ -1,31 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Reflection;
 using NetWebScript.JsClr.TypeSystem.Inlined;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.JsClr.TypeSystem.Standard;
+using NetWebScript.Metadata;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem.Imported
 {
-    class ImportedType : IScriptType
+    class ImportedType : ScriptTypeBase, IScriptType, IScriptTypeDeclaration, IScriptTypeDeclarationWriter
     {
-        private readonly Type type;
-        private readonly List<ImportedConstructor> constructors = new List<ImportedConstructor>();
-        private readonly List<IScriptMethod> methods = new List<IScriptMethod>();
-        private readonly List<IScriptField> fields = new List<IScriptField>();
         private readonly List<ScriptMethod> extensions = new List<ScriptMethod>();
+        private readonly List<IScriptTypeExtender> extenders = new List<IScriptTypeExtender>();
 
         private readonly CaseConvention convention;
         private readonly string name;
-        private readonly ScriptSystem system;
 
-        public ImportedType(ScriptSystem system, Type type, ImportedAttribute imported)
+        public ImportedType(ScriptSystem system, Type type, ImportedAttribute imported) : base(system, type)
         {
-            this.system = system;
-            this.type = type;
             this.convention = imported.Convention;
             
             string typeName = imported.Name;
@@ -47,22 +42,8 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
                 this.name = typeName;
             }
 
-            // Look for interfaces
-            foreach (var itf in type.GetInterfaces())
-            {
-                system.GetScriptType(itf);
-            }
-
-            foreach (var method in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
-            {
-                if (Attribute.IsDefined(method, typeof(ImportedExtensionAttribute)))
-                {
-                    var scriptMethod = new ScriptMethod(system, this, method, null, null, false);
-                    extensions.Add(scriptMethod);
-                    methods.Add(scriptMethod);
-                    system.MethodsToGenerate.Add(scriptMethod);
-                }
-            }
+            InitBaseType(false);
+            InitInterfaces();
         }
 
         internal string Name(MemberInfo member)
@@ -83,119 +64,76 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             return name;
         }
 
-        public IScriptConstructor GetScriptConstructor(ConstructorInfo method)
+        protected sealed override IScriptConstructor CreateScriptConstructor(ConstructorInfo ctor)
         {
-            Contract.Requires(method.DeclaringType == type);
-            var info = constructors.FirstOrDefault(f => f.Method == method);
-            if (info == null)
+            return new ImportedConstructor(this, ctor);
+        }
+
+        protected sealed override IScriptMethod CreateScriptMethod(MethodInfo method)
+        {
+            if (Attribute.IsDefined(method, typeof(ImportedExtensionAttribute)))
             {
-                info = new ImportedConstructor(this, method);
-                constructors.Add(info);
+                var scriptMethod = new ScriptMethod(system, this, method, null, null, false);
+                extensions.Add(scriptMethod);
+                system.AstToGenerate.Enqueue(scriptMethod);
+                return scriptMethod;
             }
-            return info;
-        }
 
-        public IScriptMethod GetScriptMethod(MethodInfo method)
-        {
-            Contract.Requires(method.DeclaringType == type);
-            var info = methods.FirstOrDefault(f => f.Method == method);
-            if (info == null)
+            var properties = type.GetProperties();
+            if (properties.Length > 0)
             {
-                var properties = type.GetProperties();
-                if (properties.Length > 0)
+                var property = properties.FirstOrDefault(p => p.GetGetMethod() == method || p.GetSetMethod() == method);
+                if (property != null && Attribute.IsDefined(property, typeof(IntrinsicPropertyAttribute)))
                 {
-                    var property = properties.FirstOrDefault(p => p.GetGetMethod() == method || p.GetSetMethod() == method);
-                    if (property != null && Attribute.IsDefined(property, typeof(IntrinsicPropertyAttribute)))
-                    {
-                        info = new ImportedMethodProperty(this, method, property);
-                        methods.Add(info);
-                        return info;
-                    }
+                    return new ImportedMethodProperty(this, method, property);
                 }
-                if (method.IsStatic)
-                {
-                    var alias = (ScriptAliasAttribute)Attribute.GetCustomAttribute(method, typeof(ScriptAliasAttribute));
-                    if (alias != null)
-                    {
-                        info = new ImportedMethodAlias(this, method, alias.Alias);
-                        methods.Add(info);
-                        return info;
-                    }
-                }
-                var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(method, typeof(ScriptBodyAttribute));
-                if (native != null && !string.IsNullOrEmpty(native.Inline))
-                {
-                    info = new InlinedMethod(this, method, native.Inline);
-                }
-                else
-                {
-                    info = new ImportedMethod(this, method);
-                }
-                methods.Add(info);
             }
-            return info;
-        }
-
-        //public IScriptMethodBase GetScriptMethodBase(MethodBase method)
-        //{
-        //    Contract.Requires(method.DeclaringType == type);
-        //    var info = method as MethodInfo;
-        //    if (info != null)
-        //    {
-        //        return GetScriptMethod(info);
-        //    }
-        //    return GetScriptConstructor((ConstructorInfo)method);
-        //}
-
-        public IScriptField GetScriptField(FieldInfo field)
-        {
-            Contract.Requires(field.DeclaringType == type);
-            IScriptField info = fields.FirstOrDefault(f => f.Field == field);
-            if (info == null)
+            if (method.IsStatic)
             {
-                var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(field, typeof(ScriptBodyAttribute));
-                if (native != null)
+                var alias = (ScriptAliasAttribute)Attribute.GetCustomAttribute(method, typeof(ScriptAliasAttribute));
+                if (alias != null)
                 {
-                    info = new InlinedField(this, field, native.Inline);
+                    return new ImportedMethodAlias(this, method, alias.Alias);
                 }
-                else
-                {
-                    info = new ImportedField(this, field);
-                }
-                fields.Add(info);
             }
-            return info;
+            var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(method, typeof(ScriptBodyAttribute));
+            if (native != null && !string.IsNullOrEmpty(native.Inline))
+            {
+                return new InlinedMethod(this, method, native.Inline);
+            }
+            return new ImportedMethod(this, method);
         }
 
-        public Type Type
+        protected sealed override IScriptField CreateScriptField(FieldInfo field)
         {
-            get { return type; }
+            var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(field, typeof(ScriptBodyAttribute));
+            if (native != null)
+            {
+                return new InlinedField(this, field, native.Inline);
+            }
+            return new ImportedField(this, field);
         }
 
-        public string TypeId
+
+        public override string TypeId
         {
             get { return name; }
         }
 
 
-        public ITypeBoxing Boxing
+        public override ITypeBoxing Boxing
         {
             get { return null; }
         }
 
-        public IValueSerializer Serializer
+        public override IValueSerializer Serializer
         {
             get { return null; }
         }
 
-        public bool HaveCastInformation
+        public override bool HaveCastInformation
         {
             get { return false; }
-        }
-
-        public List<ScriptMethod> ExtensionMethods
-        {
-            get { return extensions; }
         }
 
         internal ScriptInterfaceMapping GetMapping()
@@ -203,22 +141,76 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             return new ScriptInterfaceMapping(system, this);
         }
 
-        internal void AddExtensions(IEnumerable<ScriptMethod> iEnumerable)
+        public override TypeMetadata Metadata
         {
-            extensions.AddRange(iEnumerable);
+            get { return null; }
         }
 
-        public IScriptConstructor DefaultConstructor
+        public bool CreateType
+        {
+            get { return false; }
+        }
+
+        public string PrettyName
+        {
+            get { return type.FullName; }
+        }
+
+        public string BaseTypeId
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        public IEnumerable<string> InterfacesTypeIds
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        public IEnumerable<IScriptMethodBaseDeclaration> Constructors
+        {
+            get { return Enumerable.Empty<IScriptMethodBaseDeclaration>(); }
+        }
+
+        public IEnumerable<IScriptMethodDeclaration> Methods
         {
             get
             {
-                var ctor = type.GetConstructor(Type.EmptyTypes);
-                if (ctor != null)
-                {
-                    return GetScriptConstructor(ctor);
-                }
-                return null;
+                return extensions.Cast<IScriptMethodDeclaration>()
+                    .Concat(extenders.SelectMany(e => e.Extensions.Cast<IScriptMethodDeclaration>()));
             }
+        }
+
+        public IEnumerable<IScriptFieldDeclaration> Fields
+        {
+            get { return Enumerable.Empty<IScriptFieldDeclaration>(); }
+        }
+
+        public IEnumerable<ScriptSlotImplementation> InterfacesMapping
+        {
+            get 
+            {
+                if (extensions.Count > 0)
+                {
+                    return GetMapping().InterfacesMapping; 
+                }
+                return Enumerable.Empty<ScriptSlotImplementation>();
+            }
+        }
+
+        public bool IsEmpty
+        {
+            get { return extensions.Count == 0 && extenders.Count == 0; }
+        }
+
+
+        public void WriteDeclaration(System.IO.TextWriter writer, WriterContext context)
+        {
+            context.StandardDeclarationWriter.WriteDeclaration(writer, context, this);
+        }
+
+        internal void AddExtender(IScriptTypeExtender extender)
+        {
+            extenders.Add(extender);
         }
     }
 }

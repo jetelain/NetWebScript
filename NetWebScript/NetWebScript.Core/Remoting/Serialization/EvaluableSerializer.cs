@@ -61,6 +61,12 @@ namespace NetWebScript.Remoting.Serialization
                 return;
             }
 
+            if (type.IsEnum)
+            {
+                writer.Write(Convert.ToInt32(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture));
+                return;
+            }
+
             var valueType = value as Type;
             if (valueType != null)
             {
@@ -97,6 +103,10 @@ namespace NetWebScript.Remoting.Serialization
             }
 
             var serializer = cache.GetSerializer(type);
+            if (serializer == null)
+            {
+                throw new Exception(string.Format("Unable to serialize a value of type '{0}'", type.FullName));
+            }
             serializer.WriteScriptStart(writer);
             var data = new SerializationInfo(type, cache.Converter);
             serializer.Serialize(value, data);

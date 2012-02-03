@@ -13,6 +13,7 @@ using NetWebScript.Remoting.Serialization;
 using NetWebScript.Script;
 using NetWebScript.Page;
 using System.Diagnostics;
+using NetWebScript.JsClr.ScriptWriter;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -21,13 +22,20 @@ namespace NetWebScript.JsClr.Compiler
     /// </summary>
     public sealed class ModuleCompiler : IScriptDependencies
     {
+        internal static string NetWebScriptVersion
+        {
+            get 
+            {
+                var attr = (AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(typeof(ModuleCompiler).Assembly, typeof(AssemblyFileVersionAttribute));
+                return attr.Version;
+            }
+        }
+
         private readonly ScriptSystem system;
         private readonly RuntimeAstFilter runtimeFilter;
         private readonly List<InternalMessage> messages = new List<InternalMessage>();
         private readonly List<Type> typesToBeExported = new List<Type>();
         private readonly HashSet<Assembly> assemblies = new HashSet<Assembly>();
-        private int index;
-        private int indexMethods;
         private readonly Instrumentation instrumentation;
 
         /// <summary>
@@ -43,10 +51,16 @@ namespace NetWebScript.JsClr.Compiler
         /// <summary>
         /// Metadata of generated script
         /// </summary>
-        public ModuleMetadata Metadata { get; set; }
+        public ModuleMetadata Metadata { get { return system.Metadata; } }
 
+        /// <summary>
+        /// Module full name (source assembly name)
+        /// </summary>
         public string ModuleName { get; set; }
 
+        /// <summary>
+        /// Module file name (target javascript file)
+        /// </summary>
         public string ModuleFilename { get; set; }
 
         /// <summary>
@@ -66,7 +80,7 @@ namespace NetWebScript.JsClr.Compiler
         {
             this.system = system;
             runtimeFilter = new RuntimeAstFilter(system, messages);
-            Metadata = new ModuleMetadata() { Timestamp = DateTime.Now.ToString("yyyyMMddHHmmss") };
+            Metadata.Timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
             AddAssemblyPrivate(typeof(TypeSystemHelper).Assembly);
             AddEntryPoint(typeof(TypeSystemHelper));
@@ -90,7 +104,6 @@ namespace NetWebScript.JsClr.Compiler
         /// <returns>Script version of type</returns>
         public IScriptType AddEntryPoint(Type type)
         {
-
             if (!assemblies.Contains(type.Assembly))
             {
                 AddAssemblyPrivate(type.Assembly);
@@ -100,6 +113,7 @@ namespace NetWebScript.JsClr.Compiler
             {
                 throw new Exception(String.Format("{0} is not available in script",type));
             }
+            ScriptTypeHelper.EnsureAllPublicMembers(scriptType);
             GenerateAst();
             EnsureExports();
             return scriptType;
@@ -118,26 +132,9 @@ namespace NetWebScript.JsClr.Compiler
 
         private void GenerateAst()
         {
-            while (index < system.TypesToGenerate.Count || indexMethods < system.MethodsToGenerate.Count)
+            while (system.AstToGenerate.Count > 0)
             {
-                while (index < system.TypesToGenerate.Count)
-                {
-                    GenerateAst(system.TypesToGenerate[index]);
-                    index++;
-                }
-                while (indexMethods < system.MethodsToGenerate.Count)
-                {
-                    GenerateAst(system.MethodsToGenerate[indexMethods]);
-                    indexMethods++;
-                }
-            }
-        }
-
-        private void GenerateAst(ScriptType type)
-        {
-            foreach (var method in type.Methods)
-            {
-                GenerateAst(method);
+                GenerateAst(system.AstToGenerate.Dequeue());
             }
         }
 
@@ -201,6 +198,41 @@ namespace NetWebScript.JsClr.Compiler
             return list;
         }
 
+
+
+        private void WriteTypes(TextWriter writer)
+        {
+            var exports = system.TypesToWrite.Where(t => t.IsExported);
+
+            var moduleWriter = new ModuleWriter(writer, system, PrettyPrint, instrumentation);
+
+            foreach (var type in system.TypesToDeclare.ToArray())
+            {
+                moduleWriter.WriteType(type);
+                SanityCheck(type.PrettyName);
+            }
+
+            moduleWriter.WriteExports(exports);
+        }
+
+        private void WriteStaticCtorsCalls(TextWriter writer)
+        {
+            if (PrettyPrint)
+            {
+                writer.WriteLine();
+                writer.WriteLine("// ### Static constructors");
+            }
+            foreach (var type in system.TypesToWrite.Where(t => t.StaticConstructor != null).ToArray())
+            {
+                if (PrettyPrint)
+                {
+                    writer.WriteLine("// {0}", type.Type.FullName);
+                }
+                var ctor = type.StaticConstructor;
+                writer.WriteLine("{0}.{1}();", type.TypeId, ctor.ImplId);
+            }
+        }
+
         /// <summary>
         /// Write script to the provided writer.
         /// </summary>
@@ -212,77 +244,31 @@ namespace NetWebScript.JsClr.Compiler
                 throw new Exception(BuildReport());
             }
 
-            var exports = system.TypesToGenerate.Where(t => t.IsExported);
+            writer.WriteLine("// Generated by NetWebScript {0}", NetWebScriptVersion);
 
+            system.Seal();
 
+            WriteTypes(writer);
 
-            Metadata.Assemblies.Clear();
-            Metadata.Documents.Clear();
-            Metadata.Types.Clear();
-            Metadata.Name = system.ModuleId;
+            WriteStaticCtorsCalls(writer);
 
-            HashSet<Assembly> assemblies = new HashSet<Assembly>();
+            writer.WriteLine("Modules.Reg('{0}','0.0.0.0','{1}.js','{2}');", ModuleName, ModuleFilename, Metadata.Timestamp);
 
-            var moduleWriter = new ModuleWriter(writer, system, PrettyPrint, instrumentation);
-
-            foreach (var type in system.TypesToGenerate.ToArray())
+            if (Instrumentation != null && Instrumentation.Start != null)
             {
-                assemblies.Add(type.Type.Assembly);
-                moduleWriter.WriteType(Metadata, type);
-                SanityCheck(type);
+                writer.WriteLine("$(document).ready(function(){");
+                writer.WriteLine("{0}.{1}();", Instrumentation.Start.Owner.TypeId, Instrumentation.Start.ImplId);
+                writer.WriteLine("});");
             }
 
-            foreach (var type in system.EnumToGenerate.ToArray())
-            {
-                assemblies.Add(type.Type.Assembly);
-                moduleWriter.WriteEnumType(Metadata, type);
-                SanityCheck(type);
-            }
-
-            foreach (var type in system.ImportedTypes.ToArray())
-            {
-                if (type.ExtensionMethods.Count > 0)
-                {
-                    moduleWriter.WriteTypeExtensions(Metadata, type);
-                    SanityCheck(type);
-                }
-            }
-
-            moduleWriter.WriteExports(exports);
-
-            if (PrettyPrint)
-            {
-                writer.WriteLine("// ### Static constructors");
-            }
-            foreach (var type in system.TypesToGenerate.Where(t => t.StaticConstructor != null/* && t != debugger*/).ToArray())
-            {
-                WriteStaticCtorCall(writer, type);
-            }
-            foreach (var type in system.Equivalents)
-            {
-                Metadata.Equivalents.Add(new EquivalentMetadata() { CRef = CRefToolkit.GetCRef(type.Type), EquivalentCRef = CRefToolkit.GetCRef(type.Equivalent.Type) });
-            }
-
-            Metadata.Assemblies.AddRange(assemblies.Select(a => a.FullName));
             MetadataProvider.Current = new MetadataProvider(Metadata);
         }
 
-        private void WriteStaticCtorCall(TextWriter writer, ScriptType type)
+        private void SanityCheck(string previousName)
         {
-            if (PrettyPrint)
+            if (system.AstToGenerate.Count > 0)
             {
-                writer.WriteLine("// {0}", type.Type.FullName);
-            }
-            var ctor = type.StaticConstructor;
-            writer.WriteLine("{0}.{1}();", type.TypeId, ctor.ImplId);
-        }
-
-
-        private void SanityCheck(IScriptType previous)
-        {
-            if (index != system.TypesToGenerate.Count)
-            {
-                throw new InvalidOperationException(string.Format("Type '{0}' have been discovered while writing '{1}' !", system.TypesToGenerate[index].Type.FullName, previous.Type.FullName));
+                throw new InvalidOperationException(string.Format("Type '{0}' have been discovered while writing '{1}' !", system.AstToGenerate.Peek().Method.DeclaringType.FullName, previousName));
             }
         }
 
@@ -290,8 +276,6 @@ namespace NetWebScript.JsClr.Compiler
         {
             ModuleMetadataSerializer.Write(writer, Metadata);
         }
-
-
 
         private void AddAssemblyPrivate(Assembly assembly)
         {

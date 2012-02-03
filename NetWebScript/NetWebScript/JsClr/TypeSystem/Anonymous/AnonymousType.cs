@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.Metadata;
 
 namespace NetWebScript.JsClr.TypeSystem.Anonymous
 {
@@ -86,6 +87,27 @@ namespace NetWebScript.JsClr.TypeSystem.Anonymous
                 }
                 return null;
             }
+        }
+
+        public TypeMetadata Metadata
+        {
+            get { return null; }
+        }
+
+
+        public void RegisterChildType(IScriptType type)
+        {
+            throw new NotSupportedException();
+        }
+
+        public IScriptType BaseType
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        public IScriptMethod GetScriptMethodIfUsed(MethodInfo method)
+        {
+            throw new NotImplementedException();
         }
     }
 }
