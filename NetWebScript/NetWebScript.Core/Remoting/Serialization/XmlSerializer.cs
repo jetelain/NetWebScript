@@ -63,15 +63,5 @@ namespace NetWebScript.Remoting.Serialization
             return element;
         }
 
-        public static object CopyTo(object target, object source)
-        {
-            var members = Unsafe.GetAll(source);
-            for (int i = 0; i < members.Length; ++i)
-            {
-                var member = members[i];
-                JSObject.Set(target, member, JSObject.Get(source, member));
-            }
-            return target;
-        }
     }
 }

@@ -168,8 +168,14 @@
     <Compile Include="JsClr\Compiler\ModuleWriter.cs" />
     <Compile Include="JsClr\JsBuilder\Pattern\InlineFragment.cs" />
     <Compile Include="JsClr\Runtime\CoreRuntime.cs" />
+    <Compile Include="JsClr\ScriptAst\IInvocableConstructor.cs" />
+    <Compile Include="JsClr\ScriptAst\IInvocableField.cs" />
+    <Compile Include="JsClr\ScriptAst\IInvocableMethod.cs" />
+    <Compile Include="JsClr\ScriptAst\IInvocableMethodBase.cs" />
+    <Compile Include="JsClr\ScriptAst\IInvocableType.cs" />
     <Compile Include="JsClr\ScriptAst\IScriptStatementVisitor.cs" />
     <Compile Include="JsClr\ScriptAst\MethodScriptAst.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptArgument.cs" />
     <Compile Include="JsClr\ScriptAst\ScriptArgumentReferenceExpression.cs" />
     <Compile Include="JsClr\ScriptAst\ScriptArrayCreationExpression.cs" />
     <Compile Include="JsClr\ScriptAst\ScriptArrayIndexerExpression.cs" />
@@ -198,6 +204,7 @@
     <Compile Include="JsClr\ScriptAst\ScriptTryCatchStatement.cs" />
     <Compile Include="JsClr\ScriptAst\ScriptUnaryExpression.cs" />
     <Compile Include="JsClr\ScriptAst\ScriptUnaryOperator.cs" />
+    <Compile Include="JsClr\ScriptAst\ScriptVariable.cs" />
     <Compile Include="JsClr\ScriptAst\ScriptVariableReferenceExpression.cs" />
     <Compile Include="JsClr\ScriptAst\ScriptWhileStatement.cs" />
     <Compile Include="JsClr\ScriptWriter\Declaration\IScriptFieldDeclaration.cs" />
@@ -279,6 +286,8 @@
     <Compile Include="JsClr\TypeSystem\Helped\ScriptMethodHelped.cs" />
     <Compile Include="JsClr\TypeSystem\IScriptTypeExtender.cs" />
     <Compile Include="JsClr\TypeSystem\IScriptTypeProvider.cs" />
+    <Compile Include="JsClr\TypeSystem\MappedField.cs" />
+    <Compile Include="JsClr\TypeSystem\MappedMethodBase.cs" />
     <Compile Include="JsClr\TypeSystem\NativeScriptTypeProvider.cs" />
     <Compile Include="JsClr\TypeSystem\Native\ArrayType.cs" />
     <Compile Include="JsClr\TypeSystem\Native\NativeMethodHelped.cs" />
@@ -289,8 +298,13 @@
     <Compile Include="JsClr\TypeSystem\Native\NativeType.cs" />
     <Compile Include="JsClr\TypeSystem\Native\ObjectConstructor.cs" />
     <Compile Include="JsClr\TypeSystem\Native\ObjectType.cs" />
-    <Compile Include="JsClr\TypeSystem\RemotingScriptSystem.cs" />
     <Compile Include="JsClr\Compiler\RuntimeAstFilter.cs" />
+    <Compile Include="JsClr\TypeSystem\Remoting\ScriptTransparentProxyCreate.cs" />
+    <Compile Include="JsClr\TypeSystem\Remoting\ScriptTransparentProxyType.cs" />
+    <Compile Include="JsClr\TypeSystem\Remoting\TransparentConstructor.cs" />
+    <Compile Include="JsClr\TypeSystem\Remoting\TransparentField.cs" />
+    <Compile Include="JsClr\TypeSystem\Remoting\TransparentMethod.cs" />
+    <Compile Include="JsClr\TypeSystem\Remoting\TransparentType.cs" />
     <Compile Include="JsClr\TypeSystem\ScriptTypeBase.cs" />
     <Compile Include="JsClr\TypeSystem\ScriptTypeHelper.cs" />
     <Compile Include="JsClr\TypeSystem\Serializers\CharSerializer.cs" />

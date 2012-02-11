@@ -2,76 +2,48 @@
 using System.Reflection;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
 using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.TypeSystem.Native
 {
-    class ObjectConstructor : IScriptConstructor, IObjectCreationInvoker, IMethodInvoker
+    class ObjectConstructor : MappedMethodBase, IScriptConstructor, IObjectCreationInvoker, IMethodInvoker
     {
-        private readonly IScriptType owner;
-        private readonly ConstructorInfo ctor;
-
         public ObjectConstructor(IScriptType owner)
+            : base(owner, owner.Type.GetConstructor(Type.EmptyTypes))
         {
-            this.owner = owner;
-            ctor = owner.Type.GetConstructor(Type.EmptyTypes);
+  
         }
-
-        #region IScriptConstructor Members
 
         public IObjectCreationInvoker CreationInvoker
         {
             get { return this; }
         }
 
-        #endregion
-
-        #region IScriptMethodBase Members
-
-        public string ImplId
+        public override string ImplId
         {
             get { return null ; }
         }
 
-        public MethodBase Method
-        {
-            get { return ctor; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IMethodInvoker Invoker
+        public override IMethodInvoker Invoker
         {
             get { return this; }
         }
 
-        #endregion
-
-        #region IObjectCreationInvoker Members
-
-        public JsToken WriteObjectCreation(IScriptConstructor ctor, ScriptAst.ScriptObjectCreationExpression creationExpression, IRootInvoker converter)
+        public JsToken WriteObjectCreation(IInvocableConstructor ctor, ScriptAst.ScriptObjectCreationExpression creationExpression, IRootInvoker converter)
         {
             JsTokenWriter writer = new JsTokenWriter();
             writer.Write("new Object()");
             return writer.ToToken(JsPrecedence.FunctionCall);
         }
 
-        #endregion
-
-        #region IMethodInvoker Members
-
-        public JsToken WriteMethod(IScriptMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsToken WriteMethod(IInvocableMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             return null;
         }
 
-        public JsToken WriteMethodReference(IScriptMethodBase method)
+        public JsToken WriteMethodReference(IInvocableMethodBase method)
         {
             throw new NotSupportedException();
         }
-
-        #endregion
     }
 }

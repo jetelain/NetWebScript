@@ -85,7 +85,6 @@
     <Compile Include="Remoting\ClassC.cs" />
     <Compile Include="Remoting\NetSideSerialization.cs" />
     <Compile Include="Remoting\RemoteA.cs" />
-    <Compile Include="Remoting\RemotingCompilerTest.cs" />
     <Compile Include="Remoting\ScriptSideSerialization.cs" />
     <Compile Include="Tester.cs" />
   </ItemGroup>

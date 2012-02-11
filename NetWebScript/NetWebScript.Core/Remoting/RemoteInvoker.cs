@@ -6,15 +6,18 @@ using NetWebScript.Remoting.Serialization;
 namespace NetWebScript.Remoting
 {
     [ScriptAvailable]
-    public static class RemoteInvoker
+    public sealed class RemoteInvoker : ScriptRealProxy
     {
-        public static object Invoke(string type, string method, object target, object[] parameters)
+        public RemoteInvoker()
+        {
+        }
+
+        public override object Invoke(string typeId, string methodId, object[] parameters)
         {
             var request = new RequestData();
-            request.Type = type;
-            request.Method = method;
+            request.Type = typeId;
+            request.Method = methodId;
             request.Parameters = parameters;
-            request.Target = target;
 
             var ajaxRequest = new JQueryAjaxSettings();
             ajaxRequest.Type = "POST";
@@ -26,10 +29,6 @@ namespace NetWebScript.Remoting
             var xhr = JQuery.Ajax(ajaxRequest);
 
             var response = (ResponseData)Global.Eval(xhr.ResponseText);
-            if (response.Target != null)
-            {
-                XmlSerializer.CopyTo(target, response.Target);
-            }
             if (response.Exception != null)
             {
                 throw response.Exception;
@@ -41,5 +40,6 @@ namespace NetWebScript.Remoting
         /// Url to the remoting connector
         /// </summary>
         public static string RemotePortUrl;
+
     }
 }

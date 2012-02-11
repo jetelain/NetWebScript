@@ -1,27 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using NetWebScript.JsClr.ScriptAst;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.Metadata;
-using System.Runtime.CompilerServices;
-using NetWebScript.JsClr.ScriptWriter.Declaration;
-using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
-    class ScriptField : IScriptField, IScriptFieldDeclaration
+    class ScriptField : MappedField, IScriptFieldDeclaration
     {
-        private readonly FieldInfo field;
         private readonly string slotId;
-        private readonly ScriptType owner;
         private readonly ScriptLiteralExpression initialValue;
+        private readonly bool isGlobals;
 
         internal ScriptField(ScriptSystem system, ScriptType owner, FieldInfo field, string exportedSlot)
+            : base(owner, field)
         {
-            this.owner = owner;
-            this.field = field;
+            this.isGlobals = owner.IsGlobals;
             if (exportedSlot != null)
             {
                 this.slotId = exportedSlot;
@@ -52,7 +48,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             //}
             if (ScriptSystem.IsNumberType(field.FieldType) || field.FieldType.IsEnum)
             {
-                initialValue = new ScriptLiteralExpression(null, 0, system.GetScriptType(typeof(int)));
+                initialValue = ScriptLiteralExpression.IntegerLiteral(0);
             }
             else
             {
@@ -70,33 +66,22 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             owner.Metadata.Fields.Add(meta);
         }
 
-        public string SlodId
+        public override string SlodId
         {
             get { return slotId; }
         }
 
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public FieldInfo Field
-        {
-            get { return field; }
-        }
-
-        public IFieldInvoker Invoker
+        public override IFieldInvoker Invoker
         {
             get
             {
-                if (owner.IsGlobals)
+                if (isGlobals)
                 {
                     return GlobalsInvoker.Instance;
                 }
                 return StandardInvoker.Instance;
             } 
         }
-
 
         public ScriptLiteralExpression InitialValue
         {
@@ -109,11 +94,6 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         public string PrettyName
         {
             get { return field.ToString(); }
-        }
-
-        public bool IsStatic
-        {
-            get { return field.IsStatic; }
         }
     }
 }

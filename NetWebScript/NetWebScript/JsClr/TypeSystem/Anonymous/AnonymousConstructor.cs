@@ -5,60 +5,37 @@ using System.Text;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using System.Reflection;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.TypeSystem.Anonymous
 {
-    class AnonymousConstructor : IScriptConstructor, IObjectCreationInvoker
+    class AnonymousConstructor : MappedMethodBase, IScriptConstructor, IObjectCreationInvoker
     {
-        private readonly ConstructorInfo ctor;
-        private readonly AnonymousType owner;
-
         public AnonymousConstructor(AnonymousType owner, ConstructorInfo ctor)
+            : base(owner, ctor)
         {
-            this.owner = owner;
-            this.ctor = ctor;
-        }
 
-        #region IScriptConstructor Members
+        }
 
         public IObjectCreationInvoker CreationInvoker
         {
             get { return this; }
         }
 
-        #endregion
-
-        #region IScriptMethodBase Members
-
-        public string ImplId
+        public override string ImplId
         {
             get { return null; }
         }
 
-        public MethodBase Method
-        {
-            get { return ctor; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IMethodInvoker Invoker
+        public override IMethodInvoker Invoker
         {
             get { return null; }
         }
 
-        #endregion
-
-        #region IObjectCreationInvoker Members
-
-        public JsToken WriteObjectCreation(IScriptConstructor ctor, ScriptAst.ScriptObjectCreationExpression creationExpression, IRootInvoker converter)
+        public JsToken WriteObjectCreation(IInvocableConstructor ctor, ScriptAst.ScriptObjectCreationExpression creationExpression, IRootInvoker converter)
         {
             return JsToken.Name("{}");
         }
 
-        #endregion
     }
 }

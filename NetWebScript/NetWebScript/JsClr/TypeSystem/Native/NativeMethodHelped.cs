@@ -6,18 +6,15 @@ using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Native
 {
-    public class NativeMethodHelper : IScriptMethod, IMethodInvoker
+    public class NativeMethodHelper : MappedMethodBase, IScriptMethod, IMethodInvoker
     {
-        private readonly IScriptType owner;
         private readonly IScriptMethodBase helper;
-        private readonly MethodInfo method;
         private readonly string slotId;
         private readonly string implId;
 
         public NativeMethodHelper(IScriptType owner, MethodInfo method, string name, IScriptMethodBase helper)
+            : base(owner, method)
         {
-            this.owner = owner;
-            this.method = method;
             this.helper = helper;
             if (method.IsVirtual)
             {
@@ -30,41 +27,22 @@ namespace NetWebScript.JsClr.TypeSystem.Native
             }
         }
 
-
-        #region IScriptMethod Members
-
         public string SlodId
         {
             get { return slotId; }
         }
 
-        #endregion
-
-        #region IScriptMethodBase Members
-
-        public string ImplId
+        public override string ImplId
         {
             get { return implId; }
         }
 
-        public MethodBase Method
-        {
-            get { return method; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IMethodInvoker Invoker
+        public override IMethodInvoker Invoker
         {
             get { return this; }
         }
 
-        #endregion
-
-        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteMethod(IInvocableMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             var arguments = new List<ScriptExpression>();
             arguments.Add(methodExpression.Target);
@@ -74,7 +52,7 @@ namespace NetWebScript.JsClr.TypeSystem.Native
             return helper.Invoker.WriteMethod(helper, methdoExpressionProxy, converter);
         }
 
-        public JsBuilder.JsSyntax.JsToken WriteMethodReference(IScriptMethodBase method)
+        public JsBuilder.JsSyntax.JsToken WriteMethodReference(IInvocableMethodBase method)
         {
             throw new NotImplementedException();
         }

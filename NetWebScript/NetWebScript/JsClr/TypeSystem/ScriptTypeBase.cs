@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.Diagnostics.Contracts;
-using NetWebScript.Metadata;
+using System.Linq;
+using System.Reflection;
 using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.Metadata;
+using NetWebScript.JsClr.TypeSystem.Remoting;
 
 namespace NetWebScript.JsClr.TypeSystem
 {
@@ -19,6 +19,7 @@ namespace NetWebScript.JsClr.TypeSystem
         protected readonly List<IScriptType> interfaces = new List<IScriptType>();
 
         protected readonly List<IScriptType> children = new List<IScriptType>();
+        private readonly List<TransparentType> proxies = new List<TransparentType>();
         protected IScriptType baseType;
 
         protected ScriptTypeBase(ScriptSystem system, Type type)
@@ -91,7 +92,10 @@ namespace NetWebScript.JsClr.TypeSystem
                     throw new InvalidOperationException(string.Format("Late discovering of '{0}' declared by type '{1}'.", ctor, type.FullName));
                 }
                 info = CreateScriptConstructor(ctor);
-                constructors.Add(info);
+                if (info != null)
+                {
+                    constructors.Add(info);
+                }
             }
             return info;
         }
@@ -114,10 +118,15 @@ namespace NetWebScript.JsClr.TypeSystem
                         // If type has childs, it must force them to have their eventual override
                         EnsureChildrenOverrides(method);
                     }
+                    if (!method.IsStatic)
+                    {
+                        EnsureProxies(info);
+                    }
                 }
             }
             return info;
         }
+
 
         public IScriptMethod GetScriptMethodIfUsed(MethodInfo method)
         {
@@ -210,6 +219,14 @@ namespace NetWebScript.JsClr.TypeSystem
             }
         }
 
+        private void EnsureProxies(IScriptMethod method)
+        {
+            foreach (var proxy in proxies)
+            {
+                proxy.CreateProxyMethod(method);
+            }
+        }
+
         public IScriptField GetScriptField(FieldInfo field)
         {
             if (field.DeclaringType != type)
@@ -224,7 +241,10 @@ namespace NetWebScript.JsClr.TypeSystem
                     throw new InvalidOperationException(string.Format("Late discovering of '{0}' declared by type '{1}'.", field, type.FullName));
                 }
                 info = CreateScriptField(field);
-                fields.Add(info);
+                if (info != null)
+                {
+                    fields.Add(info);
+                }
             }
             return info;
         }
@@ -280,5 +300,35 @@ namespace NetWebScript.JsClr.TypeSystem
             get { return baseType; }
         }
 
+        public string DisplayName
+        {
+            get { return type.Name; }
+        }
+
+        public void RegisterProxyType(TransparentType transparentProxyScriptType)
+        {
+            proxies.Add(transparentProxyScriptType);
+            foreach (var method in methods)
+            {
+                if (!method.IsStatic)
+                {
+                    transparentProxyScriptType.CreateProxyMethod(method);
+                }
+            }
+        }
+
+        private TransparentType transparentProxy;
+
+        public TransparentType TransparentProxy
+        {
+            get
+            {
+                if (transparentProxy == null)
+                {
+                    transparentProxy = new TransparentType(system, this);
+                }
+                return transparentProxy;
+            }
+        }
     }
 }

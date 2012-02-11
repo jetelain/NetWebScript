@@ -9,19 +9,20 @@ namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class ScriptArgumentReferenceExpression : ScriptAssignableExpression
     {
-        public ScriptArgumentReferenceExpression(int? ilOffset, ParameterInfo arg)
+        public ScriptArgumentReferenceExpression(ScriptArgument arg)
+            : this(null, arg)
+        {
+            Contract.Requires(arg != null);
+        }
+
+        public ScriptArgumentReferenceExpression(int? ilOffset, ScriptArgument arg)
             : base(ilOffset)
         {
             Contract.Requires(arg != null);
             this.Argument = arg;
         }
 
-        public ParameterInfo Argument { get; internal set; }
-
-        public override Type GetExpressionType()
-        {
-            return Argument.ParameterType;
-        }
+        public ScriptArgument Argument { get; internal set; }
 
         public override string ToString()
         {

@@ -1,35 +1,44 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using NetWebScript.JsClr.TypeSystem;
+using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.JsClr.TypeSystem.Serializers;
 
 namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class ScriptLiteralExpression : ScriptExpression
     {
-        private readonly IScriptType type;
+        private readonly IValueSerializer serializer;
 
         public static readonly ScriptLiteralExpression NullValue = new ScriptLiteralExpression(null, null, null);
 
-        public ScriptLiteralExpression(int? ilOffset, object value, IScriptType type)
+        public static ScriptLiteralExpression StringLiteral(string value)
+        {
+            return new ScriptLiteralExpression(value, StringSerializer.Instance);
+        }
+
+        public static ScriptLiteralExpression IntegerLiteral(int value)
+        {
+            return new ScriptLiteralExpression(value, NumberSerializer.Instance);
+        }
+
+        public ScriptLiteralExpression(object value, IValueSerializer serializer)
+            : this(null, value, serializer)
+        {
+
+        }
+
+        public ScriptLiteralExpression(int? ilOffset, object value, IValueSerializer serializer)
             : base(ilOffset)
         {
-            Contract.Requires(value == null || (type != null && type.Serializer != null));
+            Contract.Requires(value == null || serializer != null);
             this.Value = value;
-            this.type = type;
+            this.serializer = serializer;
         }
 
         public object Value { get; private set; }
 
-        public IScriptType Type { get { return type; } }
-
-        public override Type GetExpressionType()
-        {
-            if (type == null)
-            {
-                return null;
-            }
-            return type.Type;
-        }
+        public IValueSerializer Serializer { get { return serializer; } }
 
         public override string ToString()
         {

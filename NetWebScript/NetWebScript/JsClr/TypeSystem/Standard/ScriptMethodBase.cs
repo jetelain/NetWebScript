@@ -1,24 +1,21 @@
 ﻿using System.Reflection;
 using NetWebScript.JsClr.ScriptAst;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.Metadata;
-using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
-    public abstract class ScriptMethodBase : IScriptMethodBase, IScriptMethodBaseDeclaration
+    public abstract class ScriptMethodBase : MappedMethodBase, IScriptMethodBaseDeclaration
     {
-        private readonly MethodBase method;
         private readonly string impl;
-        private readonly IScriptType owner;
         private readonly string body;
         private readonly IMethodInvoker invoker;
         private readonly MethodBaseMetadata metadata;
 
         protected ScriptMethodBase(ScriptSystem system, IScriptType owner, MethodBase method, string body, bool isGlobal)
+            : base(owner, method)
         {
-            this.owner = owner;
-            this.method = method;
             this.impl = system.CreateImplementationId();
             this.body = body;
             this.invoker = isGlobal ? (IMethodInvoker)GlobalsInvoker.Instance : (IMethodInvoker)StandardInvoker.Instance;
@@ -43,22 +40,12 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         /// <summary>
         /// Identifier of implementation (name to use for an explicit call of method)
         /// </summary>
-        public string ImplId
+        public override string ImplId
         {
             get { return impl; }
         }
 
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public MethodBase Method
-        {
-            get { return method; }
-        }
-
-        public IMethodInvoker Invoker 
+        public override IMethodInvoker Invoker 
         { 
             get { return invoker; } 
         }
@@ -97,9 +84,5 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             get { return method.ToString(); }
         }
 
-        public bool IsStatic
-        {
-            get { return method.IsStatic; }
-        }
     }
 }

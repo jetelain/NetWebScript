@@ -11,6 +11,5 @@ namespace NetWebScript.Remoting
     {
         public Exception Exception;
         public object Result;
-        public object Target;
     }
 }

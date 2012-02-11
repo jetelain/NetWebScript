@@ -38,10 +38,10 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
         /// <summary>
         /// Create a "fictive" <see cref="LocalVariable"/>.
         /// </summary>
-        internal LocalVariable(string name, Type localType)
+        internal LocalVariable(int localIndex, Type localType)
         {
-            LocalIndex = -1;
-            Name = name;
+            LocalIndex = localIndex;
+            Name = String.Format("v{0}", localIndex);
             LocalType = localType;
             IsCompilerGenerated = true;
         }

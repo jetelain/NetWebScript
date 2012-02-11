@@ -7,17 +7,13 @@ using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Native
 {
-    public class NativeMethod : IScriptMethod
+    public class NativeMethod : MappedMethodBase, IScriptMethod
     {
-        private readonly IScriptType owner;
-        private readonly MethodInfo method;
         private readonly string slotId;
         private readonly string implId;
 
-        public NativeMethod(IScriptType owner, MethodInfo method, string name)
+        public NativeMethod(IScriptType owner, MethodInfo method, string name) : base(owner, method)
         {
-            this.owner = owner;
-            this.method = method;
             if (method.IsVirtual)
             {
                 slotId = name;
@@ -29,38 +25,14 @@ namespace NetWebScript.JsClr.TypeSystem.Native
             }
         }
 
-
-        #region IScriptMethod Members
-
         public string SlodId
         {
             get { return slotId; }
         }
 
-        #endregion
-
-        #region IScriptMethodBase Members
-
-        public string ImplId
+        public override string ImplId
         {
             get { return implId; }
         }
-
-        public MethodBase Method
-        {
-            get { return method; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IMethodInvoker Invoker
-        {
-            get { return StandardInvoker.Instance; }
-        }
-
-        #endregion
     }
 }

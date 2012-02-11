@@ -21,28 +21,6 @@ namespace NetWebScript.JsClr.ScriptAst
         public ScriptExpression Then { get; internal set; }
         public ScriptExpression Else { get; internal set; }
 
-        public override Type GetExpressionType()
-        {
-            Type a = Then.GetExpressionType();
-            Type b = Else.GetExpressionType();
-            if (a == null && b == null)
-            {
-                return null;
-            }
-            if (a == null)
-            {
-                return b;
-            }
-            if (b == null)
-            {
-                return a;
-            }
-            if (a == b || a.IsAssignableFrom(b))
-            {
-                return a;
-            }
-            return b;
-        }
 
         public override void Accept(IScriptStatementVisitor visitor)
         {

@@ -7,19 +7,16 @@ using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Imported
 {
-    class ImportedMethod : IScriptMethod
+    class ImportedMethod : MappedMethodBase, IScriptMethod
     {
-        private readonly MethodInfo method;
         private readonly string name;
-        private readonly ImportedType owner;
         private readonly bool isOperator;
 
         public ImportedMethod(ImportedType owner, MethodInfo method)
+            : base(owner, method)
         {
             if (method.IsStatic && method.IsSpecialName && method.Name.StartsWith("op_"))
             {
-                this.owner = owner;
-                this.method = method;
                 isOperator = true;
                 switch (method.Name)
                 {
@@ -44,8 +41,6 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             }
             else
             {
-                this.owner = owner;
-                this.method = method;
                 this.name = owner.Name(method);
             }
         }
@@ -55,22 +50,12 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             get { return name; }
         }
 
-        public string ImplId
+        public override string ImplId
         {
             get { return name; }
         }
 
-        public MethodBase Method
-        {
-            get { return method; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IMethodInvoker Invoker
+        public override IMethodInvoker Invoker
         {
             // Methods works in a standard way
             get 
@@ -82,6 +67,5 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
                 return StandardInvoker.Instance;
             }
         }
-
     }
 }

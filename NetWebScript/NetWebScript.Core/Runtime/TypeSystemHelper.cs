@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NetWebScript.Script
 {
+    /// <summary>
+    /// Runtime helper methods.
+    /// </summary>
     [Globals, ScriptAvailable]
     public static class TypeSystemHelper
     {

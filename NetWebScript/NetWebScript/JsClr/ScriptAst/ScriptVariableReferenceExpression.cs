@@ -9,18 +9,13 @@ namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class ScriptVariableReferenceExpression : ScriptAssignableExpression
     {
-        public ScriptVariableReferenceExpression(int? ilOffset, LocalVariable variable)
+        public ScriptVariableReferenceExpression(int? ilOffset, ScriptVariable variable)
             : base(ilOffset)
         {
             this.Variable = variable;
         }
 
-        public LocalVariable Variable { get; internal set; }
-
-        public override Type GetExpressionType()
-        {
-            return Variable.LocalType;
-        }
+        public ScriptVariable Variable { get; internal set; }
 
         public override string ToString()
         {

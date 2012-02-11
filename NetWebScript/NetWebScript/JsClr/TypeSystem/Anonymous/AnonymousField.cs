@@ -7,42 +7,19 @@ using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Anonymous
 {
-    class AnonymousField : IScriptField
+    class AnonymousField : MappedField
     {
-        private readonly FieldInfo field;
-        private readonly AnonymousType owner;
         private readonly string name;
 
         public AnonymousField(AnonymousType owner, FieldInfo field, CaseConvention convention)
+            : base(owner, field)
         {
-            this.owner = owner;
-            this.field = field;
             this.name = Imported.ImportedType.Name(field.Name, convention);
         }
 
-
-        #region IScriptField Members
-
-        public string SlodId
+        public override string SlodId
         {
             get { return name; }
         }
-
-        public FieldInfo Field
-        {
-            get { return field; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IFieldInvoker Invoker
-        {
-            get { return StandardInvoker.Instance; }
-        }
-
-        #endregion
     }
 }

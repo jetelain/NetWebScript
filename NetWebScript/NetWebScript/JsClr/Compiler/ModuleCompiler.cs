@@ -84,6 +84,7 @@ namespace NetWebScript.JsClr.Compiler
 
             AddAssemblyPrivate(typeof(TypeSystemHelper).Assembly);
             AddEntryPoint(typeof(TypeSystemHelper));
+            AddEntryPoint(typeof(Unsafe));
 
             if (debuggable)
             {

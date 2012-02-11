@@ -16,6 +16,7 @@ namespace NetWebScript.Remoting
         {
             var scriptType = cache.GetTypeMetadataByScriptName(request.Type);
             var scriptMethod = scriptType.Methods.First(m => m.Name == request.Method);
+            var type = CRefToolkit.ResolveType(scriptType.CRef);
             var method = (MethodInfo)CRefToolkit.ResolveMethod(scriptMethod.CRef);
             var response = new ResponseData();
             try
@@ -25,21 +26,11 @@ namespace NetWebScript.Remoting
                 {
                     request.Parameters[i] = cache.Converter.Ensure(request.Parameters[i], def[i].ParameterType);
                 }
-                response.Result = method.Invoke(request.Target, request.Parameters);
+                response.Result = method.Invoke(Activator.CreateInstance(type), request.Parameters);
             }
             catch (Exception e)
             {
                 response.Exception = e;
-            }
-            if ( request.Target != null )
-            {
-                // Serialize data to update target instance members
-                var targetType = request.Target.GetType();
-                var serializer = cache.GetSerializer(targetType);
-                if ( serializer != null )
-                {
-                    response.Target = request.Target;
-                }
             }
             return response;
         }

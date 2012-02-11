@@ -24,10 +24,10 @@ namespace NetWebScript.Remoting.Serialization
         {
             scriptModules.AddRange(modules);
 
-            var meta = GetTypeMetadataByCRef(CRefToolkit.GetCRef(typeof(XmlSerializer)));
+            var meta = GetTypeMetadataByCRef(CRefToolkit.GetCRef(typeof(Unsafe)));
             if (meta != null)
             {
-                var key = CRefToolkit.GetCRef(typeof(XmlSerializer).GetMethod("CopyTo"));
+                var key = CRefToolkit.GetCRef(typeof(Unsafe).GetMethod("CopyTo"));
                 var methodMeta = meta.Methods.FirstOrDefault(m => m.CRef == key);
                 if (methodMeta != null)
                 {

@@ -5,7 +5,6 @@ using NetWebScript;
 
 namespace NetWebScript.Test.Material.Tests
 {
-    [ScriptAvailable]
     public enum Quality
     {
         VeryBad,

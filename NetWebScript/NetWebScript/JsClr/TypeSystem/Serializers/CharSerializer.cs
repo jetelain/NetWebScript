@@ -9,7 +9,7 @@ namespace NetWebScript.JsClr.TypeSystem.Serializers
     {
         internal static readonly CharSerializer Instance = new CharSerializer();
 
-        public JsToken LiteralValue(IScriptType type, object value, IRootInvoker converter)
+        public JsToken LiteralValue(IValueSerializer type, object value, IRootInvoker converter)
         {
             return JsToken.Name(Convert.ToString((int)((char)value),CultureInfo.InvariantCulture));
         }

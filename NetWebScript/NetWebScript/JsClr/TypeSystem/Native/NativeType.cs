@@ -7,101 +7,53 @@ using NetWebScript.Metadata;
 
 namespace NetWebScript.JsClr.TypeSystem.Native
 {
-    abstract class NativeType : IScriptType
+    abstract class NativeType : ScriptTypeBase
     {
         private readonly string name;
-        protected readonly Type type;
-        protected readonly List<IScriptMethodBase> methods = new List<IScriptMethodBase>();
-        protected readonly List<IScriptField> fields = new List<IScriptField>();
 
-        protected NativeType(string name, Type type)
+        protected NativeType(ScriptSystem system, string name, Type type) : base(system, type)
         {
             this.name = name;
-            this.type = type;
         }
 
-        #region IScriptType Members
-
-        public IScriptConstructor GetScriptConstructor(System.Reflection.ConstructorInfo method)
-        {
-            return (IScriptConstructor)GetScriptMethodBase(method);
-        }
-
-        public IScriptMethod GetScriptMethod(System.Reflection.MethodInfo method)
-        {
-            return (IScriptMethod)GetScriptMethodBase(method);
-        }
-
-        private IScriptMethodBase GetScriptMethodBase(System.Reflection.MethodBase method)
-        {
-            return methods.FirstOrDefault(m => m.Method == method);
-        }
-
-        public IScriptField GetScriptField(System.Reflection.FieldInfo field)
-        {
-            return fields.FirstOrDefault(f => f.Field == field);
-        }
-
-        public Type Type
-        {
-            get { return type ; }
-        }
-
-        public string TypeId
+        public override string TypeId
         {
             get { return name; }
         }
 
-        public virtual ITypeBoxing Boxing
+        public override ITypeBoxing Boxing
         {
             get { return null; }
         }
 
-        public virtual IValueSerializer Serializer
+        public override IValueSerializer Serializer
         {
             get { return null; }
         }
 
-        public virtual bool HaveCastInformation
+        public override bool HaveCastInformation
         {
             get { return false; }
         }
 
-        #endregion
-
-        public IScriptConstructor DefaultConstructor
-        {
-            get
-            {
-                var ctor = type.GetConstructor(Type.EmptyTypes);
-                if (ctor != null)
-                {
-                    return GetScriptConstructor(ctor);
-                }
-                return null;
-            }
-        }
-
-        public TypeMetadata Metadata
+        public override TypeMetadata Metadata
         {
             get { return null; }
         }
 
-
-        public void RegisterChildType(IScriptType type)
+        protected override IScriptConstructor CreateScriptConstructor(System.Reflection.ConstructorInfo ctor)
         {
-
+            return null;
         }
 
-        public IScriptType BaseType
+        protected override IScriptMethod CreateScriptMethod(System.Reflection.MethodInfo method)
         {
-            get { return null; }
+            return null;
         }
 
-
-        public IScriptMethod GetScriptMethodIfUsed(System.Reflection.MethodInfo method)
+        protected override IScriptField CreateScriptField(System.Reflection.FieldInfo field)
         {
-            return (IScriptMethod)GetScriptMethodBase(method);
+            return null;
         }
     }
 }

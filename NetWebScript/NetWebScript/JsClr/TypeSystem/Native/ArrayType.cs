@@ -9,7 +9,7 @@ namespace NetWebScript.JsClr.TypeSystem.Native
     class ArrayType : NativeType
     {
         public ArrayType(ScriptSystem system, Type type)
-            : base("Array", type)
+            : base(system, "Array", type)
         {
         }
     }

@@ -10,31 +10,32 @@ namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class ScriptFieldReferenceExpression : ScriptAssignableExpression
     {
-        public ScriptFieldReferenceExpression(int? ilOffset, ScriptExpression target, IScriptField field)
+        public ScriptFieldReferenceExpression(ScriptExpression target, IInvocableField field)
+            : this(null, target, field)
+        {
+
+        }
+
+        public ScriptFieldReferenceExpression(int? ilOffset, ScriptExpression target, IInvocableField field)
             : base(ilOffset)
         {
             Contract.Requires(field != null);
+            Contract.Requires(field.IsStatic ? target == null : target != null);
             this.Target = target;
             this.Field = field;
         }
 
         public ScriptExpression Target { get; internal set; }
 
-        public IScriptField Field { get; internal set; }
-
-
-        public override Type GetExpressionType()
-        {
-            return Field.Field.FieldType;
-        }
+        public IInvocableField Field { get; internal set; }
 
         public override string ToString()
         {
-            if (Field.Field.IsStatic)
+            if (Field.IsStatic)
             {
-                return String.Format("{0}.{1}", Field.Owner.Type.Name, Field.Field.Name);
+                return String.Format("{0}.{1}", Field.DeclaringType.DisplayName, Field.DisplayName);
             }
-            return String.Format("{0}.{1}", Target.ToString(), Field.Field.Name);
+            return String.Format("{0}.{1}", Target.ToString(), Field.DisplayName);
         }
 
         public override void Accept(IScriptStatementVisitor visitor)

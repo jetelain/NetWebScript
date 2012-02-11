@@ -24,6 +24,7 @@ namespace NetWebScript.JsClr.TypeSystem
         private readonly IdentifierGenerator impl = new IdentifierGenerator();
         private readonly IdentifierGenerator type = new IdentifierGenerator();
         private readonly List<IScriptType> types = new List<IScriptType>();
+        private readonly List<IScriptTypeDeclarationWriter> typesToWrite = new List<IScriptTypeDeclarationWriter>();
 
         private readonly Queue<ScriptMethodBase> astToGenerate = new Queue<ScriptMethodBase>();
         private bool isSealed = false;
@@ -39,7 +40,7 @@ namespace NetWebScript.JsClr.TypeSystem
             enumProvider = new EnumScriptTypeProvider(this);
             providers.Add(enumProvider);
 
-            providers.Add(new AnonymousScriptTypeProvider());
+            providers.Add(new AnonymousScriptTypeProvider(this));
 
             providers.Add(new ImportedScriptTypeProvider(this));
 
@@ -142,7 +143,7 @@ namespace NetWebScript.JsClr.TypeSystem
 
         internal IEnumerable<IScriptTypeDeclarationWriter> TypesToDeclare
         {
-            get { return types.OfType<IScriptTypeDeclarationWriter>().Where(t => !t.IsEmpty); }
+            get { return typesToWrite.Where(t => !t.IsEmpty); }
         }
 
         internal Queue<ScriptMethodBase> AstToGenerate
@@ -208,6 +209,11 @@ namespace NetWebScript.JsClr.TypeSystem
             {
                 provider.RegisterAssembly(assembly);
             }
+        }
+
+        public void AddTypeToWrite(IScriptTypeDeclarationWriter type)
+        {
+            typesToWrite.Add(type);
         }
 
         public virtual MethodAst GetMethodAst(IScriptMethodBase scriptMethod, MethodBase methodBase)

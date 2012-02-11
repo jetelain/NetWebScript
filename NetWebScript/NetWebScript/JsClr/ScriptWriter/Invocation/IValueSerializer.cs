@@ -5,6 +5,6 @@ namespace NetWebScript.JsClr.TypeSystem.Invoker
 {
     public interface IValueSerializer
 	{
-        JsToken LiteralValue(IScriptType type, object value, IRootInvoker converter);
+        JsToken LiteralValue(IValueSerializer type, object value, IRootInvoker converter);
     }
 }

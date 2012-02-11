@@ -68,12 +68,17 @@
     <Compile Include="Tests\Logic.cs" />
     <Compile Include="Tests\MathTest.cs" />
     <Compile Include="Tests\ObjectTest.cs" />
+    <Compile Include="Tests\Remoting\ProxiesTest.cs" />
     <Compile Include="Tests\StringTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetWebScript.Core\NetWebScript.Core.csproj">
       <Project>{A65F49C8-A32A-41FA-BBCF-16621FEEA418}</Project>
       <Name>NetWebScript.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NetWebScript.Metadata\NetWebScript.Metadata.csproj">
+      <Project>{A3B9ADC0-F4C4-4EA2-852E-1D94DF20ED32}</Project>
+      <Name>NetWebScript.Metadata</Name>
     </ProjectReference>
     <ProjectReference Include="..\NetWebScript.UnitTestFramework\NetWebScript.UnitTestFramework.csproj">
       <Project>{C556C9CE-C34D-4785-A8F4-206C1F3ECE2B}</Project>

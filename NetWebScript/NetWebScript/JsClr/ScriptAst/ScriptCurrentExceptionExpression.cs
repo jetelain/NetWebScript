@@ -17,11 +17,6 @@ namespace NetWebScript.JsClr.ScriptAst
             this.type = type;
         }
 
-        public override Type GetExpressionType()
-        {
-            return type;
-        }
-
         public override T Accept<T>(IScriptStatementVisitor<T> visitor)
         {
             return visitor.Visit(this);

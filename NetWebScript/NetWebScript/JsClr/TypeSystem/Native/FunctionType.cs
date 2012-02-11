@@ -13,7 +13,7 @@ namespace NetWebScript.JsClr.TypeSystem.Native
         private readonly ScriptSystem system;
 
         public FunctionType(ScriptSystem system, Type type)
-            : base("Function", type)
+            : base(system, "Function", type)
         {
             this.system = system;
         }
@@ -26,7 +26,7 @@ namespace NetWebScript.JsClr.TypeSystem.Native
             }
         }
 
-        public JsToken LiteralValue(IScriptType valueType, object value, IRootInvoker converter)
+        public JsToken LiteralValue(IValueSerializer valueType, object value, IRootInvoker converter)
         {
             Type type = value as Type;
             if (type != null)

@@ -70,7 +70,7 @@ namespace NetWebScript.JsClr.AstBuilder
         /// <returns>A new <see cref="LocalVariable"/>.</returns>
         internal LocalVariable AllocateVariable(Type type)
         {
-            LocalVariable v = new LocalVariable(string.Format("t{0}", variables.Count), type);
+            LocalVariable v = new LocalVariable(variables.Count, type);
             variables.Add(v);
             return v;
         }

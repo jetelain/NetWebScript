@@ -1,7 +1,6 @@
 ﻿
 namespace NetWebScript.Script.Xml
 {
-    [ScriptAvailable]
     public enum XmlNodeType
     {
         Attribute = 2,

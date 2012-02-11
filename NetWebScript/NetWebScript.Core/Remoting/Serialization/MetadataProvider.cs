@@ -36,7 +36,7 @@ namespace NetWebScript.Remoting.Serialization
             return map;
         }
         
-        private TypeMetadata GetTypeMetadata(Type type)
+        internal TypeMetadata GetTypeMetadata(Type type)
         {
             var key = CRefToolkit.GetCRef(type);
             return modules.SelectMany(m => m.Types.Where(t => t.CRef == key)).FirstOrDefault();

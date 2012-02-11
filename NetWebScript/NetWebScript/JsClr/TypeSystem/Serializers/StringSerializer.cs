@@ -8,7 +8,7 @@ namespace NetWebScript.JsClr.TypeSystem.Serializers
     {
         internal static readonly StringSerializer Instance = new StringSerializer();
 
-        public JsToken LiteralValue(IScriptType type, object value, IRootInvoker converter)
+        public JsToken LiteralValue(IValueSerializer type, object value, IRootInvoker converter)
         {
             var strvalue = (String)value;
             if (strvalue != null)

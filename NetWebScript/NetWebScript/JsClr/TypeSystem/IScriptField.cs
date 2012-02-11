@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
+﻿using System.Reflection;
+using NetWebScript.JsClr.ScriptAst;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem
 {
-    public interface IScriptField
+    public interface IScriptField : IInvocableField
     {
-        string SlodId { get; }
-
         FieldInfo Field { get; }
 
         IScriptType Owner { get; }
-
-        IFieldInvoker Invoker { get; }
     }
 }

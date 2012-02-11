@@ -81,6 +81,7 @@
     <Compile Include="Equivalents\Globalization\DateTimeFormat.cs" />
     <Compile Include="Equivalents\Globalization\DateTimeFormatInfoEquiv.cs" />
     <Compile Include="Equivalents\Globalization\DateTimeParseFormat.cs" />
+    <Compile Include="Equivalents\MarshalByRefObjectEquiv.cs" />
     <Compile Include="Equivalents\SingleEquiv.cs" />
     <Compile Include="Equivalents\Globalization\NumberFormatInfoEquiv.cs" />
     <Compile Include="Equivalents\Int16Equiv.cs" />
@@ -97,6 +98,8 @@
     <Compile Include="Equivalents\UInt64Equiv.cs" />
     <Compile Include="Equivalents\ByteEquiv.cs" />
     <Compile Include="Globalization\Culture.cs" />
+    <Compile Include="Remoting\ScriptRealProxy.cs" />
+    <Compile Include="Remoting\ScriptTransparentProxy.cs" />
     <Compile Include="Runtime\ModuleInfo.cs" />
     <Compile Include="Runtime\Modules.cs" />
     <Compile Include="Script\DateHelper.cs" />

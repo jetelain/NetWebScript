@@ -8,19 +8,13 @@ namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class ScriptThisReferenceExpression : ScriptExpression
     {
-        private readonly Type type;
-
-        public ScriptThisReferenceExpression(int? ilOffset, Type type)
-            : base(ilOffset)
+        public ScriptThisReferenceExpression() : base(null)
         {
-            Contract.Requires(type != null);
-            Contract.Requires(type != typeof(void));
-            this.type = type;
         }
 
-        public override Type GetExpressionType()
+        public ScriptThisReferenceExpression(int? ilOffset)
+            : base(ilOffset)
         {
-            return type;
         }
 
         public override string ToString()
@@ -45,7 +39,7 @@ namespace NetWebScript.JsClr.ScriptAst
 
         public override ScriptExpression Clone()
         {
-            return new ScriptThisReferenceExpression(IlOffset, type);
+            return new ScriptThisReferenceExpression(IlOffset);
         }
     }
 }

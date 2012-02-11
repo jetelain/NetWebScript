@@ -9,7 +9,7 @@ namespace NetWebScript.JsClr.TypeSystem.Serializers
     {
         internal static readonly BooleanSerializer Instance = new BooleanSerializer();
 
-        public JsToken LiteralValue(IScriptType type, object value, IRootInvoker converter)
+        public JsToken LiteralValue(IValueSerializer type, object value, IRootInvoker converter)
         {
             return JsToken.Name(((bool)value) ? "true" : "false");
         }

@@ -5,6 +5,6 @@ namespace NetWebScript.JsClr.TypeSystem.Invoker
 {
     public interface IFieldInvoker
 	{
-        JsToken WriteField(IScriptField field, ScriptFieldReferenceExpression fieldExpression, IRootInvoker converter);
+        JsToken WriteField(IInvocableField field, ScriptFieldReferenceExpression fieldExpression, IRootInvoker converter);
 	}
 }

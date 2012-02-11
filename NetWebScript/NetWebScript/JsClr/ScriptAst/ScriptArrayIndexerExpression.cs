@@ -21,16 +21,6 @@ namespace NetWebScript.JsClr.ScriptAst
 
         public ScriptExpression Index { get; internal set; }
 
-        public override Type GetExpressionType()
-        {
-            Type targetType = Target.GetExpressionType();
-            if (targetType != null && targetType.IsArray)
-            {
-                return targetType.GetElementType();
-            }
-            return null;
-        }
-
         public override string ToString()
         {
             return String.Format("{0}[{1}]", Target.ToString(), Index.ToString());

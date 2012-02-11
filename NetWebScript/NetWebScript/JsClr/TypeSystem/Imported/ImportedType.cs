@@ -44,6 +44,8 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
 
             InitBaseType(false);
             InitInterfaces();
+
+            system.AddTypeToWrite(this);
         }
 
         internal string Name(MemberInfo member)

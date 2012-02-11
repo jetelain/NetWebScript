@@ -8,15 +8,11 @@ using NetWebScript.Metadata;
 
 namespace NetWebScript.JsClr.TypeSystem.Anonymous
 {
-    class AnonymousType : IScriptType
+    class AnonymousType : ScriptTypeBase
     {
-        private readonly Type type;
-        private readonly List<AnonymousField> fields = new List<AnonymousField>();
-        private readonly AnonymousConstructor scriptCtor;
 
-        public AnonymousType(Type type, CaseConvention convention)
+        public AnonymousType(ScriptSystem system, Type type, CaseConvention convention) : base(system, type)
         {
-            this.type = type;
 
             foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
             {
@@ -28,86 +24,49 @@ namespace NetWebScript.JsClr.TypeSystem.Anonymous
             {
                 throw new Exception();
             }
-            scriptCtor = new AnonymousConstructor(this, ctor);
+            constructors.Add(new AnonymousConstructor(this, ctor));
 
         }
 
-        public IScriptConstructor GetScriptConstructor(ConstructorInfo method)
-        {
-            if (scriptCtor.Method == method)
-            {
-                return scriptCtor;
-            }
-            return null;
-        }
 
-        public IScriptMethod GetScriptMethod(MethodInfo method)
-        {
-            return null;
-        }
-
-        public IScriptField GetScriptField(FieldInfo field)
-        {
-            return fields.FirstOrDefault(f => f.Field == field);
-        }
-
-        public Type Type
-        {
-            get { return type; }
-        }
-
-        public string TypeId
+        public override string TypeId
         {
             get { return null; }
         }
 
-        public ITypeBoxing Boxing
+        public override ITypeBoxing Boxing
         {
             get { return null; }
         }
 
-        public bool HaveCastInformation
+        public override bool HaveCastInformation
         {
             get { return false; }
         }
 
-        public IValueSerializer Serializer
+        public override IValueSerializer Serializer
         {
             get { return null; }
         }
 
-        public IScriptConstructor DefaultConstructor
-        {
-            get
-            {
-                var ctor = type.GetConstructor(Type.EmptyTypes);
-                if (ctor != null)
-                {
-                    return GetScriptConstructor(ctor);
-                }
-                return null;
-            }
-        }
-
-        public TypeMetadata Metadata
+        public override TypeMetadata Metadata
         {
             get { return null; }
         }
 
-
-        public void RegisterChildType(IScriptType type)
+        protected override IScriptConstructor CreateScriptConstructor(ConstructorInfo ctor)
         {
-            throw new NotSupportedException();
+            return null;
         }
 
-        public IScriptType BaseType
+        protected override IScriptMethod CreateScriptMethod(MethodInfo method)
         {
-            get { throw new NotSupportedException(); }
+            return null;
         }
 
-        public IScriptMethod GetScriptMethodIfUsed(MethodInfo method)
+        protected override IScriptField CreateScriptField(FieldInfo field)
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

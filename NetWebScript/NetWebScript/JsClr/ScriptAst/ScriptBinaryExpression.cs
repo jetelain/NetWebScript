@@ -53,41 +53,6 @@ namespace NetWebScript.JsClr.ScriptAst
             }
         }
 
-
-        public override Type GetExpressionType()
-        {
-            switch (Operator)
-            {
-                case ScriptBinaryOperator.ValueEquality: // ==
-                case ScriptBinaryOperator.ValueInequality: // !=
-                case ScriptBinaryOperator.LogicalOr: // ||
-                case ScriptBinaryOperator.LogicalAnd: // &&
-                case ScriptBinaryOperator.LessThan: // <
-                case ScriptBinaryOperator.LessThanOrEqual: // <=
-                case ScriptBinaryOperator.GreaterThan: // >
-                case ScriptBinaryOperator.GreaterThanOrEqual: // >=
-                    return typeof(bool);
-
-                default:
-                    // FIXME: Use the MSDN OpCodes table
-                    Type typeLeft = Left.GetExpressionType();
-                    Type typeRight = Right.GetExpressionType();
-                    if (typeLeft == typeof(double) || typeRight == typeof(double))
-                    {
-                        return typeof(double);
-                    }
-                    if (typeLeft == typeof(float) || typeRight == typeof(float))
-                    {
-                        return typeof(float);
-                    }
-                    if (typeLeft == typeof(long) || typeRight == typeof(long))
-                    {
-                        return typeof(long);
-                    }
-                    return null;
-            }
-        }
-
         public override string ToString()
         {
             if (Left is ScriptAssignExpression || Right is ScriptAssignExpression)

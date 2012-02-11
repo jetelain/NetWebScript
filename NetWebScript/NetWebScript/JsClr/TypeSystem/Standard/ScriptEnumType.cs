@@ -9,19 +9,20 @@ using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
-    class ScriptEnumType : IScriptType, ITypeBoxing, IScriptTypeDeclarationWriter
+    class ScriptEnumType : ScriptTypeBase, ITypeBoxing, IScriptTypeDeclarationWriter
     {
-        private readonly Type type;
         private readonly string typeId;
         private readonly IScriptMethodBase createEnumType;
 
         private static readonly MethodInfo EnumBox = new Func<Type, double, NetWebScript.Equivalents.Enum>(NetWebScript.Equivalents.Enum.ToObject).Method;
 
         public ScriptEnumType(ScriptSystem system, Type type)
+            : base(system, type)
         {
-            this.type = type;
             this.typeId = system.CreateTypeId();
             this.createEnumType = system.GetScriptMethod(new Func<string, NetWebScript.Equivalents.Enum.EnumData[], Type>(NetWebScript.Equivalents.Enum.CreateEnumType).Method);
+
+            system.AddTypeToWrite(this);
         }
 
         #region IScriptType Members
@@ -41,22 +42,17 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             throw new NotImplementedException();
         }
 
-        public Type Type
-        {
-            get { return type; }
-        }
-
-        public string TypeId
+        public override string TypeId
         {
             get { return typeId; }
         }
 
-        public ITypeBoxing Boxing
+        public override ITypeBoxing Boxing
         {
             get { return this; }
         }
 
-        public IValueSerializer Serializer
+        public override IValueSerializer Serializer
         {
             get { return null; }
         }
@@ -88,20 +84,14 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         #region IScriptType Members
 
 
-        public bool HaveCastInformation
+        public override bool HaveCastInformation
         {
             get { return true; }
         }
 
         #endregion
 
-
-        public IScriptConstructor DefaultConstructor
-        {
-            get { return null; }
-        }
-
-        public TypeMetadata Metadata
+        public override TypeMetadata Metadata
         {
             get { return null; }
         }
@@ -136,21 +126,19 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             get { return type.FullName; }
         }
 
-
-        public void RegisterChildType(IScriptType type)
+        protected override IScriptConstructor CreateScriptConstructor(ConstructorInfo ctor)
         {
-            throw new NotSupportedException();
+            return null;
         }
 
-        public IScriptType BaseType
+        protected override IScriptMethod CreateScriptMethod(MethodInfo method)
         {
-            get { throw new NotSupportedException(); }
+            return null;
         }
 
-
-        public IScriptMethod GetScriptMethodIfUsed(MethodInfo method)
+        protected override IScriptField CreateScriptField(FieldInfo field)
         {
-            return null; // No method is declared by an enum type
+            return null;
         }
     }
 }

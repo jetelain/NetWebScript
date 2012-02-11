@@ -7,55 +7,34 @@ using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Helped
 {
-    class ScriptMethodHelped : IScriptMethod, IMethodInvoker
+    class ScriptMethodHelped : MappedMethodBase, IScriptMethod, IMethodInvoker
     {
-        private readonly MethodInfo method;
-        private readonly IScriptType owner;
         private readonly IScriptMethod helper;
 
         public ScriptMethodHelped(IScriptType owner, MethodInfo method, IScriptMethod helper)
+            : base(owner, method)
         {
-            this.owner = owner;
-            this.method = method;
             this.helper = helper;
         }
 
-        #region IScriptMethod Members
 
         public string SlodId
         {
             get { return helper.SlodId; }
         }
 
-        #endregion
-
-        #region IScriptMethodBase Members
-
-        public string ImplId
+        public override string ImplId
         {
             get { return helper.ImplId; }
         }
 
-        public System.Reflection.MethodBase Method
-        {
-            get { return method; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IMethodInvoker Invoker
+        public override IMethodInvoker Invoker
         {
             get { return this; }
         }
 
-        #endregion
 
-        #region IMethodInvoker Members
-
-        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase scriptMethod, ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteMethod(IInvocableMethodBase scriptMethod, ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             if (helper.Method.IsStatic && !method.IsStatic)
             {
@@ -69,10 +48,10 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
             return helper.Invoker.WriteMethod(helper, methodExpression, converter);
         }
 
-        public JsToken WriteMethodReference(IScriptMethodBase method)
+        public JsToken WriteMethodReference(IInvocableMethodBase method)
         {
             throw new NotSupportedException();
         }
-        #endregion
+
     }
 }

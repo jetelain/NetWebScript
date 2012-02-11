@@ -7,18 +7,16 @@ using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Native
 {
-    class DelegateMethodInvoke : IScriptMethod, IMethodInvoker
+    class DelegateMethodInvoke : MappedMethodBase, IScriptMethod, IMethodInvoker
     {
-        private readonly DelegateType owner;
-        private readonly MethodInfo method;
 
         public DelegateMethodInvoke(DelegateType owner, MethodInfo method)
+            : base(owner, method)
         {
-            this.owner = owner;
-            this.method = method;
+
         }
 
-        public JsToken WriteMethod(IScriptMethodBase method, ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsToken WriteMethod(IInvocableMethodBase method, ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             var writer = new JsTokenWriter();
             writer.WriteLeft(JsPrecedence.FunctionCall, methodExpression.Target.Accept(converter));
@@ -26,43 +24,24 @@ namespace NetWebScript.JsClr.TypeSystem.Native
             return writer.ToToken(JsPrecedence.FunctionCall);
         }
 
-        public JsToken WriteMethodReference(IScriptMethodBase method)
+        public JsToken WriteMethodReference(IInvocableMethodBase method)
         {
             throw new NotSupportedException();
         }
-
-
-        #region IScriptMethod Members
 
         public string SlodId
         {
             get { return null; }
         }
 
-        #endregion
-
-        #region IScriptMethodBase Members
-
-        public string ImplId
+        public override string ImplId
         {
             get { return null; }
         }
 
-        public MethodBase Method
-        {
-            get { return method; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IMethodInvoker Invoker
+        public override IMethodInvoker Invoker
         {
             get { return this; }
         }
-
-        #endregion
     }
 }

@@ -5,6 +5,6 @@ namespace NetWebScript.JsClr.TypeSystem.Invoker
 {
     public interface IObjectCreationInvoker
 	{
-        JsToken WriteObjectCreation(IScriptConstructor ctor, ScriptObjectCreationExpression creationExpression, IRootInvoker converter);
+        JsToken WriteObjectCreation(IInvocableConstructor ctor, ScriptObjectCreationExpression creationExpression, IRootInvoker converter);
 	}
 }

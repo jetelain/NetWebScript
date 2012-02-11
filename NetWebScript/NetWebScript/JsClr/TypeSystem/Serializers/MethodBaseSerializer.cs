@@ -17,7 +17,7 @@ namespace NetWebScript.JsClr.TypeSystem.Serializers
             this.system = system;
         }
 
-        public JsToken LiteralValue(IScriptType valueType, object value, IRootInvoker converter)
+        public JsToken LiteralValue(IValueSerializer valueType, object value, IRootInvoker converter)
         {
             MethodBase methodBase = (MethodBase)value;
             var targetMethod = system.GetScriptMethodBase(methodBase);

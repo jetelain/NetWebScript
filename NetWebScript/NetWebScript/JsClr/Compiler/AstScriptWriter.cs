@@ -10,14 +10,15 @@ using NetWebScript.JsClr.ScriptAst;
 using NetWebScript.JsClr.TypeSystem;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.Metadata;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.Compiler
 {
     internal class AstScriptWriter : IScriptStatementVisitor<JsToken>, IRootInvoker
     {
         private readonly MethodBaseMetadata methodMetadata;
-        private readonly MethodScriptAst method;
-        private readonly bool isctor;
+        private readonly MethodScriptAst methodAst;
+        private readonly IScriptMethodBaseDeclaration method;
         private readonly bool pretty;
         private readonly Instrumentation instrumentation;
 
@@ -25,28 +26,24 @@ namespace NetWebScript.JsClr.Compiler
         {
         }
 
-        public AstScriptWriter(MethodScriptAst method, MethodBaseMetadata methodMetadata, bool pretty, Instrumentation instrumentation)
+        public AstScriptWriter(IScriptMethodBaseDeclaration method, bool pretty, Instrumentation instrumentation)
         {
             this.pretty = pretty;
-            if (instrumentation != null && methodMetadata != null && !Attribute.IsDefined(method.Method, typeof(DebuggerHiddenAttribute)))
+            if (instrumentation != null && method.Metadata != null && !method.Ast.IsDebuggerHidden)
             {
-                this.methodMetadata = methodMetadata;
+                this.methodMetadata = method.Metadata;
                 this.instrumentation = instrumentation;
             }
             this.method = method;
-            isctor = method.Method is ConstructorInfo && !method.Method.IsStatic;
+            this.methodAst = method.Ast;
         }
 
-        internal string VariableName(LocalVariable variable)
+        internal string VariableName(ScriptVariable variable)
         {
-            if (variable.LocalIndex == -1)
-            {
-                return variable.Name;
-            }
-            return String.Format("v{0}", variable.LocalIndex);
+            return String.Format("v{0}", variable.Index);
         }
 
-        internal string VariableReference(LocalVariable variable)
+        internal string VariableReference(ScriptVariable variable)
         {
             if (instrumentation != null && instrumentation.CaptureMethodContext)
             {
@@ -55,12 +52,12 @@ namespace NetWebScript.JsClr.Compiler
             return VariableName(variable);
         }
 
-        internal string ArgumentName(ParameterInfo param)
+        internal string ArgumentName(ScriptArgument param)
         {
-            return string.Format("a{0}", param.Position);
+            return string.Format("a{0}", param.Index);
         }
 
-        internal string ArgumentReference(ParameterInfo variable)
+        internal string ArgumentReference(ScriptArgument variable)
         {
             if (instrumentation != null && instrumentation.CaptureMethodContext)
             {
@@ -145,7 +142,6 @@ namespace NetWebScript.JsClr.Compiler
         public JsToken Visit(ScriptFieldReferenceExpression fieldReferenceExpression)
         {
             var field = fieldReferenceExpression.Field;
-
             return field.Invoker.WriteField(field, fieldReferenceExpression, this);
         }
 
@@ -189,11 +185,11 @@ namespace NetWebScript.JsClr.Compiler
             {
                 return JsToken.Name("null");
             }
-            if (literalExpression.Type == null || literalExpression.Type.Serializer == null)
+            if (literalExpression.Serializer == null)
             {
                 throw new InvalidOperationException("Value => " + literalExpression.Value); // Error should have been rised by DependenciesFinder
             }
-            return literalExpression.Type.Serializer.LiteralValue(literalExpression.Type, literalExpression.Value, this);
+            return literalExpression.Serializer.LiteralValue(literalExpression.Serializer, literalExpression.Value, this);
         }
 
         public JsToken Visit(ScriptMethodInvocationExpression methodInvocationExpression)
@@ -213,14 +209,7 @@ namespace NetWebScript.JsClr.Compiler
             JsTokenWriter writer = new JsTokenWriter();
             if (returnStatement.Value == null)
             {
-                if (isctor)
-                {
-                    writer.Write("return this");
-                }
-                else
-                {
-                    writer.Write("return");
-                }
+                writer.Write("return");
             }
             else
             {
@@ -311,7 +300,7 @@ namespace NetWebScript.JsClr.Compiler
 
         internal void WriteBody(TextWriter targetwriter)
         {
-            var ast = method;
+            var ast = methodAst;
             JsTokenWriter writer = new JsTokenWriter();
             writer.WriteLine("{");
             if (instrumentation != null)
@@ -320,7 +309,7 @@ namespace NetWebScript.JsClr.Compiler
                 {
                     writer.Write("var t={");
                     writer.Write("$static:{0}", methodMetadata.Type.Name);
-                    if (!ast.Method.IsStatic)
+                    if (!method.IsStatic)
                     {
                         writer.Write(",$this:this");
                     }
@@ -341,7 +330,7 @@ namespace NetWebScript.JsClr.Compiler
             {
                 bool first = true;
                 writer.Write("var ");
-                foreach (LocalVariable v in ast.Variables)
+                foreach (ScriptVariable v in ast.Variables)
                 {
                     if (first)
                     {
@@ -367,10 +356,6 @@ namespace NetWebScript.JsClr.Compiler
                 }
             }
             writer.WriteIndented(pretty, ast.Statements.Select(s => s.Accept(this)));
-            if (isctor)
-            {
-                writer.WriteLine("return this;");
-            }
             if (instrumentation != null)
             {
                 writer.WriteLine("} finally {");

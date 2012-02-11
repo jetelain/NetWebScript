@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NetWebScript.JsClr.TypeSystem.Native;
+using NetWebScript.Remoting;
+using NetWebScript.JsClr.TypeSystem.Remoting;
 
 namespace NetWebScript.JsClr.TypeSystem
 {
@@ -44,6 +46,11 @@ namespace NetWebScript.JsClr.TypeSystem
                 if (typeof(Type).IsAssignableFrom(type))
                 {
                     scriptType = new FunctionType(system, type);
+                    return true;
+                }
+                if (type == typeof(ScriptTransparentProxy))
+                {
+                    scriptType = new ScriptTransparentProxyType(system);
                     return true;
                 }
             }

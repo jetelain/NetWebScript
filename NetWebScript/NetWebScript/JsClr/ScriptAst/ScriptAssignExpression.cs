@@ -7,6 +7,11 @@ namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class ScriptAssignExpression : ScriptExpression
     {
+        public ScriptAssignExpression(ScriptAssignableExpression target, ScriptExpression value)
+            : this(null, target, value)
+        {
+        }
+
         public ScriptAssignExpression(int? ilOffset, ScriptAssignableExpression target, ScriptExpression value)
             : base (ilOffset)
         {
@@ -17,11 +22,6 @@ namespace NetWebScript.JsClr.ScriptAst
         public ScriptAssignableExpression Target { get; internal set; }
 
         public ScriptExpression Value { get; internal set; }
-
-        public override Type GetExpressionType()
-        {
-            return Target.GetExpressionType();
-        }
 
         public override string ToString()
         {

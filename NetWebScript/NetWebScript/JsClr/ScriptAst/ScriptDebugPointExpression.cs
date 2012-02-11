@@ -19,15 +19,6 @@ namespace NetWebScript.JsClr.ScriptAst
 
         internal PdbSequencePoint Point { get; private set; }
 
-        public override Type GetExpressionType()
-        {
-            if (Value != null)
-            {
-                return Value.GetExpressionType();
-            }
-            return typeof(void);
-        }
-
         public override T Accept<T>(IScriptStatementVisitor<T> visitor)
         {
             return visitor.Visit(this);

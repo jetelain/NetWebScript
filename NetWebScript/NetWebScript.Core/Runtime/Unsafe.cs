@@ -6,6 +6,7 @@ using NetWebScript;
 using System.Globalization;
 using System.Diagnostics.Contracts;
 using NetWebScript.Remoting.Serialization;
+using System.Diagnostics;
 
 namespace NetWebScript.Script
 {
@@ -64,6 +65,18 @@ namespace NetWebScript.Script
         public static string NumberToString(int obj)
         {
             return obj.ToString(CultureInfo.InvariantCulture);
+        }
+
+        [DebuggerHidden]
+        public static object CopyTo(object target, object source)
+        {
+            var members = GetAll(source);
+            for (int i = 0; i < members.Length; ++i)
+            {
+                var member = members[i];
+                JSObject.Set(target, member, JSObject.Get(source, member));
+            }
+            return target;
         }
     }
 }

@@ -3,41 +3,28 @@ using System.Reflection;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
 using NetWebScript.JsClr.JsBuilder.Pattern;
 using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.TypeSystem.Inlined
 {
-    class InlinedField : IScriptField, IFieldInvoker
+    class InlinedField : MappedField, IFieldInvoker
     {
-        private readonly FieldInfo field;
-        private readonly IScriptType owner;
         private readonly InlineFragment pattern;
 
         public InlinedField(IScriptType owner, FieldInfo field, string patternString)
+            : base(owner, field)
         {
-            this.owner = owner;
-            this.field = field;
             this.pattern = new InlineFragment(patternString);
         }
 
-
         #region IScriptField Members
 
-        public string SlodId
+        public override string SlodId
         {
             get { return null; }
         }
 
-        public System.Reflection.FieldInfo Field
-        {
-            get { return field; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IFieldInvoker Invoker
+        public override IFieldInvoker Invoker
         {
             get { return this; }
         }
@@ -46,7 +33,7 @@ namespace NetWebScript.JsClr.TypeSystem.Inlined
 
         #region IFieldInvoker Members
 
-        public JsBuilder.JsSyntax.JsToken WriteField(IScriptField field, ScriptAst.ScriptFieldReferenceExpression fieldExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteField(IInvocableField field, ScriptAst.ScriptFieldReferenceExpression fieldExpression, IRootInvoker converter)
         {
             var locals = new Dictionary<string, JsToken>();
             if (fieldExpression.Target != null)

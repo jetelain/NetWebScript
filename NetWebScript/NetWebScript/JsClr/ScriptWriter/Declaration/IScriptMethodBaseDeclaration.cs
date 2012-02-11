@@ -37,6 +37,6 @@ namespace NetWebScript.JsClr.ScriptWriter.Declaration
         /// <summary>
         /// Method metadata
         /// </summary>
-        MethodBaseMetadata Metadata { get;  }
+        MethodBaseMetadata Metadata { get; }
     }
 }

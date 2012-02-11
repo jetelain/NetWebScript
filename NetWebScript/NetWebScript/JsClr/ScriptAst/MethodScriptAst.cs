@@ -1,47 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NetWebScript.JsClr.AstBuilder;
-using System.Reflection;
-using NetWebScript.JsClr.AstBuilder.Cil;
 
 namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class MethodScriptAst
     {
-        private readonly MethodAst netAst;
-
         public MethodScriptAst(MethodAst netAst)
         {
-            this.netAst = netAst;
+            Arguments = netAst.Arguments.Select(a => new ScriptArgument() { Index = a.Position, Name = a.Name }).ToList();
+            Variables = netAst.Variables.Select(a => new ScriptVariable() { Index = a.LocalIndex, Name = a.Name, IsCompilerGenerated = a.IsCompilerGenerated }).ToList();
+            IsDebuggerHidden = netAst.IsDebuggerHidden;
+        }
+
+        public MethodScriptAst()
+        {
+            IsDebuggerHidden = true;
+            Arguments = new List<ScriptArgument>();
+            Variables = new List<ScriptVariable>();
+            Statements = new List<ScriptStatement>();
         }
 
         public List<ScriptStatement> Statements { get; set; }
 
-        public bool IsVoidMethod()
-        {
-            return netAst.IsVoidMethod();
-        }
+        public List<ScriptArgument> Arguments { get; private set; }
 
-        public List<ParameterInfo> Arguments
-        {
-            get { return netAst.Arguments; }
-        }
+        public List<ScriptVariable> Variables { get; private set; }
 
-        public List<LocalVariable> Variables
-        {
-            get { return netAst.Variables; }
-        }
-
-        internal bool IsDebuggerHidden
-        {
-            get { return netAst.IsDebuggerHidden; }
-        }
-
-        public MethodBase Method 
-        { 
-            get { return netAst.Method; } 
-        }
+        internal bool IsDebuggerHidden { get; private set; }
     }
 }

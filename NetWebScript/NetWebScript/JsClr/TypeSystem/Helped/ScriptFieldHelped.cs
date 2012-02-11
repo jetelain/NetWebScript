@@ -5,40 +5,28 @@ using System.Text;
 using System.Reflection;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.TypeSystem.Helped
 {
-    class ScriptFieldHelped : IScriptField, IFieldInvoker
+    class ScriptFieldHelped : MappedField, IFieldInvoker
     {
-        private readonly IScriptType owner;
         private readonly IScriptField helper;
-        private readonly FieldInfo field;
 
         public ScriptFieldHelped(IScriptType owner, FieldInfo field, IScriptField helper)
+            : base(owner, field)
         {
-            this.owner = owner;
-            this.field = field;
             this.helper = helper;
         }
 
         #region IScriptField Members
 
-        public string SlodId
+        public override string SlodId
         {
             get { return helper.SlodId; }
         }
 
-        public FieldInfo Field
-        {
-            get { return field; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IFieldInvoker Invoker
+        public override IFieldInvoker Invoker
         {
             get { return this; }
         }
@@ -47,11 +35,12 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
 
         #region IFieldInvoker Members
 
-        public JsToken WriteField(IScriptField field, ScriptAst.ScriptFieldReferenceExpression fieldExpression, IRootInvoker converter)
+        public JsToken WriteField(IInvocableField field, ScriptAst.ScriptFieldReferenceExpression fieldExpression, IRootInvoker converter)
         {
             return helper.Invoker.WriteField(helper, fieldExpression, converter);
         }
 
         #endregion
+
     }
 }

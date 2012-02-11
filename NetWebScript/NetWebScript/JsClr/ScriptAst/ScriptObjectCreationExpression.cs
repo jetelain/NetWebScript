@@ -11,7 +11,7 @@ namespace NetWebScript.JsClr.ScriptAst
     public sealed class ScriptObjectCreationExpression : ScriptExpression
     {
 
-        public ScriptObjectCreationExpression(int? ilOffset, IScriptConstructor constructor, List<ScriptExpression> arguments)
+        public ScriptObjectCreationExpression(int? ilOffset, IInvocableConstructor constructor, List<ScriptExpression> arguments)
             : base(ilOffset)
         {
             Contract.Requires(constructor != null);
@@ -19,20 +19,15 @@ namespace NetWebScript.JsClr.ScriptAst
             this.Arguments = arguments;
         }
 
-        public IScriptConstructor Constructor { get; internal set; }
+        public IInvocableConstructor Constructor { get; internal set; }
 
         public List<ScriptExpression> Arguments { get; internal set; }
-
-        public override Type GetExpressionType()
-        {
-            return Constructor.Owner.Type;
-        }
 
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
             builder.Append("new ");
-            builder.Append(Constructor.Owner.Type.Name);
+            builder.Append(Constructor.Owner.DisplayName);
             builder.Append('(');
             bool first = true;
             foreach (ScriptExpression arg in Arguments)

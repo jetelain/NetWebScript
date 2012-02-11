@@ -11,7 +11,6 @@ namespace NetWebScript.Remoting
     {
         public string Type;
         public string Method;
-        public object Target;
         public object[] Parameters;
     }
 }

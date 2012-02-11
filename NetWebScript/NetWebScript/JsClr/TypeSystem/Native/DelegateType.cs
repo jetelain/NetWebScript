@@ -8,7 +8,7 @@ namespace NetWebScript.JsClr.TypeSystem.Native
     class DelegateType : NativeType
     {
         public DelegateType(ScriptSystem system, Type type)
-            : base("Function", type)
+            : base(system, "Function", type)
         {
             var invokeMethod = type.GetMethod("Invoke");
             //var ctor = type.GetConstructor(new Type[]{typeof(object), typeof(IntPtr)});

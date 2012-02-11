@@ -159,7 +159,7 @@ namespace NetWebScript.JsClr.Compiler
                 return;
             }
 
-            var astWriter = new AstScriptWriter(method.Ast, method.Metadata, context.IsPretty, context.Instrumentation);
+            var astWriter = new AstScriptWriter(method, context.IsPretty, context.Instrumentation);
 
             writer.Write("function(");
             bool first = true;

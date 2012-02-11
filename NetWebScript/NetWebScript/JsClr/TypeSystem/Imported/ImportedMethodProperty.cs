@@ -2,21 +2,19 @@
 using System.Reflection;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
 using NetWebScript.JsClr.TypeSystem.Invoker;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.TypeSystem.Imported
 {
-    class ImportedMethodProperty : IScriptMethod, IMethodInvoker
+    class ImportedMethodProperty : MappedMethodBase, IScriptMethod, IMethodInvoker
     {
-        private readonly MethodInfo method;
         private readonly string name;
-        private readonly ImportedType owner;
         private readonly bool isSetter;
         private readonly bool isIndexed;
 
         public ImportedMethodProperty(ImportedType owner, MethodInfo method, PropertyInfo property)
+            : base(owner, method)
         {
-            this.owner = owner;
-            this.method = method;
             this.name = owner.Name(property);
             this.isSetter = property.GetSetMethod() == method;
             this.isIndexed = property.GetIndexParameters().Length > 0;
@@ -27,27 +25,17 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             get { return null; }
         }
 
-        public string ImplId
+        public override string ImplId
         {
             get { return null; }
         }
 
-        public MethodBase Method
-        {
-            get { return method; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IMethodInvoker Invoker
+        public override IMethodInvoker Invoker
         {
             get { return this; }
         }
 
-        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase methodBase, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteMethod(IInvocableMethodBase methodBase, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             JsToken token;
             int setArg = 0;
@@ -83,7 +71,7 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             }
         }
 
-        public JsBuilder.JsSyntax.JsToken WriteMethodReference(IScriptMethodBase method)
+        public JsBuilder.JsSyntax.JsToken WriteMethodReference(IInvocableMethodBase method)
         {
             throw new NotSupportedException();
         }

@@ -27,15 +27,6 @@ namespace NetWebScript.JsClr.ScriptAst
             return base.Negate();
         }
 
-        public override Type GetExpressionType()
-        {
-            if (Operator == ScriptUnaryOperator.LogicalNot)
-            {
-                return typeof(bool);
-            }
-            return Operand.GetExpressionType();
-        }
-
         public override string ToString()
         {
             return String.Format("{0}({1})", Operator, Operand.ToString() );

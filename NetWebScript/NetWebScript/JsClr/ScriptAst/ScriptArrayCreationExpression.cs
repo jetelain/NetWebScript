@@ -2,38 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics.Contracts;
 
 namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class ScriptArrayCreationExpression : ScriptExpression
     {
-        public ScriptArrayCreationExpression(int? ilOffset, Type type, ScriptExpression size)
-            : base(ilOffset)
+        public ScriptArrayCreationExpression(ScriptExpression size)
+            : this(null, size)
         {
-            this.ItemType = type;
-            this.Type = type.MakeArrayType();
-            this.Size = size;
+
         }
 
-        public Type ItemType { get; internal set; }
-
-        public Type Type { get; internal set; }
+        public ScriptArrayCreationExpression(int? ilOffset, ScriptExpression size)
+            : base(ilOffset)
+        {
+            Contract.Requires(size != null);
+            this.Size = size;
+        }
 
         public ScriptExpression Size { get; internal set; }
 
         public List<ScriptExpression> Initialize { get; set; }
-
-        public override Type GetExpressionType()
-        {
-            return Type;
-        }
 
         public override string ToString()
         {
             if (Initialize != null)
             {
                 StringBuilder builder = new StringBuilder();
-                builder.AppendFormat("new {0}[{1}] {{", ItemType.Name, Size.ToString());
+                builder.AppendFormat("new [{0}] {{", Size.ToString());
                 bool first = true;
                 foreach (ScriptExpression arg in Initialize)
                 {
@@ -52,7 +49,7 @@ namespace NetWebScript.JsClr.ScriptAst
             }
 
 
-            return String.Format("new {0}[{1}]", ItemType.Name, Size.ToString());
+            return String.Format("new [{0}]", Size.ToString());
         }
 
         public override void Accept(IScriptStatementVisitor visitor)

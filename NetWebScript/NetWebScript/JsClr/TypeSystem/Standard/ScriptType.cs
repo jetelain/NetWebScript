@@ -88,7 +88,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                 EnsurePublicMembersForExport();
             }
 
-
+            system.AddTypeToWrite(this);
         }
 
         private void EnsurePublicMembersForExport()

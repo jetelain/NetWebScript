@@ -10,7 +10,12 @@ namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class ScriptMethodInvocationExpression : ScriptExpression
     {
-        public ScriptMethodInvocationExpression(int? ilOffset, bool vir, IScriptMethodBase method, ScriptExpression target, List<ScriptExpression> arguments)
+        public ScriptMethodInvocationExpression(bool vir, IInvocableMethodBase method, ScriptExpression target, List<ScriptExpression> arguments)
+            : this(null, vir, method, target, arguments)
+        {
+        }
+
+        public ScriptMethodInvocationExpression(int? ilOffset, bool vir, IInvocableMethodBase method, ScriptExpression target, List<ScriptExpression> arguments)
             : base(ilOffset)
         {
             Contract.Requires(method != null);
@@ -22,25 +27,15 @@ namespace NetWebScript.JsClr.ScriptAst
 
         public bool Virtual { get; internal set; }
 
-        public IScriptMethodBase Method { get; internal set; }
+        public IInvocableMethodBase Method { get; internal set; }
 
         public ScriptExpression Target { get; internal set; }
 
         public List<ScriptExpression> Arguments { get; internal set; }
 
-        public override Type GetExpressionType()
-        {
-            IScriptMethod fi = Method as IScriptMethod;
-            if (fi != null)
-            {
-                return ((MethodInfo)fi.Method).ReturnType;
-            }
-            return typeof(void);
-        }
-
         internal bool IsExplicit
         {
-            get { return !Virtual || !Method.Method.IsVirtual; }
+            get { return !Virtual || !Method.IsVirtual; }
         }
 
         public override string ToString()
@@ -52,10 +47,10 @@ namespace NetWebScript.JsClr.ScriptAst
             }
             else
             {
-                builder.Append(Method.Owner.Type.Name);
+                builder.Append(Method.Owner.DisplayName);
             }
             builder.Append('.');
-            builder.Append(Method.Method.Name);
+            builder.Append(Method.DisplayName);
             builder.Append('(');
             bool first = true;
             foreach (ScriptExpression arg in Arguments)

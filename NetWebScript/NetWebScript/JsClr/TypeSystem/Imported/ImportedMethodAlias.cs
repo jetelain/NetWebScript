@@ -5,19 +5,17 @@ using System.Text;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using System.Reflection;
 using NetWebScript.JsClr.JsBuilder.JsSyntax;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.TypeSystem.Imported
 {
-    class ImportedMethodAlias : IScriptMethod, IMethodInvoker
+    class ImportedMethodAlias : MappedMethodBase, IScriptMethod, IMethodInvoker
     {
-        private readonly MethodInfo method;
         private readonly string name;
-        private readonly ImportedType owner;
 
         public ImportedMethodAlias(ImportedType owner, MethodInfo method, string name)
+            : base(owner, method)
         {
-            this.owner = owner;
-            this.method = method;
             this.name = name;
         }
 
@@ -26,27 +24,17 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             get { return null; }
         }
 
-        public string ImplId
+        public override string ImplId
         {
             get { return null; }
         }
 
-        public MethodBase Method
-        {
-            get { return method; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IMethodInvoker Invoker
+        public override IMethodInvoker Invoker
         {
             get { return this; }
         }
 
-        public JsBuilder.JsSyntax.JsToken WriteMethod(IScriptMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsBuilder.JsSyntax.JsToken WriteMethod(IInvocableMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
             var writer = new JsTokenWriter();
             writer.Write(name);
@@ -54,10 +42,9 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             return writer.ToToken(JsPrecedence.FunctionCall);
         }
 
-        public JsBuilder.JsSyntax.JsToken WriteMethodReference(IScriptMethodBase method)
+        public JsBuilder.JsSyntax.JsToken WriteMethodReference(IInvocableMethodBase method)
         {
             return JsToken.Name(name);
         }
-
     }
 }

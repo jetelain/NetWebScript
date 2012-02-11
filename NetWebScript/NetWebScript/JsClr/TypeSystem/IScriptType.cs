@@ -3,10 +3,13 @@ using System.Reflection;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.Metadata;
 using NetWebScript.JsClr.ScriptWriter.Declaration;
+using NetWebScript.JsClr.ScriptAst;
+using System.Collections.Generic;
+using NetWebScript.JsClr.TypeSystem.Remoting;
 
 namespace NetWebScript.JsClr.TypeSystem
 {
-    public interface IScriptType
+    public interface IScriptType : IInvocableType
     {
         IScriptConstructor GetScriptConstructor(ConstructorInfo method);
 
@@ -17,8 +20,6 @@ namespace NetWebScript.JsClr.TypeSystem
         IScriptField GetScriptField(FieldInfo field);
 
         Type Type { get; }
-
-        string TypeId { get; }
 
         ITypeBoxing Boxing { get; }
 
@@ -46,5 +47,9 @@ namespace NetWebScript.JsClr.TypeSystem
         void RegisterChildType(IScriptType type);
 
         IScriptType BaseType { get; }
+
+        void RegisterProxyType(TransparentType transparentProxyScriptType);
+
+        TransparentType TransparentProxy { get; }
     }
 }

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
+using NetWebScript.JsClr.ScriptAst;
 namespace NetWebScript.JsClr.TypeSystem
 {
-    public interface IScriptMethod : IScriptMethodBase
+    public interface IScriptMethod : IScriptMethodBase, IInvocableMethod
     {
-        string SlodId { get; }
+
     }
 }

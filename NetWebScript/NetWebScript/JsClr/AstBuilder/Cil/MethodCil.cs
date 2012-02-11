@@ -265,6 +265,10 @@ namespace NetWebScript.JsClr.AstBuilder.Cil
 
             foreach (LocalVariableInfo info in body.LocalVariables)
             {
+                if (info.LocalIndex != variables.Count)
+                {
+                    throw new InvalidOperationException();
+                }
                 variables.Add(new LocalVariable(pdb, info));
             }
 

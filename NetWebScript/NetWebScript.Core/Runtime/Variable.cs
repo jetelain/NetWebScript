@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace NetWebScript.Runtime
 {
@@ -10,11 +11,13 @@ namespace NetWebScript.Runtime
     {
         public object localValue;
 
+        [DebuggerHidden]
         public object Set(object value)
         {
             return localValue = value;
         }
 
+        [DebuggerHidden]
         public object Get()
         {
             return localValue;

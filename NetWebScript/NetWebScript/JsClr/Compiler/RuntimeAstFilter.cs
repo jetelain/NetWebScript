@@ -9,6 +9,8 @@ using NetWebScript.JsClr.TypeSystem;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.Runtime;
 using NetWebScript.Script;
+using System.Diagnostics.Contracts;
+using NetWebScript.JsClr.AstBuilder.Cil;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -29,6 +31,7 @@ namespace NetWebScript.JsClr.Compiler
         private readonly ScriptSystem system;
         private readonly List<InternalMessage> errors;
         private MethodAst current;
+        private MethodScriptAst currentScript;
 
         internal RuntimeAstFilter(ScriptSystem system, List<InternalMessage> errors)
         {
@@ -56,7 +59,7 @@ namespace NetWebScript.JsClr.Compiler
                 }
                 return new MethodInvocationExpression(arrayCreationExpression.IlOffset, false, new Func<int, object, JSArray<object>>(RuntimeHelper.CreateArray).Method, null, new List<Expression>() { arrayCreationExpression .Size, value }).Accept(this);
             }
-            var scriptCreation = new ScriptArrayCreationExpression(arrayCreationExpression.IlOffset, arrayCreationExpression.ItemType, Visit(arrayCreationExpression.Size));
+            var scriptCreation = new ScriptArrayCreationExpression(arrayCreationExpression.IlOffset, Visit(arrayCreationExpression.Size));
             scriptCreation.Initialize = Visit(arrayCreationExpression.Initialize);
             return scriptCreation;
         }
@@ -140,14 +143,16 @@ namespace NetWebScript.JsClr.Compiler
 
         public ScriptStatement Visit(LiteralExpression literalExpression)
         {
-            IScriptType type = null;
+            IValueSerializer serializer = null;
             if (literalExpression.Value != null)
             {
-                type = system.GetScriptType(literalExpression.GetExpressionType());
+                IScriptType type = system.GetScriptType(literalExpression.GetExpressionType());
                 if (type == null || type.Serializer == null)
                 {
                     AddError(literalExpression, string.Format("Type '{0}' is not script available or cannot be serialized in script. You can not use literal value of that type.", literalExpression.GetExpressionType().FullName));
+                    return new ScriptLiteralExpression(literalExpression.IlOffset, null, null);
                 }
+                serializer = type.Serializer;
                 Type literalType = literalExpression.Value as Type;
                 if (literalType != null)
                 {
@@ -170,7 +175,7 @@ namespace NetWebScript.JsClr.Compiler
                     }
                 }
             }
-            return new ScriptLiteralExpression(literalExpression.IlOffset, literalExpression.Value, type);
+            return new ScriptLiteralExpression(literalExpression.IlOffset, literalExpression.Value, serializer);
         }
 
         public ScriptStatement Visit(MethodInvocationExpression methodInvocationExpression)
@@ -249,17 +254,23 @@ namespace NetWebScript.JsClr.Compiler
         {
             MethodScriptAst scriptMethod = new MethodScriptAst(method);
             current = method;
+            currentScript = scriptMethod;
+
             scriptMethod.Statements = Visit(method.Statements);
             foreach (var variable in method.Variables)
             {
                 if (variable.AllowRef)
                 {
                     scriptMethod.Statements.Insert(0, new ScriptAssignExpression(null,
-                        new ScriptVariableReferenceExpression(null, variable),
+                        new ScriptVariableReferenceExpression(null, Visit(variable)),
                         (ScriptExpression)new ScriptObjectCreationExpression(null, 
                             system.GetScriptConstructor(typeof(Variable).GetConstructor(Type.EmptyTypes)),
                             new List<ScriptExpression>())));
                 }
+            }
+            if (IsConstructor)
+            {
+                scriptMethod.Statements.Add(ConstructorReturnThis());
             }
             return scriptMethod;
         }
@@ -358,11 +369,11 @@ namespace NetWebScript.JsClr.Compiler
             if (variable.AllowRef)
             {
                 return new ScriptFieldReferenceExpression(
-                    variableReferenceExpression.IlOffset, 
-                    new ScriptVariableReferenceExpression(variableReferenceExpression.IlOffset, variableReferenceExpression.Variable), 
+                    variableReferenceExpression.IlOffset,
+                    new ScriptVariableReferenceExpression(variableReferenceExpression.IlOffset, Visit(variableReferenceExpression.Variable)), 
                     system.GetScriptField(typeof(Variable).GetField("localValue")));
             }
-            return new ScriptVariableReferenceExpression(variableReferenceExpression.IlOffset, variableReferenceExpression.Variable);
+            return new ScriptVariableReferenceExpression(variableReferenceExpression.IlOffset, Visit(variableReferenceExpression.Variable));
         }
 
         private static bool IsLiteralNull(Expression expr)
@@ -386,7 +397,7 @@ namespace NetWebScript.JsClr.Compiler
 
         public ScriptStatement Visit(ArgumentReferenceExpression node)
         {
-            return new ScriptArgumentReferenceExpression(node.IlOffset, node.Argument);
+            return new ScriptArgumentReferenceExpression(node.IlOffset, Visit(node.Argument));
         }
 
         public ScriptStatement Visit(ArrayIndexerExpression arrayIndexerExpression)
@@ -430,8 +441,18 @@ namespace NetWebScript.JsClr.Compiler
                 );
         }
 
+        private ScriptStatement ConstructorReturnThis()
+        {
+            Contract.Requires(IsConstructor);
+            return new ScriptReturnStatement(new ScriptThisReferenceExpression(null));
+        }
+
         public ScriptStatement Visit(ReturnStatement returnStatement)
         {
+            if (IsConstructor)
+            {
+                return ConstructorReturnThis();
+            }
             return new ScriptReturnStatement(Visit(returnStatement.Value));
         }
 
@@ -451,7 +472,7 @@ namespace NetWebScript.JsClr.Compiler
             {
                 throw new InvalidOperationException();
             }
-            return new ScriptLiteralExpression(null, value, type);
+            return new ScriptLiteralExpression(null, value, type.Serializer);
         }
 
         public ScriptStatement Visit(SwitchStatement switchStatement)
@@ -463,7 +484,7 @@ namespace NetWebScript.JsClr.Compiler
 
         public ScriptStatement Visit(ThisReferenceExpression thisReferenceExpression)
         {
-            return new ScriptThisReferenceExpression(thisReferenceExpression.IlOffset, thisReferenceExpression.GetExpressionType());
+            return new ScriptThisReferenceExpression(thisReferenceExpression.IlOffset);
         }
 
         public ScriptStatement Visit(UnaryExpression unaryExpression)
@@ -592,7 +613,7 @@ namespace NetWebScript.JsClr.Compiler
 
         public ScriptStatement Visit(MakeByRefVariableExpression makeByRefVariableExpression)
         {
-            return new ScriptVariableReferenceExpression(makeByRefVariableExpression.IlOffset, makeByRefVariableExpression.Variable);
+            return new ScriptVariableReferenceExpression(makeByRefVariableExpression.IlOffset, Visit(makeByRefVariableExpression.Variable));
         }
 
         public ScriptStatement Visit(MakeByRefArgumentExpression makeByRefArgumentExpression)
@@ -612,7 +633,7 @@ namespace NetWebScript.JsClr.Compiler
                 }
                 else if (type.Serializer != null)
                 {
-                    return new ScriptLiteralExpression(defaultValueExpression.IlOffset, Activator.CreateInstance(defaultValueExpression.Type), type);
+                    return new ScriptLiteralExpression(defaultValueExpression.IlOffset, Activator.CreateInstance(defaultValueExpression.Type), type.Serializer);
                 }
                 else
                 {
@@ -634,6 +655,21 @@ namespace NetWebScript.JsClr.Compiler
         {
             // FIXME: Make conversion with appropriate rules :)
             return numberConvertion.Value.Accept(this);
+        }
+
+        private bool IsConstructor
+        {
+            get { return !current.Method.IsStatic && current.Method is ConstructorInfo; }
+        }
+
+        private ScriptVariable Visit(LocalVariable variable)
+        {
+            return currentScript.Variables.First(v => v.Index == variable.LocalIndex);
+        }
+
+        private ScriptArgument Visit(ParameterInfo argument)
+        {
+            return currentScript.Arguments.First(a => a.Index == argument.Position);
         }
     }
 }

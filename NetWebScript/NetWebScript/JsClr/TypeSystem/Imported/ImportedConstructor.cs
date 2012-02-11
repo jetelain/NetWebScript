@@ -7,15 +7,12 @@ using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Imported
 {
-    class ImportedConstructor : IScriptConstructor
+    class ImportedConstructor : MappedMethodBase, IScriptConstructor
     {
-        private readonly ConstructorInfo ctor;
-        private readonly ImportedType owner;
-
         public ImportedConstructor(ImportedType type, ConstructorInfo ctor)
+            : base(type, ctor)
         {
-            this.owner = type;
-            this.ctor = ctor;
+
         }
 
         public IObjectCreationInvoker CreationInvoker
@@ -23,26 +20,15 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             get { return ImportedConstructorInvoker.Instance; }
         }
 
-        public string ImplId
+        public override string ImplId
         {
             get { throw new NotSupportedException(); }
         }
 
-        public MethodBase Method
-        {
-            get { return ctor; }
-        }
-
-        public IScriptType Owner
-        {
-            get { return owner; }
-        }
-
-        public IMethodInvoker Invoker
+        public override IMethodInvoker Invoker
         {
             get { return ImportedConstructorInvoker.Instance; }
         }
 
-      
     }
 }
