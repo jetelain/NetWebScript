@@ -98,6 +98,7 @@
     <Compile Include="Equivalents\UInt64Equiv.cs" />
     <Compile Include="Equivalents\ByteEquiv.cs" />
     <Compile Include="Globalization\Culture.cs" />
+    <Compile Include="Remoting\RemotingSecurityException.cs" />
     <Compile Include="Remoting\ScriptRealProxy.cs" />
     <Compile Include="Remoting\ScriptTransparentProxy.cs" />
     <Compile Include="Runtime\ModuleInfo.cs" />

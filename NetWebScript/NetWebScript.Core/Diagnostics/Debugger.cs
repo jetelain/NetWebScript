@@ -350,8 +350,6 @@ namespace NetWebScript.Diagnostics
 		/// <summary>
 		/// Called when leaving a method
 		/// </summary>
-		/// <param name="v">Value to return as-is</param>
-		/// <returns>Value of <paramref name="v"/></returns>
 		[DebuggerHidden]
         public static void L()
 		{

@@ -19,23 +19,9 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             this.impl = system.CreateImplementationId();
             this.body = body;
             this.invoker = isGlobal ? (IMethodInvoker)GlobalsInvoker.Instance : (IMethodInvoker)StandardInvoker.Instance;
-            metadata = CreateMetadata();
-        }
 
-        private MethodBaseMetadata CreateMetadata()
-        {
-            if (owner.Metadata == null)
-            {
-                return null;
-            }
-            var meta = new MethodBaseMetadata();
-            meta.Type = owner.Metadata;
-            meta.Name = ImplId;
-            meta.CRef = CRefToolkit.GetCRef(Method);
-            owner.Metadata.Methods.Add(meta);
-            return meta;
+            metadata = MetadataHelper.CreateMethodMetadata(this);
         }
-
 
         /// <summary>
         /// Identifier of implementation (name to use for an explicit call of method)

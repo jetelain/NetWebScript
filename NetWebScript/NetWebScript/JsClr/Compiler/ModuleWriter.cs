@@ -12,6 +12,7 @@ using NetWebScript.Metadata;
 using NetWebScript.Script;
 using NetWebScript.JsClr.ScriptWriter;
 using NetWebScript.JsClr.ScriptWriter.Declaration;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -54,7 +55,7 @@ namespace NetWebScript.JsClr.Compiler
             declaration.WriteDeclaration(writer, context);
         }
 
-        internal void WriteExports(IEnumerable<ScriptType> iEnumerable)
+        internal void WriteExports(IEnumerable<ExportDefinition> iEnumerable)
         {
             foreach (var type in iEnumerable.OrderBy(t => t.ExportNamespace))
             {
@@ -62,46 +63,55 @@ namespace NetWebScript.JsClr.Compiler
             }
         }
 
-        private void WriteExports(ScriptType type)
+        private void WriteExports(ExportDefinition export)
         {
             if (pretty)
             {
                 writer.WriteLine();
-                writer.WriteLine();
-                writer.WriteLine();
-                writer.WriteLine("//### Exports of {0}", type.Type.FullName);
+                writer.WriteLine("//### Exports of {0}", export.PrettyName);
             }
-            if (!string.IsNullOrEmpty(type.ExportNamespace))
+            if (!string.IsNullOrEmpty(export.ExportNamespace))
             {
-                EnsureNamespace(type.ExportNamespace);
-                writer.Write("{0}.", type.ExportNamespace);
+                EnsureNamespace(export.ExportNamespace);
+                writer.Write("{0}.", export.ExportNamespace);
             }
             else
             {
                 writer.Write("var ");
             }
 
-            var ctor = type.ExportedConstructor;
+            var ctor = export.ExportedConstructor;
             if (ctor != null)
             {
                 var argsCount = ctor.Method.GetParameters().Length;
-                writer.Write("{0}=function(", type.ExportName);
+                var body = ctor.CreationInvoker.WriteObjectCreation(ctor, 
+                    new ScriptObjectCreationExpression(
+                        ctor,
+                        Enumerable.
+                            Range(0, argsCount).
+                            Select(i => (ScriptExpression)new ScriptArgumentReferenceExpression(new ScriptArgument() { Index = i, Name = string.Format("a{0}", i) })).ToList()
+                    ), 
+                    new AstScriptWriter());
+
+                writer.Write("{0}=function(", export.ExportName);
                 for (int i = 0; i < argsCount; ++i) { if (i > 0) { writer.Write(','); } writer.Write("a{0}", i); }
-                writer.Write("){{return new {0}().{1}(", type.TypeId, ctor.ImplId);
-                for (int i = 0; i < argsCount; ++i) { if (i > 0) { writer.Write(','); } writer.Write("a{0}", i); }
-                writer.WriteLine(");};");
+                writer.Write("){return ");
+                writer.Write(body);
+                writer.WriteLine(";};");
             }
             else
             {
-                writer.WriteLine("{0}={{}};", type.ExportName);
+                writer.WriteLine("{0}={{}};", export.ExportName);
             }
-            foreach (var method in type.MethodsToWrite.OfType<ScriptMethod>().Where(m => m.Method.IsStatic && m.Method.IsPublic))
+            foreach (var method in export.ExportedStaticMethods)
             {
-                if (!string.IsNullOrEmpty(type.ExportNamespace))
+                if (!string.IsNullOrEmpty(export.ExportNamespace))
                 {
-                    writer.Write("{0}.", type.ExportNamespace);
+                    writer.Write("{0}.", export.ExportNamespace);
                 }
-                writer.WriteLine("{0}.{1}={2}.{3};", type.ExportName, CaseToolkit.GetMemberName(type.ExportCaseConvention, method.Method.Name), type.TypeId, method.ImplId);
+                writer.WriteLine("{0}.{1}={2};",
+                    export.ExportName, CaseToolkit.GetMemberName(export.ExportCaseConvention, method.Method.Name),
+                    method.Invoker.WriteMethodReference(method).Text);
             }
         }
 

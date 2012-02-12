@@ -15,16 +15,23 @@ namespace NetWebScript.Remoting.Serialization
     {
         private readonly Dictionary<Type, IObjectSerializer> serializers = new Dictionary<Type, IObjectSerializer>();
 
-        private readonly List<ModuleMetadata> scriptModules = new List<ModuleMetadata>();
+       // private readonly List<ModuleMetadata> scriptModules = new List<ModuleMetadata>();
         private readonly string copyMethod;
         private readonly Converter converter;
+        private readonly MetadataProvider metadataProvider;
 
         [CLSCompliant(false)]
         public SerializerCache(params ModuleMetadata[] modules)
+            : this(new MetadataProvider(modules))
         {
-            scriptModules.AddRange(modules);
 
-            var meta = GetTypeMetadataByCRef(CRefToolkit.GetCRef(typeof(Unsafe)));
+        }
+
+        public SerializerCache(MetadataProvider metadataProvider)
+        {
+            this.metadataProvider = metadataProvider;
+
+            var meta = metadataProvider.GetTypeMetadataByCRef(CRefToolkit.GetCRef(typeof(Unsafe)));
             if (meta != null)
             {
                 var key = CRefToolkit.GetCRef(typeof(Unsafe).GetMethod("CopyTo"));
@@ -35,18 +42,6 @@ namespace NetWebScript.Remoting.Serialization
                 }
             }
             converter = new Converter(this);
-        }
-
-        [CLSCompliant(false)]
-        public TypeMetadata GetTypeMetadataByScriptName(string name)
-        {
-            return scriptModules.SelectMany(m => m.Types.Where(t => t.Name == name)).FirstOrDefault();
-        }
-
-        [CLSCompliant(false)]
-        public TypeMetadata GetTypeMetadataByCRef(string cref)
-        {
-            return scriptModules.SelectMany(m => m.Types.Where(t => t.CRef == cref)).FirstOrDefault();
         }
 
         private IObjectSerializer CreateSerializer(Type type)
@@ -61,12 +56,13 @@ namespace NetWebScript.Remoting.Serialization
                 return CreateSerializer(attribute, type);
             }
             var cref = CRefToolkit.GetCRef(type);
-            var scriptType = GetTypeMetadataByCRef(cref);
+            var scriptType = metadataProvider.GetTypeMetadataByCRef(cref);
             if (scriptType != null)
             {
                 return CreateSerializer(scriptType, type);
             }
-            var equiv = scriptModules.SelectMany(m => m.Equivalents.Where(t => t.CRef == cref)).FirstOrDefault();
+            var equiv = metadataProvider.GetEquivalentMetadataByCRef(cref);
+
             if (equiv != null)
             {
                 var equivalentType = CRefToolkit.ResolveType(equiv.EquivalentCRef);
@@ -117,9 +113,9 @@ namespace NetWebScript.Remoting.Serialization
 
         public Converter Converter { get { return converter; } }
 
-        internal List<ModuleMetadata> ScriptModules
+        internal MetadataProvider MetadataProvider
         {
-            get { return scriptModules; }
+            get { return metadataProvider; }
         }
     }
 }

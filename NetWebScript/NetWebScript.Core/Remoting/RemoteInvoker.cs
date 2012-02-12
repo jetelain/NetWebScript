@@ -2,6 +2,7 @@
 using NetWebScript;
 using NetWebScript.Script;
 using NetWebScript.Remoting.Serialization;
+using NetWebScript.Script.Xml;
 
 namespace NetWebScript.Remoting
 {
@@ -21,14 +22,14 @@ namespace NetWebScript.Remoting
 
             var ajaxRequest = new JQueryAjaxSettings();
             ajaxRequest.Type = "POST";
-            ajaxRequest.Data = XmlSerializer.Serialize(request);
+            ajaxRequest.Data = XmlToolkit.ToXml(XmlSerializer.Serialize(request));
             ajaxRequest.Async = false;
             ajaxRequest.Cache = false;
             ajaxRequest.Url = RemotePortUrl;
             
             var xhr = JQuery.Ajax(ajaxRequest);
 
-            var response = (ResponseData)Global.Eval(xhr.ResponseText);
+            var response = (ResponseData)Global.Eval("("+xhr.ResponseText+")");
             if (response.Exception != null)
             {
                 throw response.Exception;
@@ -39,7 +40,7 @@ namespace NetWebScript.Remoting
         /// <summary>
         /// Url to the remoting connector
         /// </summary>
-        public static string RemotePortUrl;
+        public static string RemotePortUrl = "nws.ashx";
 
     }
 }

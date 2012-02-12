@@ -15,45 +15,12 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         private readonly string typeId;
         private readonly bool isGlobals;
 
-        private readonly CaseConvention exportCaseConvention;
-
-        private readonly bool isExported;
-        private readonly string exportedName;
-        private readonly string exportedNamespace;
-        private IScriptConstructor exportedConstructor;
-
-        private readonly IScriptConstructor staticScriptConstructor;
+        private readonly ExportDefinition exportDefinition;
         private readonly TypeMetadata metadata;
-
 
         public ScriptType(ScriptSystem system, Type type) : base(system, type)
         {
-            if (!type.IsGenericType)
-            {
-                // Generic types are not allowed to be exported !
-                var exported = (ExportedAttribute)Attribute.GetCustomAttribute(type, typeof(ExportedAttribute));
-                if (exported != null)
-                {
-                    this.isExported = true;
-                    this.exportCaseConvention = exported.Convention;
-                    if (exported.Name != null)
-                    {
-                        exportedName = exported.Name;
-                    }
-                    else
-                    {
-                        exportedName = CaseToolkit.GetMemberName(exportCaseConvention, type.Name);
-                    }
-                    if (exported.IgnoreNamespace)
-                    {
-                        exportedNamespace = string.Empty;
-                    }
-                    else
-                    {
-                        exportedNamespace = type.Namespace;
-                    }
-                }
-            }
+            exportDefinition = ExportDefinition.GetExportDefinition(type);
 
             this.typeId = system.CreateTypeId();
             isGlobals = Attribute.IsDefined(type, typeof(GlobalsAttribute));
@@ -61,12 +28,13 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             InitBaseType(false);
             InitInterfaces();
 
-            this.metadata = CreateTypeMetadata();
+            this.metadata = MetadataHelper.CreateTypeMetadata(system, this);
 
             var staticCtor = type.GetConstructor(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, Type.EmptyTypes, null);
             if ( staticCtor != null )
             {
-                staticScriptConstructor = GetScriptConstructor(staticCtor);
+                var staticScriptConstructor = GetScriptConstructor(staticCtor);
+                system.AddStaticConstructor(staticScriptConstructor);
             }
 
             if (type.IsInterface)
@@ -82,58 +50,14 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                     }
                 }
             }
-            
-            if (isExported)
+
+            if (exportDefinition != null)
             {
-                EnsurePublicMembersForExport();
+                exportDefinition.InitMappedType(this);
+                system.AddExport(exportDefinition);
             }
 
             system.AddTypeToWrite(this);
-        }
-
-        private void EnsurePublicMembersForExport()
-        {
-            var pubCtors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-            if (pubCtors.Length > 1)
-            {
-                throw new Exception(string.Format("Type '{0}' is exported, it cannot have more than one public constructor", type.FullName));
-            }
-
-            foreach (var ctor in pubCtors)
-            {
-               exportedConstructor = GetScriptConstructor(ctor);
-            }
-
-            foreach (var method in type.GetMethods( BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
-            {
-                if (!method.IsGenericMethodDefinition)
-                {
-                    GetScriptMethod(method);
-                }
-            }
-
-            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public))
-            {
-                if (field.DeclaringType == type)
-                {
-                    GetScriptField(field);
-                }
-            }
-        }
-
-
-        private TypeMetadata CreateTypeMetadata()
-        {
-            var meta = new TypeMetadata();
-            meta.Module = system.Metadata;
-            meta.Name = TypeId;
-            meta.CRef = CRefToolkit.GetCRef(Type);
-            if (BaseType != null)
-            {
-                meta.BaseTypeName = BaseType.TypeId;
-            }
-            system.Metadata.Types.Add(meta);
-            return meta;
         }
 
         internal ScriptInterfaceMapping GetMapping()
@@ -157,10 +81,10 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             }
 
             string exported = null;
-            if (isExported && method.IsPublic && !method.IsStatic)
+            if (exportDefinition != null && method.IsPublic && !method.IsStatic)
             {
                 // Static methods will have correct name on the export object
-                exported = CaseToolkit.GetMemberName(exportCaseConvention, method.Name);
+                exported = CaseToolkit.GetMemberName(exportDefinition.ExportCaseConvention, method.Name);
                 // FIXME: check for conflicts
             }
             var body = native != null ? native.Body : null;
@@ -178,9 +102,9 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             }
 
             string exported = null;
-            if (isExported && field.IsPublic && !field.IsStatic)
+            if (exportDefinition != null && field.IsPublic && !field.IsStatic)
             {
-                exported = CaseToolkit.GetMemberName(exportCaseConvention, field.Name);
+                exported = CaseToolkit.GetMemberName(exportDefinition.ExportCaseConvention, field.Name);
                 // FIXME: check for conflicts
             }
             return new ScriptField(system, this, field, exported);
@@ -211,11 +135,6 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             get { return null; }
         }
 
-        public IScriptConstructor ExportedConstructor
-        {
-            get { return exportedConstructor; }
-        }
-
         public IList<IScriptType> Interfaces
         {
             get { return interfaces; }
@@ -231,29 +150,9 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             get { return true; }
         }
 
-        public bool IsExported
+        public ExportDefinition ExportDefinition
         {
-            get { return isExported; }
-        }
-
-        public string ExportName
-        {
-            get { return exportedName; }
-        }
-
-        public string ExportNamespace
-        {
-            get { return exportedNamespace; }
-        }
-
-        public CaseConvention ExportCaseConvention
-        {
-            get { return exportCaseConvention; }
-        }
-
-        public IScriptConstructor StaticConstructor
-        {
-            get { return staticScriptConstructor; }
+            get { return exportDefinition; }
         }
 
         public override TypeMetadata Metadata

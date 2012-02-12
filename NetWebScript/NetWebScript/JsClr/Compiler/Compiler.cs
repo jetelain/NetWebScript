@@ -156,7 +156,7 @@ namespace NetWebScript.JsClr.Compiler
             {
                 var ctor = compiler.AddEntryPoint(scriptPageType).GetScriptConstructor(scriptPageType.GetConstructor(Type.EmptyTypes));
                 var method = compiler.AddEntryPoint(typeof(IScriptPage)).GetScriptMethod(typeof(IScriptPage).GetMethod("OnLoad"));
-                writer.WriteLine("new {0}().{1}().{2}();", ctor.Owner.TypeId, ctor.ImplId, method.SlodId);
+                writer.WriteLine("new {0}().{1}().{2}();", ctor.OwnerScriptType.TypeId, ctor.ImplId, method.SlodId);
             }
             writer.WriteLine("});");
             writer.WriteLine("</script>");

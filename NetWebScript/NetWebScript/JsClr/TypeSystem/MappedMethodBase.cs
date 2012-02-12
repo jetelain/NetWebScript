@@ -21,7 +21,7 @@ namespace NetWebScript.JsClr.TypeSystem
             get { return method; }
         }
 
-        public IScriptType Owner
+        public IScriptType OwnerScriptType
         {
             get { return owner; }
         }

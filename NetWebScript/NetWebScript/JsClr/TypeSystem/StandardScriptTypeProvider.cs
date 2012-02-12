@@ -10,7 +10,6 @@ namespace NetWebScript.JsClr.TypeSystem
     {
         private readonly ScriptSystem system;
         private readonly HashSet<Type> implicitScriptAvailable = new HashSet<Type>();
-        private readonly List<ScriptType> typesToWrite = new List<ScriptType>();
 
         public StandardScriptTypeProvider(ScriptSystem system)
         {
@@ -24,14 +23,10 @@ namespace NetWebScript.JsClr.TypeSystem
                 var extender = (ImportedExtenderAttribute)Attribute.GetCustomAttribute(type, typeof(ImportedExtenderAttribute));
                 if (extender != null)
                 {
-                    var scriptExtType = new ScriptExtenderType(system, type, extender.ExtendedType);
-                    typesToWrite.Add(scriptExtType);
-                    scriptType = scriptExtType;
+                    scriptType = new ScriptExtenderType(system, type, extender.ExtendedType);
                     return true;
                 }
-                var scriptStdType = new ScriptType(system, type);
-                typesToWrite.Add(scriptStdType);
-                scriptType = scriptStdType;
+                scriptType = new ScriptType(system, type);
                 return true;
             }
             scriptType = null;
@@ -69,11 +64,6 @@ namespace NetWebScript.JsClr.TypeSystem
             {
                 implicitScriptAvailable.Add(force.Type);
             }
-        }
-
-        internal List<ScriptType> TypesToWrite
-        {
-            get { return typesToWrite; }
         }
 
     }

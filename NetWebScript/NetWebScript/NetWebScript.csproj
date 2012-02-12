@@ -220,6 +220,7 @@
     <Compile Include="JsClr\TypeSystem\AnonymousScriptTypeProvider.cs" />
     <Compile Include="JsClr\TypeSystem\EnumScriptTypeProvider.cs" />
     <Compile Include="JsClr\TypeSystem\EquivalentScriptTypeProvider.cs" />
+    <Compile Include="JsClr\TypeSystem\ExportDefinition.cs" />
     <Compile Include="JsClr\TypeSystem\Helped\NoneTypeBoxing.cs" />
     <Compile Include="JsClr\TypeSystem\Helped\TypeBoxing.cs" />
     <Compile Include="JsClr\TypeSystem\IdentifierGenerator.cs" />
@@ -288,6 +289,7 @@
     <Compile Include="JsClr\TypeSystem\IScriptTypeProvider.cs" />
     <Compile Include="JsClr\TypeSystem\MappedField.cs" />
     <Compile Include="JsClr\TypeSystem\MappedMethodBase.cs" />
+    <Compile Include="JsClr\TypeSystem\MetadataHelper.cs" />
     <Compile Include="JsClr\TypeSystem\NativeScriptTypeProvider.cs" />
     <Compile Include="JsClr\TypeSystem\Native\ArrayType.cs" />
     <Compile Include="JsClr\TypeSystem\Native\NativeMethodHelped.cs" />
@@ -301,6 +303,10 @@
     <Compile Include="JsClr\Compiler\RuntimeAstFilter.cs" />
     <Compile Include="JsClr\TypeSystem\Remoting\ScriptTransparentProxyCreate.cs" />
     <Compile Include="JsClr\TypeSystem\Remoting\ScriptTransparentProxyType.cs" />
+    <Compile Include="JsClr\TypeSystem\Remoting\ServerSideConstructor.cs" />
+    <Compile Include="JsClr\TypeSystem\Remoting\ServerSideMethod.cs" />
+    <Compile Include="JsClr\TypeSystem\Remoting\ServerSideType.cs" />
+    <Compile Include="JsClr\TypeSystem\Remoting\ServerSideTypeProvider.cs" />
     <Compile Include="JsClr\TypeSystem\Remoting\TransparentConstructor.cs" />
     <Compile Include="JsClr\TypeSystem\Remoting\TransparentField.cs" />
     <Compile Include="JsClr\TypeSystem\Remoting\TransparentMethod.cs" />

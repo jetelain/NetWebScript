@@ -194,7 +194,6 @@ namespace NetWebScript.JsClr.TypeSystem
 
         private void EnsureChildImplments(IScriptType child, MethodInfo virtualMethod)
         {
-            Console.WriteLine("EnsureChildrenImplments {0}", virtualMethod);
             Contract.Requires(virtualMethod.IsVirtual);
             Contract.Requires(type.IsInterface);
 

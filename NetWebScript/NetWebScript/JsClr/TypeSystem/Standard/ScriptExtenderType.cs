@@ -27,6 +27,13 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
             }
         }
 
+        public override bool HaveCastInformation
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         public IEnumerable<ScriptMethod> Extensions
         {

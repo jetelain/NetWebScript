@@ -145,7 +145,7 @@ namespace NetWebScript.JsClr.Compiler
             {
                 try
                 {
-                    var netAst = system.GetMethodAst(method, method.Method);
+                    var netAst = MethodAst.GetMethodAst(method.Method);
                     method.Ast = runtimeFilter.Visit(netAst);
                 }
                 catch (AstBuilderException e)
@@ -203,7 +203,7 @@ namespace NetWebScript.JsClr.Compiler
 
         private void WriteTypes(TextWriter writer)
         {
-            var exports = system.TypesToWrite.Where(t => t.IsExported);
+            var exports = system.Exports.ToList();
 
             var moduleWriter = new ModuleWriter(writer, system, PrettyPrint, instrumentation);
 
@@ -223,14 +223,14 @@ namespace NetWebScript.JsClr.Compiler
                 writer.WriteLine();
                 writer.WriteLine("// ### Static constructors");
             }
-            foreach (var type in system.TypesToWrite.Where(t => t.StaticConstructor != null).ToArray())
+            foreach (var ctor in system.StaticConstructors.ToArray())
             {
                 if (PrettyPrint)
                 {
-                    writer.WriteLine("// {0}", type.Type.FullName);
+                    writer.WriteLine("// {0}", ctor.OwnerScriptType.Type.FullName);
                 }
-                var ctor = type.StaticConstructor;
-                writer.WriteLine("{0}.{1}();", type.TypeId, ctor.ImplId);
+                writer.Write(ctor.Invoker.WriteMethodReference(ctor).Text);
+                writer.WriteLine("();");
             }
         }
 
@@ -258,7 +258,7 @@ namespace NetWebScript.JsClr.Compiler
             if (Instrumentation != null && Instrumentation.Start != null)
             {
                 writer.WriteLine("$(document).ready(function(){");
-                writer.WriteLine("{0}.{1}();", Instrumentation.Start.Owner.TypeId, Instrumentation.Start.ImplId);
+                writer.WriteLine("{0}.{1}();", Instrumentation.Start.OwnerScriptType.TypeId, Instrumentation.Start.ImplId);
                 writer.WriteLine("});");
             }
 

@@ -12,6 +12,6 @@ namespace NetWebScript.JsClr.TypeSystem
     {
         MethodBase Method { get; }
 
-        IScriptType Owner { get; }
+        IScriptType OwnerScriptType { get; }
     }
 }

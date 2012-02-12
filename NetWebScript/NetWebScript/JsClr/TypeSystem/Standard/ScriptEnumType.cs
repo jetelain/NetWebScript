@@ -27,21 +27,6 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
 
         #region IScriptType Members
 
-        public IScriptConstructor GetScriptConstructor(ConstructorInfo method)
-        {
-            return null; // No constructor is declared by an enum type
-        }
-
-        public IScriptMethod GetScriptMethod(MethodInfo method)
-        {
-            return null; // No method is declared by an enum type
-        }
-
-        public IScriptField GetScriptField(System.Reflection.FieldInfo field)
-        {
-            throw new NotImplementedException();
-        }
-
         public override string TypeId
         {
             get { return typeId; }
@@ -98,7 +83,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
 
         public void WriteDeclaration(System.IO.TextWriter writer, WriterContext context)
         {
-            writer.Write("{2}={0}.{1}('{2}',[", createEnumType.Owner.TypeId, createEnumType.ImplId, TypeId);
+            writer.Write("{2}={0}.{1}('{2}',[", createEnumType.OwnerScriptType.TypeId, createEnumType.ImplId, TypeId);
             bool first = true;
             foreach (var field in Type.GetFields(BindingFlags.Public | BindingFlags.Static))
             {

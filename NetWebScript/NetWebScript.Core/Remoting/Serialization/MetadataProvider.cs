@@ -35,12 +35,6 @@ namespace NetWebScript.Remoting.Serialization
             }
             return map;
         }
-        
-        internal TypeMetadata GetTypeMetadata(Type type)
-        {
-            var key = CRefToolkit.GetCRef(type);
-            return modules.SelectMany(m => m.Types.Where(t => t.CRef == key)).FirstOrDefault();
-        }
 
         private Dictionary<string, FieldInfo> GenerateMapping(Type type)
         {
@@ -114,6 +108,24 @@ namespace NetWebScript.Remoting.Serialization
             return true;
         }
 
+        internal TypeMetadata GetTypeMetadataByScriptName(string name)
+        {
+            return modules.SelectMany(m => m.Types.Where(t => t.Name == name)).FirstOrDefault();
+        }
 
+        internal TypeMetadata GetTypeMetadataByCRef(string cref)
+        {
+            return modules.SelectMany(m => m.Types.Where(t => t.CRef == cref)).FirstOrDefault();
+        }
+
+        internal TypeMetadata GetTypeMetadata(Type type)
+        {
+            return GetTypeMetadataByCRef(CRefToolkit.GetCRef(type));
+        }
+
+        internal EquivalentMetadata GetEquivalentMetadataByCRef(string cref)
+        {
+            return modules.SelectMany(m => m.Equivalents.Where(t => t.CRef == cref)).FirstOrDefault();
+        }
     }
 }

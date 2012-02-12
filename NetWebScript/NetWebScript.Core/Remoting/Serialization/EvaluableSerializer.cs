@@ -70,8 +70,7 @@ namespace NetWebScript.Remoting.Serialization
             var valueType = value as Type;
             if (valueType != null)
             {
-                var key = CRefToolkit.GetCRef(valueType);
-                var scriptType = cache.ScriptModules.SelectMany(m => m.Types.Where(t => t.CRef == key)).FirstOrDefault();
+                var scriptType = cache.MetadataProvider.GetTypeMetadata(valueType);
                 writer.Write(scriptType.Name);
                 return;
             }
@@ -132,10 +131,9 @@ namespace NetWebScript.Remoting.Serialization
 
         private void SerializeMethodReference(TextWriter writer, System.Reflection.MethodBase method)
         {
-            var key = CRefToolkit.GetCRef(method.DeclaringType);
-            var scriptType = cache.ScriptModules.SelectMany(m => m.Types.Where(t => t.CRef == key)).FirstOrDefault();
+            var scriptType = cache.MetadataProvider.GetTypeMetadata(method.DeclaringType);
 
-            key = CRefToolkit.GetCRef(method);
+            var key = CRefToolkit.GetCRef(method);
             var scriptMethod = scriptType.Methods.FirstOrDefault(m => m.CRef == key);
             writer.Write(scriptType.Name);
             writer.Write('.');

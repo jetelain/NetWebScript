@@ -323,7 +323,7 @@ namespace NetWebScript.JsClr.Compiler
                 {
                     writer.WriteLine("var t=null;");
                 }
-                writer.WriteLine("{0}.{1}('{2}',t);", instrumentation.EnterMethod.Owner.TypeId, instrumentation.EnterMethod.ImplId, methodMetadata.Id);
+                writer.WriteLine("{0}.{1}('{2}',t);", instrumentation.EnterMethod.OwnerScriptType.TypeId, instrumentation.EnterMethod.ImplId, methodMetadata.Id);
                 writer.WriteLine("try {");
             }
             else if (ast.Variables.Count > 0)
@@ -359,7 +359,7 @@ namespace NetWebScript.JsClr.Compiler
             if (instrumentation != null)
             {
                 writer.WriteLine("} finally {");
-                writer.WriteLine("{0}.{1}();",  instrumentation.LeaveMethod.Owner.TypeId, instrumentation.LeaveMethod.ImplId);
+                writer.WriteLine("{0}.{1}();",  instrumentation.LeaveMethod.OwnerScriptType.TypeId, instrumentation.LeaveMethod.ImplId);
                 writer.WriteLine("}");
             }
             writer.Write("}");
@@ -377,7 +377,7 @@ namespace NetWebScript.JsClr.Compiler
                 return null;
             }
             JsTokenWriter builder = new JsTokenWriter();
-            builder.Write("{0}.{1}", instrumentation.Point.Owner.TypeId, instrumentation.Point.ImplId);
+            builder.Write("{0}.{1}", instrumentation.Point.OwnerScriptType.TypeId, instrumentation.Point.ImplId);
             builder.WriteOpenArgs();
             builder.Write("'" + AddDebugPoint(point.Point).Id + "'");
             builder.WriteCloseArgs();

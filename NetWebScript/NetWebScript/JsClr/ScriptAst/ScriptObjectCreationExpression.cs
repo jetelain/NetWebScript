@@ -10,6 +10,10 @@ namespace NetWebScript.JsClr.ScriptAst
 {
     public sealed class ScriptObjectCreationExpression : ScriptExpression
     {
+        public ScriptObjectCreationExpression(IInvocableConstructor constructor, List<ScriptExpression> arguments)
+            : this(null, constructor, arguments)
+        {
+        }
 
         public ScriptObjectCreationExpression(int? ilOffset, IInvocableConstructor constructor, List<ScriptExpression> arguments)
             : base(ilOffset)

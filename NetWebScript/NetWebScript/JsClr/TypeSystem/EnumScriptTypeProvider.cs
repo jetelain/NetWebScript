@@ -8,7 +8,6 @@ namespace NetWebScript.JsClr.TypeSystem
 {
     class EnumScriptTypeProvider : IScriptTypeProvider
     {
-        private readonly List<ScriptEnumType> enumsToWrite = new List<ScriptEnumType>();
         private readonly ScriptSystem system;
 
         public EnumScriptTypeProvider(ScriptSystem system)
@@ -21,9 +20,7 @@ namespace NetWebScript.JsClr.TypeSystem
             if (type.IsEnum)
             {
                 // All enums are automaticly script avaiblable
-                var scriptEnumType = new ScriptEnumType(system, type);
-                enumsToWrite.Add(scriptEnumType);
-                scriptType = scriptEnumType;
+                scriptType = new ScriptEnumType(system, type);
                 return true;
             }
             scriptType = null;
@@ -34,12 +31,5 @@ namespace NetWebScript.JsClr.TypeSystem
         {
 
         }
-
-
-        internal List<ScriptEnumType> EnumsToWrite
-        {
-            get { return enumsToWrite; }
-        }
-
     }
 }

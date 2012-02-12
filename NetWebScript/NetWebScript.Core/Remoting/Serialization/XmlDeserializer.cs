@@ -58,7 +58,7 @@ namespace NetWebScript.Remoting.Serialization
             if (element.Name == "obj")
             {
                 string name = element.GetAttribute("c");
-                TypeMetadata meta = cache.GetTypeMetadataByScriptName(name);
+                TypeMetadata meta = cache.MetadataProvider.GetTypeMetadataByScriptName(name);
                 IObjectSerializer serializer;
                 Type type;
                 if (meta != null)

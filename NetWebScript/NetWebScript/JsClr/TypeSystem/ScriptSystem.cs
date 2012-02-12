@@ -2,29 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NetWebScript.JsClr.AstBuilder;
-using NetWebScript.JsClr.TypeSystem.Helped;
-using NetWebScript.JsClr.TypeSystem.Imported;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
+using NetWebScript.JsClr.TypeSystem.Remoting;
 using NetWebScript.JsClr.TypeSystem.Standard;
 using NetWebScript.Metadata;
-using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem
 {
-    public class ScriptSystem
+    public sealed class ScriptSystem
     {
         private readonly ModuleMetadata moduleMetadata;
 
-        private readonly StandardScriptTypeProvider stdProvider;
-        private readonly EquivalentScriptTypeProvider equivProvider;
-        private readonly EnumScriptTypeProvider enumProvider;
         private readonly List<IScriptTypeProvider> providers = new List<IScriptTypeProvider>();
              
         private readonly IdentifierGenerator slot = new IdentifierGenerator();
         private readonly IdentifierGenerator impl = new IdentifierGenerator();
         private readonly IdentifierGenerator type = new IdentifierGenerator();
+
         private readonly List<IScriptType> types = new List<IScriptType>();
+
         private readonly List<IScriptTypeDeclarationWriter> typesToWrite = new List<IScriptTypeDeclarationWriter>();
+        private readonly List<IScriptMethodBase> staticConstructors = new List<IScriptMethodBase>();
+        private readonly List<ExportDefinition> exports = new List<ExportDefinition>();
 
         private readonly Queue<ScriptMethodBase> astToGenerate = new Queue<ScriptMethodBase>();
         private bool isSealed = false;
@@ -36,19 +35,12 @@ namespace NetWebScript.JsClr.TypeSystem
             moduleMetadata.Name = "a";
 
             providers.Add(new NativeScriptTypeProvider(this));
-
-            enumProvider = new EnumScriptTypeProvider(this);
-            providers.Add(enumProvider);
-
+            providers.Add(new EnumScriptTypeProvider(this));
             providers.Add(new AnonymousScriptTypeProvider(this));
-
             providers.Add(new ImportedScriptTypeProvider(this));
-
-            stdProvider = new StandardScriptTypeProvider(this);
-            providers.Add(stdProvider);
-
-            equivProvider = new EquivalentScriptTypeProvider(this);
-            providers.Add(equivProvider);
+            providers.Add(new StandardScriptTypeProvider(this));
+            providers.Add(new ServerSideTypeProvider(this));
+            providers.Add(new EquivalentScriptTypeProvider(this));
         }
 
         internal ModuleMetadata Metadata 
@@ -136,11 +128,6 @@ namespace NetWebScript.JsClr.TypeSystem
             return null;
         }
 
-        internal IEnumerable<ScriptType> TypesToWrite
-        {
-            get { return stdProvider.TypesToWrite; }
-        }
-
         internal IEnumerable<IScriptTypeDeclarationWriter> TypesToDeclare
         {
             get { return typesToWrite.Where(t => !t.IsEmpty); }
@@ -216,9 +203,24 @@ namespace NetWebScript.JsClr.TypeSystem
             typesToWrite.Add(type);
         }
 
-        public virtual MethodAst GetMethodAst(IScriptMethodBase scriptMethod, MethodBase methodBase)
+        public void AddStaticConstructor(IScriptMethodBase staticCtor)
         {
-            return MethodAst.GetMethodAst(methodBase);
+            staticConstructors.Add(staticCtor);
+        }
+
+        public void AddExport(ExportDefinition export)
+        {
+            exports.Add(export);
+        }
+
+        public IEnumerable<IScriptMethodBase> StaticConstructors
+        {
+            get { return staticConstructors; }
+        }
+
+        public IEnumerable<ExportDefinition> Exports
+        {
+            get { return exports; }
         }
 
         internal bool IsSealed

@@ -3,10 +3,13 @@
 namespace NetWebScript.Remoting
 {
     /// <summary>
-    /// Attribute to specify that a method (or all methods of a class) must be executed
-    /// throw AJAX remoting when used in a script available type.
+    /// Specifies that a type methods should be executed throw AJAX remoting when used in a script available type.
+    /// Target class must inherits from <see cref="MarshalByRefObject"/>.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method|AttributeTargets.Class)]
+    /// <remarks>
+    /// A class with this attribute is a trust boundary. You must not trust callers, ensures that all provided data is valid and that user has the appropriate rights.
+    /// </remarks>
+    [AttributeUsage(AttributeTargets.Class)]
     public sealed class ServerSideAttribute : Attribute
     {
     }

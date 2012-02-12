@@ -10,12 +10,9 @@ namespace NetWebScript.JsClr.TypeSystem.Native
 {
     internal class FunctionType : NativeType, IValueSerializer
     {
-        private readonly ScriptSystem system;
-
         public FunctionType(ScriptSystem system, Type type)
             : base(system, "Function", type)
         {
-            this.system = system;
         }
 
         public override IValueSerializer Serializer
