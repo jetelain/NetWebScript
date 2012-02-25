@@ -59,6 +59,14 @@ namespace NetWebScript.JsClr.AstPattern
         }
     }
 
+    class AnyPattern<TStatement> : PatternBase<TStatement> where TStatement : class
+    {
+        protected override PatternMatch Visit(TStatement statement)
+        {
+            return new PatternMatch();
+        }
+    }
+
     abstract class PatternBase<TStatement> where TStatement : class
     {
         internal string StatementName { get; set; }

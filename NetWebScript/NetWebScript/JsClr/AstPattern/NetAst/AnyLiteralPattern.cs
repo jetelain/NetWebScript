@@ -9,10 +9,16 @@ namespace NetWebScript.JsClr.AstPattern.NetAst
     {
         internal Type Type { get; set; }
 
+        internal string Name { get; set; }
+
         public override PatternMatch Visit(Ast.LiteralExpression literalExpression)
         {
             if (Type == null || (literalExpression.Value != null && literalExpression.Value.GetType() == Type))
             {
+                if (Name != null)
+                {
+                    return new PatternMatch(Name, literalExpression.Value);
+                }
                 return new PatternMatch();
             }
             return null;

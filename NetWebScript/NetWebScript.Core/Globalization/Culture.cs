@@ -24,9 +24,9 @@ namespace NetWebScript.Globalization
         /// Register a culture into runtime. 
         /// </summary>
         /// <param name="culture">Culture to register</param>
-        public static void Register(CultureInfoEquiv culture)
+        public static void Register(System.Globalization.CultureInfo culture)
         {
-            CultureInfoEquiv.AddCulture(culture);
+            CultureInfoEquiv.AddCulture(new CultureInfoEquiv(culture));
         }
     }
 }

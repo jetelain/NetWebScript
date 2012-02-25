@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents
     [ScriptAvailable]
     [ImportedExtender(typeof(JSString))]
     [ScriptEquivalent(typeof(System.String))]
-    public sealed class StringEquiv
+    internal sealed class StringEquiv
     {
         [ScriptBody(Inline="this")]
         private readonly JSString str;

@@ -79,6 +79,7 @@
       <Link>Properties\Version.cs</Link>
     </Compile>
     <Compile Include="JsClr\AstBuilder\AstBuilderException.cs" />
+    <Compile Include="JsClr\AstBuilder\AstFilter\ArrayInitialisation.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\AstFilters.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\BinaryFix.cs" />
     <Compile Include="JsClr\AstBuilder\AstFilter\SwitchCaseString.cs" />
@@ -94,6 +95,8 @@
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\InfiniteLoop.cs" />
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\InlineBlock.cs" />
     <Compile Include="JsClr\AstBuilder\FlowPrimitives\PostLoop.cs" />
+    <Compile Include="JsClr\AstPattern\NetAst\ArrayCreationPattern.cs" />
+    <Compile Include="JsClr\AstPattern\NetAst\ArrayIndexerPattern.cs" />
     <Compile Include="JsClr\AstPattern\NetAst\AssignExpressionPattern.cs" />
     <Compile Include="JsClr\AstPattern\NetAst\BinaryExpressionPattern.cs" />
     <Compile Include="JsClr\AstPattern\AnySequencePattern.cs" />
@@ -113,6 +116,7 @@
     <Compile Include="JsClr\AstPattern\NetAst\AnyStaticFieldPattern.cs" />
     <Compile Include="JsClr\AstPattern\NetAst\NetPatternBase.cs" />
     <Compile Include="JsClr\AstPattern\ExactSequencePattern.cs" />
+    <Compile Include="JsClr\AstPattern\SubSequencePattern.cs" />
     <Compile Include="JsClr\Ast\ArrayCreationExpression.cs" />
     <Compile Include="JsClr\Ast\ArrayIndexerExpression.cs" />
     <Compile Include="JsClr\Ast\AssignableExpression.cs" />

@@ -7,7 +7,7 @@ namespace NetWebScript.Equivalents.Collections.Generic
 {
     [ScriptEquivalent(typeof(System.Collections.Generic.KeyValuePair<,>))]
     [ScriptAvailable]
-    public sealed class KeyValuePair<TKey, TValue>
+    internal sealed class KeyValuePair<TKey, TValue>
     {
         private readonly TKey key;
         private readonly TValue value;

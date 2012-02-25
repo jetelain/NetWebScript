@@ -6,7 +6,7 @@ using System.Text;
 namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
-    public static class ObjectHelper
+    internal static class ObjectHelper
     {
         // On some browser (IE) all objects does nto inherits from Object and it's not possible to change Object.prototype
         // This class provide a "workaround" for GetHashCode and Equals.

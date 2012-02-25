@@ -10,7 +10,7 @@ namespace NetWebScript.Equivalents
 {
 	[ScriptEquivalent(typeof(System.DateTime))]
 	[ScriptAvailable]
-	public sealed class DateTimeEquiv : IFormattable
+    internal sealed class DateTimeEquiv : IFormattable
 	{
 		private readonly Date date; // the underlaying timestamp is UTC based
 		private readonly DateTimeKind kind;

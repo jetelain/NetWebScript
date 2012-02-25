@@ -6,7 +6,7 @@ namespace NetWebScript.Equivalents.Collections.Generic
 {
     [ScriptEquivalent(typeof(System.Collections.Generic.List<>))]
     [ScriptAvailable]
-    public class List<T> : IList<T>
+    internal class List<T> : IList<T>
     {
         private readonly Script.JSArray<T> data = new Script.JSArray<T>();
 

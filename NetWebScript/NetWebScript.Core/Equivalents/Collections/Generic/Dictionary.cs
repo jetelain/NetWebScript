@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents.Collections.Generic
 {
     [ScriptEquivalent(typeof(System.Collections.Generic.Dictionary<,>))]
     [ScriptAvailable]
-    public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    internal class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private class Entry
         {

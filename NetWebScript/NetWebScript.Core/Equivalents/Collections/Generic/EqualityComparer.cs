@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents.Collections.Generic
 {
     [ScriptEquivalent(typeof(System.Collections.Generic.EqualityComparer<>))]
     [ScriptAvailable]
-    public abstract class EqualityComparer<T> : IEqualityComparer<T>, IEqualityComparer
+    internal abstract class EqualityComparer<T> : IEqualityComparer<T>, IEqualityComparer
     {
         private static EqualityComparer<T> @default;
 

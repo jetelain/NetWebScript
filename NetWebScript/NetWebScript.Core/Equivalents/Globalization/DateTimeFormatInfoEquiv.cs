@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents.Globalization
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Globalization.DateTimeFormatInfo))]
-    public class DateTimeFormatInfoEquiv : IFormatProvider
+    internal class DateTimeFormatInfoEquiv : IFormatProvider
     {
         public string[] AbbreviatedDayNames { get; set; }
         public string[] AbbreviatedMonthGenitiveNames { get; set; }

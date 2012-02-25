@@ -40,27 +40,14 @@ using System.Collections.Generic;
 //[assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: CLSCompliant(true)]
-        
-[assembly: ForceScriptAvailable(typeof(IEnumerable))]
-[assembly: ForceScriptAvailable(typeof(IEnumerator))]
-[assembly: ForceScriptAvailable(typeof(IEnumerable<>))]
-[assembly: ForceScriptAvailable(typeof(IEnumerator<>))]
-[assembly: ForceScriptAvailable(typeof(IDisposable))]
-
-[assembly: ForceScriptAvailable(typeof(IEqualityComparer))]
-[assembly: ForceScriptAvailable(typeof(IEqualityComparer<>))]
-[assembly: ForceScriptAvailable(typeof(ICollection))]
-[assembly: ForceScriptAvailable(typeof(ICollection<>))]
-
-[assembly: ForceScriptAvailable(typeof(ICustomFormatter))]
-[assembly: ForceScriptAvailable(typeof(IFormatProvider))]
-[assembly: ForceScriptAvailable(typeof(IFormattable))]
 
 #if SIGNED
 [assembly: InternalsVisibleTo("NetWebScript.Test.Material, PublicKey=002400000480000094000000060200000024000052534131000400000100010093f5b897959d0750070b0857c5f2d123987ee46191d4688797c5df2a8ae8c5ce2593a971842b334ab3eba209566ce6cbb92490f5f1bbba5be3364fad1817aece8951d4923870f910566510b2e8453c9ea5fe943a180096df648f397ad7efb072acdd1674bbaf06fe2e68a61c8cbfcbf944bb926756fd29f368951f8b53e897a7")]
 [assembly: InternalsVisibleTo("NetWebScript.Test, PublicKey=002400000480000094000000060200000024000052534131000400000100010093f5b897959d0750070b0857c5f2d123987ee46191d4688797c5df2a8ae8c5ce2593a971842b334ab3eba209566ce6cbb92490f5f1bbba5be3364fad1817aece8951d4923870f910566510b2e8453c9ea5fe943a180096df648f397ad7efb072acdd1674bbaf06fe2e68a61c8cbfcbf944bb926756fd29f368951f8b53e897a7")]
+[assembly: InternalsVisibleTo("NetWebScript, PublicKey=002400000480000094000000060200000024000052534131000400000100010093f5b897959d0750070b0857c5f2d123987ee46191d4688797c5df2a8ae8c5ce2593a971842b334ab3eba209566ce6cbb92490f5f1bbba5be3364fad1817aece8951d4923870f910566510b2e8453c9ea5fe943a180096df648f397ad7efb072acdd1674bbaf06fe2e68a61c8cbfcbf944bb926756fd29f368951f8b53e897a7")]
 #else
 [assembly: InternalsVisibleTo("NetWebScript.Test.Material")]
 [assembly: InternalsVisibleTo("NetWebScript.Test")]
+[assembly: InternalsVisibleTo("NetWebScript")]
 #endif
 

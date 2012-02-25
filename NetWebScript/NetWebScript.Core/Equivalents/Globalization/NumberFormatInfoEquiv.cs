@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents.Globalization
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Globalization.NumberFormatInfo))]
-    public class NumberFormatInfoEquiv : IFormatProvider
+    internal class NumberFormatInfoEquiv : IFormatProvider
     {
         public int CurrencyDecimalDigits { get; set; }
 

@@ -32,6 +32,7 @@ namespace NetWebScript.JsClr.AstPattern
             {
                 if (!patternsEnum.Current.Test(statements.Current, context))
                 {
+                    statements.MoveBack();
                     return false;
                 }
             }

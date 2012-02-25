@@ -6,7 +6,7 @@ using System.Text;
 namespace NetWebScript.Equivalents.Threading
 {
     [ScriptAvailable, ScriptEquivalent(typeof(System.Threading.Thread))]
-    public class Thread
+    internal class Thread
     {
         private static Thread unique;
         public static Thread CurrentThread { get { if (unique == null) { unique = new Thread(); } return unique; } }

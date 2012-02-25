@@ -10,7 +10,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Double))]
-    public sealed class DoubleEquiv : IFormattable
+    internal sealed class DoubleEquiv : IFormattable
     {
         private readonly JSNumber value;
 

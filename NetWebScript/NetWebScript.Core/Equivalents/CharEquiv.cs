@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Char))]
-    public sealed class CharEquiv
+    internal sealed class CharEquiv
     {
         private readonly int value;
 

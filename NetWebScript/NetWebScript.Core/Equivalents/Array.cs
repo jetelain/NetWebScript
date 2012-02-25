@@ -6,7 +6,7 @@ using System.Text;
 namespace NetWebScript.Equivalents
 {
     [ScriptEquivalent(typeof(System.Array)), ScriptAvailable]
-    public static class Array
+    internal static class Array
     {
         [ScriptBody(Inline = "array.length")]
         public static int get_Length(System.Array array)

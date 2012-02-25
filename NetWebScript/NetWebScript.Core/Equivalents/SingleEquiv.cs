@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Single))]
-    public sealed class SingleEquiv
+    internal sealed class SingleEquiv
     {
         private readonly JSNumber value;
 

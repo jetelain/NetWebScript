@@ -12,6 +12,7 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
             new NullTest().Visit(method);
             new SwitchCaseString().Visit(method);
             new VariableRef().Visit(method);
+            new ArrayInitialisation().Visit(method);
         }
     }
 }

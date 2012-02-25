@@ -7,7 +7,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptEquivalent(typeof(System.TimeSpan))]
     [ScriptAvailable]
-    public sealed class TimeSpanEquiv
+    internal sealed class TimeSpanEquiv
     {
         private readonly double totalMiliseconds;
 

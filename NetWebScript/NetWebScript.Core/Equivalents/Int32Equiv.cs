@@ -10,7 +10,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Int32))]
-    public sealed class Int32Equiv : IFormattable
+    internal sealed class Int32Equiv : IFormattable
     {
         private readonly JSNumber value;
 

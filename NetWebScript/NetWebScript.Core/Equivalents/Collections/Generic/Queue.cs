@@ -7,7 +7,7 @@ namespace NetWebScript.Equivalents.Collections.Generic
 {
     [ScriptEquivalent(typeof(System.Collections.Generic.Queue<>))]
     [ScriptAvailable]
-    public class Queue<T>
+    internal class Queue<T>
     {
         private readonly Script.JSArray<T> data = new Script.JSArray<T>();
 

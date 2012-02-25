@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents.Linq
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Linq.Enumerable))]
-    public static class EnumerableEquiv
+    internal static class EnumerableEquiv
     {
         public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {

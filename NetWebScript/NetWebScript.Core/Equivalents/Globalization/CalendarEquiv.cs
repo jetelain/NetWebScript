@@ -7,7 +7,7 @@ namespace NetWebScript.Equivalents.Globalization
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Globalization.Calendar))]
-    public class CalendarEquiv 
+    internal class CalendarEquiv 
     {
         // TODO: More complete API to allow non-gregorian calendars.
         // => Do not try to fit standard API, do the more effective based on JavaScript Date object

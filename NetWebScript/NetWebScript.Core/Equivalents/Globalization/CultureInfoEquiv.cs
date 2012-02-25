@@ -9,9 +9,11 @@ namespace NetWebScript.Equivalents.Globalization
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Globalization.CultureInfo))]
-    public class CultureInfoEquiv : IFormatProvider
+    internal class CultureInfoEquiv : IFormatProvider
     {
         public virtual string Name { get; internal set; }
+
+        public virtual bool IsNeutralCulture { get; internal set; }
 
         public virtual DateTimeFormatInfoEquiv DateTimeFormat { get; set; }
 
@@ -66,14 +68,7 @@ namespace NetWebScript.Equivalents.Globalization
             var culture = cultures.FirstOrDefault(c => c.Name == cultureName);
             if (culture == null )
             {
-                if (cultures.Length > 0)
-                {
-                    culture = cultures.First();
-                }
-                else
-                {
-                    culture = invariantCulture;
-                }
+                culture = invariantCulture;
             }
             return culture;
         }
@@ -88,6 +83,7 @@ namespace NetWebScript.Equivalents.Globalization
             invariantCulture = new CultureInfoEquiv()
             {
                 Name = "",
+                IsNeutralCulture = true,
                 NumberFormat = new NumberFormatInfoEquiv()
                 {
                     CurrencyDecimalDigits = 2,
@@ -142,6 +138,7 @@ namespace NetWebScript.Equivalents.Globalization
             };
 
             cultures = new JSArray<CultureInfoEquiv>();
+            cultures.Push(invariantCulture);
         }
         
         private CultureInfoEquiv()
@@ -157,6 +154,7 @@ namespace NetWebScript.Equivalents.Globalization
                 throw new System.Exception("CultureNotFoundException");
             }
             Name = data.Name;
+            IsNeutralCulture = data.IsNeutralCulture;
             DateTimeFormat = data.DateTimeFormat;
             NumberFormat = data.NumberFormat;
         }
@@ -165,8 +163,38 @@ namespace NetWebScript.Equivalents.Globalization
         public CultureInfoEquiv(CultureInfo info)
         {
             Name = info.Name;
+            IsNeutralCulture = info.IsNeutralCulture;
             DateTimeFormat = new DateTimeFormatInfoEquiv(info.DateTimeFormat);
             NumberFormat = new NumberFormatInfoEquiv(info.NumberFormat);
+        }
+
+        public static CultureInfoEquiv[] GetCultures(CultureTypes types)
+        {
+            bool includeNeutral = (types & CultureTypes.NeutralCultures) == CultureTypes.NeutralCultures;
+            bool includeSpecific = (types & CultureTypes.SpecificCultures) == CultureTypes.SpecificCultures;
+            if (includeNeutral && includeSpecific)
+            {
+                return cultures;
+            }
+            JSArray<CultureInfoEquiv> list = new JSArray<CultureInfoEquiv>();
+            if (cultures != null)
+            {
+                foreach (var culture in cultures)
+                {
+                    if (culture.IsNeutralCulture)
+                    {
+                        if (includeNeutral)
+                        {
+                            list.Push(culture);
+                        }
+                    }
+                    else if (includeSpecific)
+                    {
+                        list.Push(culture);
+                    }
+                }
+            }
+            return list;
         }
     }
 }

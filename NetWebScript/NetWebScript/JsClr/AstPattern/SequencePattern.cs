@@ -42,6 +42,11 @@ namespace NetWebScript.JsClr.AstPattern
             Current = null;
             return false;
         }
+        
+        internal bool IsEnd
+        {
+            get { return pos >= data.Count; }
+        }
     }
 
 

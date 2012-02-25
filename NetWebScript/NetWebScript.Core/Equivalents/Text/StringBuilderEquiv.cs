@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents.Text
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Text.StringBuilder))]
-    public sealed class StringBuilderEquiv
+    internal sealed class StringBuilderEquiv
     {
         private readonly JSArray<object> data = new JSArray<object>();
 

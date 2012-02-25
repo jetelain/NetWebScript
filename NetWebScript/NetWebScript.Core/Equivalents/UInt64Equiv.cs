@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.UInt64))]
-    public sealed class UInt64Equiv
+    internal sealed class UInt64Equiv
     {
         private readonly JSNumber value;
 

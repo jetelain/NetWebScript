@@ -2,7 +2,7 @@
 namespace NetWebScript.Equivalents
 {
     [ScriptAvailable, ScriptEquivalent(typeof(System.InvalidOperationException))]
-    public class InvalidOperationException : Exception
+    internal class InvalidOperationException : Exception
     {
         public InvalidOperationException()
             : base("InvalidOperation")

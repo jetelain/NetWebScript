@@ -9,7 +9,7 @@ namespace NetWebScript.Equivalents.Reflection
 {
     [ScriptEquivalent(typeof(System.Reflection.ConstructorInfo))]
     [ScriptAvailable]
-    public class ConstructorInfo : MethodBase
+    internal class ConstructorInfo : MethodBase
     {
         private readonly Type type;
         private readonly JSFunction method;

@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Math))]
-    public static class MathEquiv
+    internal static class MathEquiv
     {
         //public static decimal Abs(decimal value);
 

@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
-    public class Enum
+    internal class Enum
     {
         protected string name;
         protected double value;

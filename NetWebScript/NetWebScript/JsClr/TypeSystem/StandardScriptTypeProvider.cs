@@ -9,7 +9,6 @@ namespace NetWebScript.JsClr.TypeSystem
     internal sealed class StandardScriptTypeProvider : IScriptTypeProvider
     {
         private readonly ScriptSystem system;
-        private readonly HashSet<Type> implicitScriptAvailable = new HashSet<Type>();
 
         public StandardScriptTypeProvider(ScriptSystem system)
         {
@@ -39,15 +38,16 @@ namespace NetWebScript.JsClr.TypeSystem
             {
                 return false;
             }
+            if (type.IsInterface)
+            {
+                // All interfaces are implicitly script available
+                return true;
+            }
             if (Attribute.IsDefined(type, typeof(ScriptAvailableAttribute)) || Attribute.IsDefined(type.Assembly, typeof(ScriptAvailableAttribute)))
             {
                 return true;
             }
             if (type.DeclaringType != null && IsScriptAvailable(type.DeclaringType))
-            {
-                return true;
-            }
-            if (implicitScriptAvailable.Contains(type))
             {
                 return true;
             }
@@ -60,10 +60,7 @@ namespace NetWebScript.JsClr.TypeSystem
 
         public void RegisterAssembly(Assembly assembly)
         {
-            foreach (ForceScriptAvailableAttribute force in Attribute.GetCustomAttributes(assembly, typeof(ForceScriptAvailableAttribute)))
-            {
-                implicitScriptAvailable.Add(force.Type);
-            }
+
         }
 
     }

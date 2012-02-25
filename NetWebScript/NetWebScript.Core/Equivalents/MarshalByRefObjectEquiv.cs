@@ -7,7 +7,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(MarshalByRefObject))]
-    public class MarshalByRefObjectEquiv
+    internal class MarshalByRefObjectEquiv
     {
     }
 }

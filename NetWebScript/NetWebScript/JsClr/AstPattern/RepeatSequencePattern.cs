@@ -28,6 +28,10 @@ namespace NetWebScript.JsClr.AstPattern
                     break;
                 }
             }
+            if (matching.Count == 0)
+            {
+                return false;
+            }
             context.Merge(new PatternMatch(Name, matching));
             return true;
         }

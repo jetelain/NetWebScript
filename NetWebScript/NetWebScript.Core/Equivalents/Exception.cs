@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace NetWebScript.Equivalents
 {
     [ScriptAvailable, ScriptEquivalent(typeof(System.Exception))]
-    public class Exception : Script.Error
+    internal class Exception : Script.Error
     {
         [DebuggerHidden]
         public Exception()

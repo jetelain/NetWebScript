@@ -8,7 +8,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Byte))]
-    public sealed class ByteEquiv
+    internal sealed class ByteEquiv
     {
         private readonly JSNumber value;
 

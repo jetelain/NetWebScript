@@ -7,7 +7,7 @@ namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
     [ScriptEquivalent(typeof(System.Boolean))]
-    public sealed class BooleanEquiv
+    internal sealed class BooleanEquiv
     {
         private readonly bool value;
 
