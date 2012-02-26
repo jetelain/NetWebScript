@@ -104,6 +104,7 @@
     <Compile Include="JsClr\AstPattern\NetAst\AnyVariablePattern.cs" />
     <Compile Include="JsClr\AstPattern\NetAst\AnyVariableOrAssignPattern.cs" />
     <Compile Include="JsClr\AstPattern\NetAst\AnyLiteralPattern.cs" />
+    <Compile Include="JsClr\AstPattern\NetAst\NoReferenceToVariable.cs" />
     <Compile Include="JsClr\AstPattern\NetAst\ObjectCreationPattern.cs" />
     <Compile Include="JsClr\AstPattern\NetAst\MethodInvocationPattern.cs" />
     <Compile Include="JsClr\AstPattern\NetAst\SwitchStatementPattern.cs" />

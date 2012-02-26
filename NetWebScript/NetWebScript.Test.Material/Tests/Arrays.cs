@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NetWebScript;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
 
 namespace NetWebScript.Test.Material.Tests
 {
@@ -69,5 +70,42 @@ namespace NetWebScript.Test.Material.Tests
             }
             Assert.AreEqual(10, idx);
         }
+
+        /// <summary>
+        /// Ensures that initialisation optimisation does introduce problem
+        /// </summary>
+        [TestMethod]
+        [DebuggerHidden]
+        public void InitialisationOptimisation()
+        {
+            int[] tab = new int[4];
+            tab[0] = 1;
+            tab[1] = 2;
+            tab[2] = 3;
+            tab[3] = 4;
+
+            int[] tab2 = new int[4];
+            tab2[0] = 1;
+            tab2[1] = tab2[0] + 1;
+            tab2[2] = tab2[1] + 1;
+            tab2[3] = tab2[2] + 1;
+
+            Assert.IsNotNull(tab);
+            Assert.IsNotNull(tab2);
+            Assert.AreEqual(4, tab.Length);
+            Assert.AreEqual(4, tab2.Length);
+
+            Assert.AreEqual(1, tab[0]);
+            Assert.AreEqual(2, tab[1]);
+            Assert.AreEqual(3, tab[2]);
+            Assert.AreEqual(4, tab[3]);
+
+            Assert.AreEqual(1, tab2[0]);
+            Assert.AreEqual(2, tab2[1]);
+            Assert.AreEqual(3, tab2[2]);
+            Assert.AreEqual(4, tab2[3]);
+        }
+
+
     }
 }

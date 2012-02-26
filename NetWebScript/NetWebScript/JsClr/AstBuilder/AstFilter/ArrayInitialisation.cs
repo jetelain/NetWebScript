@@ -5,6 +5,7 @@ using System.Text;
 using NetWebScript.JsClr.AstPattern;
 using NetWebScript.JsClr.Ast;
 using NetWebScript.JsClr.AstPattern.NetAst;
+using NetWebScript.JsClr.AstBuilder.Cil;
 
 namespace NetWebScript.JsClr.AstBuilder.AstFilter
 {
@@ -59,13 +60,14 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
                     if (items.Count == size)
                     {
                         List<Expression> values = new List<Expression>();
+                        var variableTester = new NoReferenceToVariable((LocalVariable)sequence.GetCapture("array"));
                         bool valid = true;
                         for(int i=0;i<size;++i)
                         {
                             var assign = (AssignExpression)items[i];
                             var indexer = (ArrayIndexerExpression)assign.Target;
                             var indexerValue = (LiteralExpression)indexer.Index;
-                            if ((int)indexerValue.Value != i)
+                            if ((int)indexerValue.Value != i || !assign.Value.Accept(variableTester))
                             {
                                 valid = false;
                                 break;
