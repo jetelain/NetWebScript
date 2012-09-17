@@ -64,5 +64,10 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
         {
             get { return isGlobal; }
         }
+
+        public bool InlineMethodCall
+        {
+            get { return false; }
+        }
     }
 }

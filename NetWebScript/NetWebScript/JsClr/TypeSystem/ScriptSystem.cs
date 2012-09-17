@@ -148,7 +148,7 @@ namespace NetWebScript.JsClr.TypeSystem
             return GetScriptConstructor((ConstructorInfo)methodBase);
         }
 
-        internal IScriptMethod GetScriptMethod(MethodInfo methodInfo)
+        public IScriptMethod GetScriptMethod(MethodInfo methodInfo)
         {
             var type = GetScriptType(methodInfo.DeclaringType);
             if (type != null)
@@ -162,7 +162,7 @@ namespace NetWebScript.JsClr.TypeSystem
             return null;
         }
 
-        internal IScriptConstructor GetScriptConstructor(ConstructorInfo constructorInfo)
+        public IScriptConstructor GetScriptConstructor(ConstructorInfo constructorInfo)
         {
             var type = GetScriptType(constructorInfo.DeclaringType);
             if (type != null)
@@ -176,7 +176,7 @@ namespace NetWebScript.JsClr.TypeSystem
             return null;
         }
 
-        internal IScriptField GetScriptField(FieldInfo fieldInfo)
+        public IScriptField GetScriptField(FieldInfo fieldInfo)
         {
             var type = GetScriptType(fieldInfo.DeclaringType);
             if (type != null)

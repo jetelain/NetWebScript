@@ -7,11 +7,11 @@ using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.TypeSystem.Inlined
 {
-    class InlinedField : MappedField, IFieldInvoker
+    internal sealed class InlinedField : MappedField, IFieldInvoker
     {
         private readonly InlineFragment pattern;
 
-        public InlinedField(IScriptType owner, FieldInfo field, string patternString)
+        internal InlinedField(IScriptType owner, FieldInfo field, string patternString)
             : base(owner, field)
         {
             this.pattern = new InlineFragment(patternString);

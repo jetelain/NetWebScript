@@ -40,9 +40,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Task", "NetWeb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.Web", "NetWebScript.Web\NetWebScript.Web.csproj", "{FB14C870-F430-48F3-9911-0E257BAA6D35}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetWebScript.APIStatus", "NetWebScript.APIStatus\NetWebScript.APIStatus.csproj", "{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 15
+		SccNumberOfProjects = 16
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs26
 		SccLocalPath0 = .
@@ -88,6 +90,9 @@ Global
 		SccProjectUniqueName14 = NetWebScript.Web\\NetWebScript.Web.csproj
 		SccProjectName14 = NetWebScript.Web
 		SccLocalPath14 = NetWebScript.Web
+		SccProjectUniqueName15 = NetWebScript.APIStatus\\NetWebScript.APIStatus.csproj
+		SccProjectName15 = NetWebScript.APIStatus
+		SccLocalPath15 = NetWebScript.APIStatus
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = NetWebScript.vsmdi
@@ -241,6 +246,16 @@ Global
 		{FB14C870-F430-48F3-9911-0E257BAA6D35}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{FB14C870-F430-48F3-9911-0E257BAA6D35}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FB14C870-F430-48F3-9911-0E257BAA6D35}.Release|x86.ActiveCfg = Release|Any CPU
+		{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}.Debug|x86.ActiveCfg = Debug|x86
+		{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}.Debug|x86.Build.0 = Debug|x86
+		{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}.Release|Any CPU.ActiveCfg = Release|x86
+		{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}.Release|Mixed Platforms.Build.0 = Release|x86
+		{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}.Release|x86.ActiveCfg = Release|x86
+		{89D25BFB-973E-4B10-91C5-3A7CDA3C82BE}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

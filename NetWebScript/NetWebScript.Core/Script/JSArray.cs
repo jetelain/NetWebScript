@@ -115,6 +115,20 @@ namespace NetWebScript.Script
             return removed;
         }
 
+        public JSArray<T> Splice(int index, int count, T value1, T value2, T value3)
+        {
+            var removed = new JSArray<T>();
+            while (count > 0)
+            {
+                removed.list.Add(list[index]);
+                list.RemoveAt(index);
+                count--;
+            }
+            list.Insert(index, value1);
+            list.Insert(index + 1, value2);
+            list.Insert(index + 2, value3);
+            return removed;
+        }
         public string Join(string separator)
         {
             return string.Join(separator, list);

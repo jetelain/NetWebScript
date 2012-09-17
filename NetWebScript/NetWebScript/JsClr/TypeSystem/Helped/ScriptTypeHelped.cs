@@ -74,7 +74,7 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
         private static MethodInfo EquivalentMethod(Type owner, Type helper, MethodInfo method)
         {
             var parameters = method.GetParameters().Select(p => p.ParameterType).ToArray();
-            var helperMethod = helper.GetMethod(method.Name, (method.IsStatic ? BindingFlags.Static : BindingFlags.Instance) | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, parameters, null);
+            var helperMethod = helper.GetMethod(method.Name, (method.IsStatic ? BindingFlags.Static : BindingFlags.Instance) | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.ExactBinding, null, parameters, null);
             if (helperMethod == null && !method.IsStatic)
             {
                 List<Type> parametersList = new List<Type>();
@@ -126,7 +126,7 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
             {
                 return true;
             }
-            if (a.IsGenericType && b.IsGenericType)
+            if (a.IsGenericType && b.IsGenericType && !a.IsGenericTypeDefinition && !b.IsGenericTypeDefinition)
             {
                 var defA = a.GetGenericTypeDefinition();
                 var defB = b.GetGenericTypeDefinition();

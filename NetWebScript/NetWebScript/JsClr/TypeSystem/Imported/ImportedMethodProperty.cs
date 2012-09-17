@@ -76,5 +76,14 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
             throw new NotSupportedException();
         }
 
+        public bool InlineMethodCall
+        {
+            get { return false; }
+        }
+
+        public ScriptAst.MethodScriptAst Ast
+        {
+            get { return null; }
+        }
     }
 }

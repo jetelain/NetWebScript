@@ -70,7 +70,7 @@ namespace NetWebScript.Test.AstBuilder.StatementBuilder
             il.Emit(OpCodes.Add);
             il.Emit(OpCodes.Ret);
             var expr = tester.GetExpression();
-            Assert.AreEqual("((t0 = Dup.A()) Add (t0))", expr.ToString());
+            Assert.AreEqual("((v0 = Dup.A()) Add (v0))", expr.ToString());
         }
 
         [TestMethod]
@@ -85,7 +85,7 @@ namespace NetWebScript.Test.AstBuilder.StatementBuilder
             il.Emit(OpCodes.Sub); // A - (A + A)
             il.Emit(OpCodes.Ret);
             var expr = tester.GetExpression();
-            Assert.AreEqual("((t0 = Dup.A()) Subtract ((t0 Add t0)))", expr.ToString());
+            Assert.AreEqual("((v0 = Dup.A()) Subtract ((v0 Add v0)))", expr.ToString());
         }
 
         [TestMethod]
@@ -102,7 +102,7 @@ namespace NetWebScript.Test.AstBuilder.StatementBuilder
             il.Emit(OpCodes.Mul); // A * (A - (A + A))
             il.Emit(OpCodes.Ret);
             var expr = tester.GetExpression();
-            Assert.AreEqual("((t0 = Dup.A()) Multiply ((t0 Subtract (t0 Add t0))))", expr.ToString());
+            Assert.AreEqual("((v0 = Dup.A()) Multiply ((v0 Subtract (v0 Add v0))))", expr.ToString());
         }
     }
 }

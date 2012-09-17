@@ -43,5 +43,14 @@ namespace NetWebScript.JsClr.TypeSystem.Native
         {
             get { return this; }
         }
+        public bool InlineMethodCall
+        {
+            get { return false; }
+        }
+
+        public ScriptAst.MethodScriptAst Ast
+        {
+            get { return null; }
+        }
     }
 }

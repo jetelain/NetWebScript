@@ -67,5 +67,15 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
                 return StandardInvoker.Instance;
             }
         }
+
+        public bool InlineMethodCall
+        {
+            get { return false; }
+        }
+
+        public ScriptAst.MethodScriptAst Ast
+        {
+            get { return null; }
+        }
     }
 }

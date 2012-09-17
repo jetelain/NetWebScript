@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using NetWebScript.JsClr.Runtime;
 using NetWebScript.Page;
 using NetWebScript.Remoting.Serialization;
-using System.Globalization;
 
 namespace NetWebScript.JsClr.Compiler
 {

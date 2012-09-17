@@ -8,11 +8,12 @@ using NetWebScript.JsClr.TypeSystem.Invoker;
 
 namespace NetWebScript.JsClr.TypeSystem.Inlined
 {
-    internal sealed class InlinedMethod : MappedMethodBase, IScriptMethod, IMethodInvoker
+    internal sealed class InlinedConstructor : MappedMethodBase, IScriptConstructor, IObjectCreationInvoker, IMethodInvoker
     {
+        private readonly ScriptTypeBase owner;
         private readonly InlineFragment pattern;
 
-        internal InlinedMethod(IScriptType owner, MethodInfo method, string patternString)
+        internal InlinedConstructor(IScriptType owner, ConstructorInfo method, string patternString)
             : base(owner, method)
         {
             this.pattern = new InlineFragment(patternString);
@@ -33,14 +34,20 @@ namespace NetWebScript.JsClr.TypeSystem.Inlined
             get { return this; }
         }
 
-        public JsToken WriteMethod(IInvocableMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
+        public IInvocableType Owner
+        {
+            get { return owner; }
+        }
+
+        public IObjectCreationInvoker CreationInvoker
+        {
+            get { return this; }
+        }
+
+        public JsToken WriteObjectCreation(ScriptAst.IInvocableConstructor ctor, ScriptObjectCreationExpression creationExpression, IRootInvoker converter)
         {
             var locals = new Dictionary<string, JsToken>();
-            if (methodExpression.Target != null)
-            {
-                locals.Add("this", methodExpression.Target.Accept(converter));
-            }
-            var args = methodExpression.Arguments;
+            var args = creationExpression.Arguments;
             if (args != null && args.Count > 0)
             {
                 var argsDef = this.method.GetParameters();
@@ -50,22 +57,16 @@ namespace NetWebScript.JsClr.TypeSystem.Inlined
                 }
             }
             return pattern.Execute(locals);
+        }
 
+        public JsToken WriteMethod(IInvocableMethodBase method, ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
+        {
+            throw new NotSupportedException();
         }
 
         public JsToken WriteMethodReference(IInvocableMethodBase method)
         {
             throw new NotSupportedException();
-        }
-
-        public bool InlineMethodCall
-        {
-            get { return false; }
-        }
-
-        public ScriptAst.MethodScriptAst Ast
-        {
-            get { return null; }
         }
     }
 }

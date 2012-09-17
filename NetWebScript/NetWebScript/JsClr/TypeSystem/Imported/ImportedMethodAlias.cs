@@ -46,5 +46,15 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
         {
             return JsToken.Name(name);
         }
+
+        public bool InlineMethodCall
+        {
+            get { return false; }
+        }
+
+        public ScriptAst.MethodScriptAst Ast
+        {
+            get { return null; }
+        }
     }
 }

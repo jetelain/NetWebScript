@@ -52,22 +52,22 @@ namespace NetWebScript.Test.AstBuilder.StatementBuilder
             Assert.AreEqual(6, ast.Statements.Count);
 
             var s = ast.Statements[0];
-            Assert.AreEqual("t3 = ExecOrder.A()", s.ToString());
+            Assert.AreEqual("v3 = ExecOrder.A()", s.ToString());
             
             s = ast.Statements[1];
-            Assert.AreEqual("t2 = ExecOrder.B()", s.ToString());
+            Assert.AreEqual("v2 = ExecOrder.B()", s.ToString());
             
             s = ast.Statements[2];
-            Assert.AreEqual("t1 = ExecOrder.C()", s.ToString());
+            Assert.AreEqual("v1 = ExecOrder.C()", s.ToString());
             
             s = ast.Statements[3];
-            Assert.AreEqual("t0 = ExecOrder.D()", s.ToString());
+            Assert.AreEqual("v0 = ExecOrder.D()", s.ToString());
             
             s = ast.Statements[4];
             Assert.AreEqual("ExecOrder.E()", s.ToString());
             
             s = ast.Statements[5];
-            Assert.AreEqual("return (t3 Subtract (t2 Add (t1 Multiply t0)))", s.ToString());
+            Assert.AreEqual("return (v3 Subtract (v2 Add (v1 Multiply v0)))", s.ToString());
 
             // TODO: Check IL offsets
         }
@@ -86,13 +86,13 @@ namespace NetWebScript.Test.AstBuilder.StatementBuilder
             Assert.AreEqual(3, ast.Statements.Count);
 
             var s = ast.Statements[0];
-            Assert.AreEqual("t0 = ExecOrder.A()", s.ToString());
+            Assert.AreEqual("v0 = ExecOrder.A()", s.ToString());
 
             s = ast.Statements[1];
             Assert.AreEqual("ExecOrder.E()", s.ToString());
 
             s = ast.Statements[2];
-            Assert.AreEqual("return (t0 Multiply t0)", s.ToString());
+            Assert.AreEqual("return (v0 Multiply v0)", s.ToString());
 
             // TODO: Check IL offsets
         }
@@ -117,16 +117,16 @@ namespace NetWebScript.Test.AstBuilder.StatementBuilder
             Assert.AreEqual(4, ast.Statements.Count);
 
             var s = ast.Statements[0];
-            Assert.AreEqual("t1 = ExecOrder.A()", s.ToString());
+            Assert.AreEqual("v1 = ExecOrder.A()", s.ToString());
 
             s = ast.Statements[1];
-            Assert.AreEqual("t0 = ExecOrder.B()", s.ToString());
+            Assert.AreEqual("v0 = ExecOrder.B()", s.ToString());
 
             s = ast.Statements[2];
             Assert.AreEqual("ExecOrder.E()", s.ToString());
 
             s = ast.Statements[3];
-            Assert.AreEqual("return (t1 Divide (t1 Subtract (t1 Add (t0 Multiply t0))))", s.ToString());
+            Assert.AreEqual("return (v1 Divide (v1 Subtract (v1 Add (v0 Multiply v0))))", s.ToString());
 
             // TODO: Check IL offsets
         }

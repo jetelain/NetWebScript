@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using NetWebScript.Metadata;
+using NetWebScript.JsClr.ScriptAst;
 
 namespace NetWebScript.JsClr.TypeSystem.Remoting
 {
@@ -23,6 +24,16 @@ namespace NetWebScript.JsClr.TypeSystem.Remoting
         public string SlodId
         {
             get { return slotId; }
+        }
+
+        public bool InlineMethodCall
+        {
+            get { return false; }
+        }
+
+        public MethodScriptAst Ast
+        {
+            get { return null; }
         }
     }
 }

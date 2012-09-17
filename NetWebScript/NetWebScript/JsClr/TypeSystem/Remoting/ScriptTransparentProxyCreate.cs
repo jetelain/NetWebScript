@@ -46,5 +46,15 @@ namespace NetWebScript.JsClr.TypeSystem.Remoting
         {
             get { return null; }
         }
+
+        public bool InlineMethodCall
+        {
+            get { return false; }
+        }
+
+        public ScriptAst.MethodScriptAst Ast
+        {
+            get { return null; }
+        }
     }
 }

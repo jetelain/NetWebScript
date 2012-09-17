@@ -67,13 +67,13 @@ namespace NetWebScript.Test.AstBuilder.StatementBuilder
             var ast = tester.GetMethodAst();
 
             Assert.AreEqual(4, ast.Statements.Count);
-            Assert.AreEqual("t0 = Condition.A()", ast.Statements[0].ToString());
-            Assert.AreEqual("t1 = Condition.B()", ast.Statements[1].ToString());
+            Assert.AreEqual("v0 = Condition.A()", ast.Statements[0].ToString());
+            Assert.AreEqual("v1 = Condition.B()", ast.Statements[1].ToString());
             Assert.AreEqual(@"if ( (Condition.C() ValueInequality 2) )
 {
-	t1 = Condition.D();
+	v1 = Condition.D();
 }", ast.Statements[2].ToString());
-            Assert.AreEqual("Condition.Show2(t0,t1)", ast.Statements[3].ToString());
+            Assert.AreEqual("Condition.Show2(v0,v1)", ast.Statements[3].ToString());
         }
 
         [TestMethod]
@@ -100,16 +100,16 @@ namespace NetWebScript.Test.AstBuilder.StatementBuilder
             var ast = tester.GetMethodAst();
 
             Assert.AreEqual(6, ast.Statements.Count);
-            Assert.AreEqual("t0 = Condition.A()", ast.Statements[0].ToString());
-            Assert.AreEqual("t1 = Condition.B()", ast.Statements[1].ToString());
-            Assert.AreEqual("t2 = Condition.C()", ast.Statements[2].ToString());
-            Assert.AreEqual("t3 = Condition.D()", ast.Statements[3].ToString());
+            Assert.AreEqual("v0 = Condition.A()", ast.Statements[0].ToString());
+            Assert.AreEqual("v1 = Condition.B()", ast.Statements[1].ToString());
+            Assert.AreEqual("v2 = Condition.C()", ast.Statements[2].ToString());
+            Assert.AreEqual("v3 = Condition.D()", ast.Statements[3].ToString());
             Assert.AreEqual(@"if ( (Condition.E() ValueInequality 2) )
 {
-	t2 = Condition.F();
-	t3 = Condition.G();
+	v2 = Condition.F();
+	v3 = Condition.G();
 }", ast.Statements[4].ToString());
-            Assert.AreEqual("Condition.Show4(t0,t1,t2,t3)", ast.Statements[5].ToString());
+            Assert.AreEqual("Condition.Show4(v0,v1,v2,v3)", ast.Statements[5].ToString());
         }
 
         [TestMethod]

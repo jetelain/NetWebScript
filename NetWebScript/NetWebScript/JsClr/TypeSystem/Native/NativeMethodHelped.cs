@@ -56,5 +56,15 @@ namespace NetWebScript.JsClr.TypeSystem.Native
         {
             throw new NotImplementedException();
         }
+
+        public bool InlineMethodCall
+        {
+            get { return false; }
+        }
+
+        public ScriptAst.MethodScriptAst Ast
+        {
+            get { return null; }
+        }
     }
 }

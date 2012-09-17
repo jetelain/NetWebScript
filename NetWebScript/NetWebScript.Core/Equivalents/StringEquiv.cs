@@ -1,8 +1,9 @@
-﻿
-using NetWebScript.Script;
-using System;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NetWebScript.Equivalents.Text;
+using NetWebScript.Script;
+
 namespace NetWebScript.Equivalents
 {
     [ScriptAvailable]
@@ -56,7 +57,7 @@ namespace NetWebScript.Equivalents
             return str == null || str.Length == 0;
         }
 
-        public static bool IsNullOrWhitespace(string str)
+        public static bool IsNullOrWhiteSpace(string str)
         {
             return str == null || str.Trim().Length == 0;
         }
@@ -139,7 +140,10 @@ namespace NetWebScript.Equivalents
             return string.Compare(str, strB);
         }
 
-        //public static string Concat(IEnumerable<string> values);
+        public static string Concat(IEnumerable<string> values)
+        {
+            return ((JSArray<string>)values.ToArray()).Join("");
+        }
 
         //public static string Concat<T>(IEnumerable<T> values);
 
@@ -363,7 +367,10 @@ namespace NetWebScript.Equivalents
 
         //public bool IsNormalized(NormalizationForm normalizationForm);
 
-        //public static string Join(string separator, IEnumerable<string> values);
+        public static string Join(string separator, IEnumerable<string> values)
+        {
+            return ((JSArray<string>)values.ToArray()).Join(separator);
+        }
 
         //public static string Join<T>(string separator, IEnumerable<T> values);
 

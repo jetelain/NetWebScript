@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NetWebScript.Script;
+using System.Globalization;
 
 namespace NetWebScript.Equivalents.Text
 {
@@ -10,17 +11,14 @@ namespace NetWebScript.Equivalents.Text
     [ScriptEquivalent(typeof(System.Text.StringBuilder))]
     internal sealed class StringBuilderEquiv
     {
-        private readonly JSArray<object> data = new JSArray<object>();
-
-        public StringBuilderEquiv Clear()
-        {
-            data.Splice(0, data.Length);
-            return this;
-        }
+        private readonly JSArray<string> data = new JSArray<string>();
 
         public StringBuilderEquiv Append(string value)
         {
-            data.Push(value);
+            if (value != null)
+            {
+                data.Push(value);
+            }
             return this;
         }
 
@@ -28,6 +26,82 @@ namespace NetWebScript.Equivalents.Text
         {
             data.Push(JSString.FromCharCode(c));
             return this;
+        }
+        public StringBuilderEquiv Append(bool value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+
+        public StringBuilderEquiv Append(byte value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+        //public StringBuilderEquiv Append(char[] value);
+        //public StringBuilderEquiv Append(decimal value);
+        public StringBuilderEquiv Append(double value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Append(float value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Append(int value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Append(long value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Append(object value)
+        {
+            if (value == null)
+            {
+                return this;
+            }
+            return Append(value.ToString());
+        }
+        public StringBuilderEquiv Append(sbyte value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Append(short value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Append(uint value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Append(ulong value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+
+        public StringBuilderEquiv Append(ushort value)
+        {
+            return Append(value.ToString(CultureInfo.CurrentCulture));
+        }
+
+        public StringBuilderEquiv AppendFormat(string format, object arg0) 
+        {
+            return AppendFormat(null, format, new[] { arg0 });
+        }
+
+        public StringBuilderEquiv AppendFormat(string format, object arg0, object arg1)  
+        {
+            return AppendFormat(format,new []{arg0,arg1});
+        } 
+
+        public StringBuilderEquiv AppendFormat(string format, object arg0, object arg1, object arg2)  
+        {
+            return AppendFormat(null, format, new[] { arg0, arg1, arg2 });
+        } 
+
+        public StringBuilderEquiv AppendFormat(string format, params object[] args)
+        {
+            return AppendFormat(null, format, args);
         }
 
         public StringBuilderEquiv AppendFormat(IFormatProvider provider, string format, params object[] args)
@@ -38,6 +112,25 @@ namespace NetWebScript.Equivalents.Text
                 customFormatter = (ICustomFormatter)provider.GetFormat(typeof(ICustomFormatter));
             }
             Format(customFormatter, provider, format, args);
+            return this;
+        }
+
+        public StringBuilderEquiv AppendLine()
+        {
+            data.Push("\r\n");
+            return this;
+        }
+
+        public StringBuilderEquiv AppendLine(string value)
+        {
+            data.Push(value);
+            AppendLine();
+            return this;
+        }
+        
+        public StringBuilderEquiv Clear()
+        {
+            data.Splice(0, data.Length);
             return this;
         }
 
@@ -190,5 +283,95 @@ namespace NetWebScript.Equivalents.Text
             }
             return a;
         }
+
+        private string ReduceToOneString()
+        {
+            if (data.Length == 1)
+            {
+                return data[0];
+            }
+            var value = ToString();
+            data.Splice(0, data.Length, value);
+            return value;
+        }
+
+        public int Length
+        {
+            get { return ReduceToOneString().Length; }
+        }
+
+        public StringBuilderEquiv Insert(int position, string value)
+        {
+            if (value == null)
+            {
+                return this;
+            }
+            if (position == 0)
+            {
+                data.Splice(0, 0, value);
+                return this;
+            }
+            var content = ToString();
+            data.Splice(0, data.Length, content.Substring(0, position), value, content.Substring(position));
+            return this;
+        }
+        public StringBuilderEquiv Insert(int index, bool value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Insert(int index, byte value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Insert(int index, char value)
+        {
+            return Insert(index, JSString.FromCharCode((int)value));
+        }
+        //public StringBuilderEquiv Insert(int index, decimal value);
+        public StringBuilderEquiv Insert(int index, double value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Insert(int index, float value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Insert(int index, int value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Insert(int index, long value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Insert(int index, object value)
+        {
+            if (value == null)
+            {
+                return this;
+            }
+            return Insert(index, value.ToString());
+        }
+        public StringBuilderEquiv Insert(int index, sbyte value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Insert(int index, short value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Insert(int index, uint value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Insert(int index, ulong value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+        public StringBuilderEquiv Insert(int index, ushort value)
+        {
+            return Insert(index, value.ToString(CultureInfo.CurrentCulture));
+        }
+
     }
 }

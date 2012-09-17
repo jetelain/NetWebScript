@@ -68,6 +68,11 @@ namespace NetWebScript.JsClr.TypeSystem.Imported
 
         protected sealed override IScriptConstructor CreateScriptConstructor(ConstructorInfo ctor)
         {
+            var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(ctor, typeof(ScriptBodyAttribute));
+            if (native != null && !string.IsNullOrEmpty(native.Inline))
+            {
+                return new InlinedConstructor(this, ctor, native.Inline);
+            }
             return new ImportedConstructor(this, ctor);
         }
 

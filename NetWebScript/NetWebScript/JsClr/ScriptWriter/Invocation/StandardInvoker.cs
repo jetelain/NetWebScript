@@ -20,13 +20,19 @@ namespace NetWebScript.JsClr.TypeSystem.Invoker
             return JsToken.Member(fieldExpression.Target.Accept(converter), field.SlodId);
         }
 
-        public JsToken WriteMethod(IInvocableMethodBase method, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
+        public JsToken WriteMethod(IInvocableMethodBase methodBase, ScriptAst.ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
         {
+            IInvocableMethod method = methodBase as IInvocableMethod;
+            if (methodExpression.IsExplicit && method != null && method.InlineMethodCall)
+            {
+                return WriteInlineMethodCall(method, methodExpression, converter);
+            }
+
             var writer = new JsTokenWriter();
             var explicitCall = methodExpression.IsExplicit;
-            if (method.IsStatic)
+            if (methodBase.IsStatic)
             {
-                writer.Write(method.Owner.TypeId);
+                writer.Write(methodBase.Owner.TypeId);
             }
             else
             {
@@ -35,14 +41,22 @@ namespace NetWebScript.JsClr.TypeSystem.Invoker
             writer.Write('.');
             if (methodExpression.IsExplicit)
             {
-                writer.Write(method.ImplId);
+                writer.Write(methodBase.ImplId);
             }
             else
             {
-                writer.Write(((IScriptMethod)method).SlodId);
+                writer.Write(method.SlodId);
             }
             writer.WriteArgs(methodExpression.Arguments.Select(a => a.Accept(converter)));
             return writer.ToToken(JsPrecedence.FunctionCall);
+        }
+
+        private JsToken WriteInlineMethodCall(IInvocableMethod method, ScriptMethodInvocationExpression methodExpression, IRootInvoker converter)
+        {
+            
+
+
+            throw new System.NotImplementedException();
         }
 
         public JsToken WriteObjectCreation(IInvocableConstructor ctor, ScriptAst.ScriptObjectCreationExpression creationExpression, IRootInvoker converter)

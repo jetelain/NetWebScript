@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
+using NetWebScript.JsClr.ScriptWriter.Declaration;
 using NetWebScript.JsClr.TypeSystem.Inlined;
 using NetWebScript.JsClr.TypeSystem.Invoker;
 using NetWebScript.Metadata;
-using NetWebScript.JsClr.ScriptWriter.Declaration;
 
 namespace NetWebScript.JsClr.TypeSystem.Standard
 {
@@ -37,18 +36,12 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
                 system.AddStaticConstructor(staticScriptConstructor);
             }
 
-            if (type.IsInterface)
+            if (type.IsInterface && HasGenericMethod(type))
             {
                 // Generic methods within an interface is not supported.
                 // It would require to force generation of concreate method in all types
                 // implementing interface.
-                foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
-                {
-                    if (method.IsGenericMethodDefinition)
-                    {
-                        throw new NotSupportedException("An interface should have generic method.");
-                    }
-                }
+                throw new NotSupportedException("An interface should have generic method.");
             }
 
             if (exportDefinition != null)
@@ -59,6 +52,17 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
 
             system.AddTypeToWrite(this);
         }
+        internal static bool HasGenericMethod(Type type)
+        {
+            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
+            {
+                if (method.IsGenericMethodDefinition)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         internal ScriptInterfaceMapping GetMapping()
         {
@@ -67,6 +71,11 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
 
         protected sealed override IScriptConstructor CreateScriptConstructor(ConstructorInfo ctor)
         {
+            var native = (ScriptBodyAttribute)Attribute.GetCustomAttribute(ctor, typeof(ScriptBodyAttribute));
+            if (native != null && !string.IsNullOrEmpty(native.Inline))
+            {
+                return new InlinedConstructor(this, ctor, native.Inline);
+            }
             var scriptCtor = new ScriptConstructor(system, this, ctor);
             system.AstToGenerate.Enqueue(scriptCtor);
             return scriptCtor;
@@ -189,7 +198,7 @@ namespace NetWebScript.JsClr.TypeSystem.Standard
 
         public IEnumerable<IScriptMethodBaseDeclaration> Constructors
         {
-            get { return constructors.Cast<IScriptMethodBaseDeclaration>(); }
+            get { return constructors.OfType<IScriptMethodBaseDeclaration>(); }
         }
 
         public virtual IEnumerable<IScriptMethodDeclaration> Methods

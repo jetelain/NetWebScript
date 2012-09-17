@@ -40,6 +40,10 @@ namespace NetWebScript.JsClr.TypeSystem
             }
             if (type.IsInterface)
             {
+                if (ScriptType.HasGenericMethod(type))
+                {
+                    return false;
+                }
                 // All interfaces are implicitly script available
                 return true;
             }

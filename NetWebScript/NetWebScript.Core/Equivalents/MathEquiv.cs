@@ -19,7 +19,10 @@ namespace NetWebScript.Equivalents
 
         //public static float Abs(float value);
 
-        //public static int Abs(int value);
+        public static int Abs(int value)
+        {
+            return (int)JSMath.Abs(value);
+        }
 
         //public static long Abs(long value);
 

@@ -10,7 +10,7 @@ namespace NetWebScript.Test.Material.Tests
     public class StringTest
 	{
         [TestMethod]
-        public void Equality()
+        public void String_Equality()
 		{
 			String a = "some value";
 			String b = "some value";
@@ -23,7 +23,7 @@ namespace NetWebScript.Test.Material.Tests
 		}
 
         [TestMethod]
-        public void Inequality()
+        public void String_Inequality()
 		{
 			String a = "some value";
 			String b = "some value";
@@ -36,7 +36,7 @@ namespace NetWebScript.Test.Material.Tests
 		}
 
         [TestMethod]
-        public void Concat()
+        public void String_Concat()
 		{
 			String a = "a";
 			String b = "b";
@@ -69,7 +69,7 @@ namespace NetWebScript.Test.Material.Tests
 		}
 
         [TestMethod]
-        public void Substring()
+        public void String_Substring()
 		{
 			String a = "abcdef";
 			String b = a.Substring(2,2);
@@ -80,7 +80,7 @@ namespace NetWebScript.Test.Material.Tests
 		}
 
         [TestMethod]
-        public void Chars()
+        public void String_Chars()
 		{
 			String a = "abcdef";
 			char b = a[2];
@@ -88,7 +88,7 @@ namespace NetWebScript.Test.Material.Tests
 		}
 
         [TestMethod]
-        public void Length()
+        public void String_Length()
 		{
 			String a = "abcdef";
 			int b = a.Length;
@@ -96,7 +96,7 @@ namespace NetWebScript.Test.Material.Tests
 		}
 
         [TestMethod]
-        public void Trim()
+        public void String_Trim()
         {
             Assert.AreEqual("abcd", "  abcd  ".Trim());
             Assert.AreEqual("abcd", "  abcd".Trim());
@@ -106,7 +106,7 @@ namespace NetWebScript.Test.Material.Tests
         }
 
         [TestMethod]
-        public void TrimStart()
+        public void String_TrimStart()
         {
             Assert.AreEqual("abcd  ", "  abcd  ".TrimStart());
             Assert.AreEqual("abcd", "  abcd".TrimStart());
@@ -116,7 +116,7 @@ namespace NetWebScript.Test.Material.Tests
         }
 
         [TestMethod]
-        public void TrimEnd()
+        public void String_TrimEnd()
         {
             Assert.AreEqual("  abcd", "  abcd  ".TrimEnd());
             Assert.AreEqual("  abcd", "  abcd".TrimEnd());
@@ -126,7 +126,7 @@ namespace NetWebScript.Test.Material.Tests
         }
 
         [TestMethod]
-        public void Format()
+        public void String_Format()
         {
             Assert.AreEqual("Hello world !", string.Format("Hello {0} !", "world"));
             Assert.AreEqual("Hello world !", string.Format("{1} {0} !", "world", "Hello"));
@@ -136,7 +136,7 @@ namespace NetWebScript.Test.Material.Tests
         }
 
         [TestMethod]
-        public void Format_Alignement()
+        public void String_Format_Alignement()
         {
             Assert.AreEqual("|  abcd|", string.Format("|{0,6}|", "abcd"));
             Assert.AreEqual("|abcdef|", string.Format("|{0,6}|", "abcdef"));
@@ -155,7 +155,7 @@ namespace NetWebScript.Test.Material.Tests
         }
 
         [TestMethod]
-        public void Concat_Objects()
+        public void String_Concat_Objects()
         {
             object a = 32;
             object b = "word";
@@ -349,7 +349,26 @@ namespace NetWebScript.Test.Material.Tests
             // StringComparison.InvariantCulture and StringComparison.CurrentCulture does not behave the same way
             // in CLR and in browser
         }
-        
 
+        [TestMethod]
+        public void String_IsNullOrEmpty()
+        {
+            Assert.IsTrue(string.IsNullOrEmpty(""));
+            Assert.IsTrue(string.IsNullOrEmpty(null));
+            Assert.IsFalse(string.IsNullOrEmpty("Hello world!"));
+        }
+
+        [TestMethod]
+        public void String_IsNullOrWhiteSpace()
+        {
+            Assert.IsTrue(string.IsNullOrWhiteSpace(""));
+            Assert.IsTrue(string.IsNullOrWhiteSpace(" "));
+            Assert.IsTrue(string.IsNullOrWhiteSpace("\t"));
+            Assert.IsTrue(string.IsNullOrWhiteSpace("\n"));
+            Assert.IsTrue(string.IsNullOrWhiteSpace("\r"));
+            Assert.IsTrue(string.IsNullOrWhiteSpace("\r\n\t "));
+            Assert.IsTrue(string.IsNullOrWhiteSpace(null));
+            Assert.IsFalse(string.IsNullOrWhiteSpace("Hello world!"));
+        }
 	}
 }

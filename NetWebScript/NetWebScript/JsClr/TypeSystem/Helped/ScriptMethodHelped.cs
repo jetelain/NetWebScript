@@ -53,5 +53,21 @@ namespace NetWebScript.JsClr.TypeSystem.Helped
             throw new NotSupportedException();
         }
 
+        public bool InlineMethodCall
+        {
+            get 
+            {
+                if (helper.Method.IsStatic && !method.IsStatic)
+                {
+                    return false;
+                }
+                return helper.InlineMethodCall;
+            }
+        }
+
+        public MethodScriptAst Ast
+        {
+            get { return helper.Ast; }
+        }
     }
 }
