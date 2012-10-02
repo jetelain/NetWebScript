@@ -83,7 +83,7 @@ namespace NetWebScript.Script
             }
             try
             {
-                return new JSNumber(Convert.ToInt64(s, radix));
+                return new JSNumber(Convert.ToInt32(s, radix));
             }
             catch
             {

@@ -15,19 +15,20 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
     internal class FlowTransform
     {
         private readonly ControlFlowSubGraph graph;
-        private readonly InstructionBlock loopStart;
-        private readonly InstructionBlock loopEnd;
-        
-        public FlowTransform(ControlFlowGraph graph)
+        private readonly int deep = 0;
+        private FlowTransform(ControlFlowGraph graph)
         {
             this.graph = new ControlFlowSubGraph(graph);
         }
 
-        private FlowTransform(ControlFlowSubGraph graph, InstructionBlock loopStart, InstructionBlock loopEnd)
+        private FlowTransform(int deep, ControlFlowSubGraph graph)
         {
+            if (deep == 50)
+            {
+                throw new AstBuilderException(graph.First.First.Offset, string.Format("Unable to process execution graph around block {0} (too deep recursion).", graph.First.Index + 1));
+            }
+            this.deep = deep;
             this.graph = graph;
-            this.loopEnd = loopEnd;
-            this.loopStart = loopStart;
         }
 
         public static List<Sequence> Transform(ControlFlowGraph graph)
@@ -50,15 +51,15 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
         }
         private List<Sequence> PreLoopTransform(InstructionBlock start, InstructionBlock body, InstructionBlock end)
         {
-            if (body == loopStart)
+            if (body == graph.LoopStart)
             {
                 return new List<Sequence> { new Continue() };
             }
-            if (body == loopEnd)
+            if (body == graph.LoopEnd)
             {
                 return new List<Sequence> { new Break() };
             }
-            List<Sequence> result = new FlowTransform(graph.SubGraph(body, start), start, end).Transform();
+            List<Sequence> result = new FlowTransform(deep + 1, graph.SubGraph(body, start, start, end)).Transform();
             if (result.Count > 0 && result[result.Count - 1] is Continue)
             {
                 result.RemoveAt(result.Count - 1);
@@ -76,7 +77,7 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
             //{
             //    return new List<Sequence> { new Break() };
             //}
-            var result = new FlowTransform(graph.SubGraph(block, condition), condition, end).Transform();
+            var result = new FlowTransform(deep + 1, graph.SubGraph(block, condition, condition, end)).Transform();
             if (result.Count > 0 && result[result.Count - 1] is Continue)
             {
                 result.RemoveAt(result.Count - 1);
@@ -86,7 +87,7 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
 
         private List<Sequence> InfiniteLoopTransform(InstructionBlock block, InstructionBlock end)
         {
-            var result = new FlowTransform(graph.SubGraph(block, block), block, end).TransformIgnoreFirstSpecial();
+            var result = new FlowTransform(deep + 1, graph.SubGraph(block, block, block, end)).TransformIgnoreFirstSpecial();
             if (result.Count > 0 && result[result.Count - 1] is Continue)
             {
                 result.RemoveAt(result.Count - 1);
@@ -98,41 +99,41 @@ namespace NetWebScript.JsClr.AstBuilder.Flow
         {
             Contract.Requires(body != end);
             Contract.Requires(body != null);
-            if (body == loopStart)
+            if (body == graph.LoopStart)
             {
                 return new List<Sequence> { new Continue() };
             }
-            if (body == loopEnd)
+            if (body == graph.LoopEnd)
             {
                 return new List<Sequence> { new Break() };
             }
-            return new FlowTransform(graph.SubGraph(body, end), loopStart, loopEnd).Transform();
+            return new FlowTransform(deep + 1, graph.SubGraph(body, end)).Transform();
         }
 
         private List<Sequence> TryTransform(InstructionBlock body, InstructionBlock end, ProtectedRegionData newtry)
         {
-            return new FlowTransform(graph.SubGraph(body, end, newtry), loopStart, loopEnd).Transform();
+            return new FlowTransform(deep + 1, graph.SubGraph(body, end, newtry)).Transform();
         }
 
         private List<Sequence> CatchTransform(InstructionBlock body, InstructionBlock end)
         {
-            return new FlowTransform(graph.SubGraph(body, end), loopStart, loopEnd).Transform();
+            return new FlowTransform(deep + 1, graph.SubGraph(body, end)).Transform();
         }
 
         private List<Sequence> FinallyTransform(InstructionBlock body)
         {
-            return new FlowTransform(graph.SubGraph(body, null), loopStart, loopEnd).Transform();
+            return new FlowTransform(deep + 1, graph.SubGraph(body, null)).Transform();
         }
 
         private void ProcessNext(List<Sequence> sequences, InstructionBlock block)
         {
             if (!graph.IsEnd(block))
             {
-                if (block == loopStart)
+                if (block == graph.LoopStart)
                 {
                     sequences.Add(new Continue());
                 }
-                else if (block == loopEnd)
+                else if (block == graph.LoopEnd)
                 {
                     sequences.Add(new Break());
                 }

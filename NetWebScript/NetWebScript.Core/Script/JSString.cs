@@ -149,6 +149,32 @@ namespace NetWebScript.Script
 			return regex.Expression.Replace(data, evaluator, 1);
 		}
 
+        public string Replace(JSRegExp regex, Delegate callback)
+        {
+            MatchEvaluator evaluator = delegate(Match match) { 
+                object[] arguments = new object[callback.Method.GetParameters().Length];
+                int groups = match.Groups.Count;
+                for (int i = 0; i < groups && i < arguments.Length; ++i)
+                {
+                    arguments[i] = match.Groups[i].Value;
+                }
+                if (arguments.Length > groups)
+                {
+                    arguments[groups] = match.Index;
+                }
+                if (arguments.Length == groups+2)
+                {
+                    arguments[groups+1] = this;
+                }
+                return (string)callback.DynamicInvoke(arguments);
+            };
+            if (regex.Global)
+            {
+                return regex.Expression.Replace(data, evaluator);
+            }
+            return regex.Expression.Replace(data, evaluator, 1);
+        }
+
 		public string Replace(string oldText, string replaceText)
 		{
 			int pos = data.IndexOf(oldText);

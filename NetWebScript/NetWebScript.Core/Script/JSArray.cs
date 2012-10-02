@@ -56,6 +56,21 @@ namespace NetWebScript.Script
 
         private readonly List<T> list = new List<T>();
 
+        public JSArray()
+        {
+
+        }
+
+        public JSArray(int size)
+        {
+            
+        }
+
+        private JSArray(List<T> list)
+        {
+            this.list = list;
+        }
+
         public void Push(T item)
         {
             list.Add(item);
@@ -76,8 +91,14 @@ namespace NetWebScript.Script
             return value;
         }
 
+        private int NormalizeIndex(int index)
+        {
+            return index < 0 ? Length + index : index;
+        }
+
         public JSArray<T> Splice(int index, int count)
         {
+            index = NormalizeIndex(index);
             var removed = new JSArray<T>();
             while ( count > 0 )
             {
@@ -90,6 +111,7 @@ namespace NetWebScript.Script
 
         public JSArray<T> Splice(int index, int count, T value1)
         {
+            index = NormalizeIndex(index);
             var removed = new JSArray<T>();
             while (count > 0)
             {
@@ -103,6 +125,7 @@ namespace NetWebScript.Script
 
         public JSArray<T> Splice(int index, int count, T value1, T value2)
         {
+            index = NormalizeIndex(index);
             var removed = new JSArray<T>();
             while (count > 0)
             {
@@ -117,6 +140,7 @@ namespace NetWebScript.Script
 
         public JSArray<T> Splice(int index, int count, T value1, T value2, T value3)
         {
+            index = NormalizeIndex(index);
             var removed = new JSArray<T>();
             while (count > 0)
             {
@@ -129,6 +153,13 @@ namespace NetWebScript.Script
             list.Insert(index + 2, value3);
             return removed;
         }
+
+        public JSArray<T> Splice(int index)
+        {
+            index = NormalizeIndex(index);
+            return Splice(index, Length - index);
+        }
+
         public string Join(string separator)
         {
             return string.Join(separator, list);
@@ -159,6 +190,12 @@ namespace NetWebScript.Script
             {
                 return list.Count;
             }
+        }
+
+        public JSArray<T> Reverse()
+        {
+            list.Reverse();
+            return this;
         }
 
         [ScriptAlias("$.inArray")]
@@ -199,6 +236,17 @@ namespace NetWebScript.Script
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public JSArray<T> Slice()
+        {
+            return new JSArray<T>(new List<T>(list));
+        }
+
+        public int Unshift(T value1)
+        {
+            list.Insert(0, value1);
+            return list.Count;
         }
     }
 }

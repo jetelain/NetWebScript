@@ -8,24 +8,26 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
 {
     public class ControlFlowSubGraph
     {
-        private readonly ControlFlowGraph graph;
+        private readonly InstructionBlock loopStart;
+        private readonly InstructionBlock loopEnd;
+
         private readonly InstructionBlock first;
         private readonly InstructionBlock last;
         private readonly List<ProtectedRegionData> regions;
 
         internal ControlFlowSubGraph(ControlFlowGraph graph)
         {
-            this.graph = graph;
             this.first = graph.StartBlock;
             this.regions = graph.ExceptionData;
         }
 
-        private ControlFlowSubGraph(ControlFlowGraph graph, InstructionBlock first, InstructionBlock last,List<ProtectedRegionData> regions)
+        private ControlFlowSubGraph(InstructionBlock first, InstructionBlock last, InstructionBlock loopStart, InstructionBlock loopEnd, List<ProtectedRegionData> regions)
         {
-            this.graph = graph;
             this.first = first;
             this.last = last;
-            this.regions = regions;        
+            this.regions = regions;
+            this.loopEnd = loopEnd;
+            this.loopStart = loopStart;
         }
 
         /// <summary>
@@ -44,17 +46,31 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
             get { return last; }
         }
 
+        public InstructionBlock LoopEnd
+        {
+            get { return loopEnd; }
+        }
+
+        public InstructionBlock LoopStart
+        {
+            get { return loopStart; }
+        }
 
         internal ControlFlowSubGraph SubGraph(InstructionBlock first, InstructionBlock last)
         {
-            return new ControlFlowSubGraph(graph, first, last, regions);
+            return new ControlFlowSubGraph(first, last, loopStart, loopEnd, regions);
+        }
+
+        internal ControlFlowSubGraph SubGraph(InstructionBlock first, InstructionBlock last, InstructionBlock subLoopStart, InstructionBlock subLoopEnd)
+        {
+            return new ControlFlowSubGraph(first, last, subLoopStart, subLoopEnd, regions);
         }
 
         internal ControlFlowSubGraph SubGraph(InstructionBlock first, InstructionBlock last, ProtectedRegionData inregion)
         {
             List<ProtectedRegionData> subregions = new List<ProtectedRegionData>(regions);
             subregions.Remove(inregion);
-            return new ControlFlowSubGraph(graph, first, last, subregions);
+            return new ControlFlowSubGraph(first, last, loopStart, loopEnd, subregions);
         }
 
         private List<InstructionBlock> Sucessors(InstructionBlock block)
@@ -194,7 +210,7 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
             int count = 0;
             foreach (InstructionBlock sucessor in block.Successors)
             {
-                if (sucessor != last)
+                if (!IsLimit(sucessor))
                 {
                     count++;
                     if (!done.Contains(sucessor))
@@ -225,7 +241,7 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
             int count = 0;
             foreach (InstructionBlock sucessor in block.Successors)
             {
-                if (sucessor != last)
+                if (!IsLimit(sucessor))
                 {
                     count++;
                     if (!done.Contains(sucessor))
@@ -261,7 +277,7 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
 
         private bool HasPathTo(HashSet<InstructionBlock> visited, InstructionBlock block, InstructionBlock target)
         {
-            if (last == block || visited.Contains(block))
+            if (IsLimit(block) || visited.Contains(block))
             {
                 return false;
             }
@@ -283,6 +299,11 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
         public bool IsEnd(InstructionBlock block)
         {
             return last == block;
+        }
+
+        public bool IsLimit(InstructionBlock block)
+        {
+            return last == block || block == loopEnd || block == loopStart;
         }
 
         internal List<InstructionBlock> FindAllPredececorsFrom(InstructionBlock block, InstructionBlock[] instructionBlock)
@@ -335,7 +356,7 @@ namespace NetWebScript.JsClr.AstBuilder.FlowGraph
 
         private void FindBlocksNotGoingTo(List<InstructionBlock> nonlooping, HashSet<InstructionBlock> visited, InstructionBlock block, InstructionBlock current)
         {
-            if (visited.Contains(current) || current == block || last == current)
+            if (visited.Contains(current) || current == block || IsLimit(current))
             {
                 return;
             }

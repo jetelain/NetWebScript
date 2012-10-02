@@ -11,7 +11,12 @@ namespace NetWebScript.JsClr.TypeSystem.Serializers
 
         public JsToken LiteralValue(IValueSerializer type, object value, IRootInvoker converter)
         {
-            return JsToken.Name(Convert.ToString(value,CultureInfo.InvariantCulture));
+            var str = Convert.ToString(value,CultureInfo.InvariantCulture);
+            if (str.StartsWith("-", StringComparison.Ordinal))
+            {
+                return new JsToken(JsPrecedence.Other, str);
+            }
+            return JsToken.Name(str);
         }
 
     }

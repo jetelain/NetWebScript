@@ -162,6 +162,7 @@
     <Compile Include="Script\JSRegExp.cs" />
     <Compile Include="Script\JSString.cs" />
     <Compile Include="Script\HTML\Window.cs" />
+    <Compile Include="Script\Numerics\JSBigInteger.cs" />
     <Compile Include="Script\Xml\Impl\NXmlAttribute.cs" />
     <Compile Include="Script\Xml\Impl\NXmlDocument.cs" />
     <Compile Include="Script\Xml\Impl\NXmlElement.cs" />
