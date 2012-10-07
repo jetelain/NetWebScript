@@ -41,7 +41,7 @@ namespace NetWebScript.Script.Numercis
 
                 <ZERO>, <ONE>, <_0>, <_1>
         */
-        private static JSBigInteger[] small = new []{
+        internal static JSBigInteger[] small = new []{
             JSBigInteger.ZERO,
             JSBigInteger.ONE,
             new JSBigInteger( new JSNumber[]{2},1),
@@ -122,20 +122,20 @@ namespace NetWebScript.Script.Numercis
         };
         private static JSArray<string> digits = ((JSString)"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ").Split("");
 
-        private /*readonly*/ JSArray<JSNumber> _d;
-        private /*readonly*/ int _s;
+        internal /*readonly*/ JSArray<JSNumber> _d;
+        internal /*readonly*/ int _s;
 
-        private const int @base = 10000000;
+        private const double @base = 10000000;
         private const int base_log10 = 7;
 
-        private JSBigInteger(JSArray<JSNumber> n, int s)
+        internal JSBigInteger(JSArray<JSNumber> n, int s)
         {
-            while (n.Length > 0 && n[n.Length - 1] == 0)
+            while (n.Length > 0 && (n[n.Length - 1] == null || n[n.Length - 1] == 0))
             {
                 n.Splice(n.Length-1, 1);
             }
             this._d = n;
-            this._s = n.Length == 0 ? s : 0;
+            this._s = n.Length != 0 ? (s == 0 ? 1 : s) : 0;
         }
 
         public string ToString(int toBase) {
@@ -170,9 +170,9 @@ namespace NetWebScript.Script.Numercis
 			        digit = divmod[1];
 			        // TODO: This could be changed to unshift instead of reversing at the end.
 			        // Benchmark both to compare speeds.
-                    numdDigits.Push(numerals[digit.ValueOf()]);
+                    numdDigits.Push(numerals[digit.ValueOfSmall()]);
 		        }
-		        return (sign < 0 ? "-" : "") + digits.Reverse().Join("");
+                return (sign < 0 ? "-" : "") + numdDigits.Reverse().Join("");
 	        }
         }
 
@@ -181,21 +181,28 @@ namespace NetWebScript.Script.Numercis
 
             return str.Replace(new JSRegExp(@"^([+\-])?(\d+)\.?(\d*)[eE]([+\-]?\d+)$"), new Func<string, string, string, string, string, string>((strX, s, n, f, cStr) =>
             {
-			    int x = JSNumber.ParseInt(strX);
+                //int x = JSNumber.ParseInt(strX);
                 int c = JSNumber.ParseInt(cStr);
                 var l = c < 0 ? 1 : 0;
 			    var i = n.Length + c;
-			    x = (c < 0 ? n : f).Length;
+			    int x = (c < 0 ? n : f).Length;
 			    c = ((c = Math.Abs(c)) >= x ? (c - x + l) : 0);
 			    var z = (new JSArray<object>(c + 1)).Join("0");
 			    JSString r = n + f;
+                if ((object)s == JSObject.Undefined || s == null)
+                {
+                    s = string.Empty;
+                }
 			    return s + (c < 0 ? r = z + r : r += z).Substr(0, i += c < 0 ? z.Length : 0) + (i < r.Length ? "." + r.Substr(i) : "");
 		    }));
 	    }
-
+        public static JSBigInteger Parse(JSNumber s)
+        {
+            return Parse(s.ToString(), -1);
+        }
         public static JSBigInteger Parse(string s)
         {
-            return Parse(s, 10);
+            return Parse(s, -1);
         }
         public static JSBigInteger FromInteger(int v)
         {
@@ -209,7 +216,7 @@ namespace NetWebScript.Script.Numercis
                 {
                     return new JSBigInteger(new JSNumber[] { v }, 1);
                 }
-                return new JSBigInteger(new JSNumber[]{(v % @base)|0, (v / @base)|0}, 1);
+                return new JSBigInteger(new JSNumber[] { (int)(v % @base) & 0x7FFFFFFF, (int)(v / @base) & 0x7FFFFFFF }, 1);
             }
             
             return Parse(((JSNumber)v).ToString(), 10);
@@ -219,25 +226,54 @@ namespace NetWebScript.Script.Numercis
 	        // expandExponential("-13.441*10^5") === "1344100";
 	        // expandExponential("1.12300e-1") === "0.112300";
 	        // expandExponential(1000000000000000000000000000000) === "1000000000000000000000000000000";
+            var originalS = s;
 
-
-	        s = s.ToString();
-	        if (fromBase == 10) {
+	        if (fromBase == 10 || fromBase == -1) {
 		        s = expandExponential(s);
 	        }
 
-	        var parts = new JSRegExp(@"^([+\-]?)(0[xXcCbB])?([0-9A-Za-z]*)(?:\.\d*)?$").Exec(s);
+            string prefixRE=string.Empty;
+	        if ( fromBase == -1) {
+		        prefixRE = "0[xcb]";
+	        }
+	        else if (fromBase == 16) {
+		        prefixRE = "0x";
+	        }
+	        else if (fromBase == 8) {
+		        prefixRE = "0c";
+	        }
+	        else if (fromBase == 2) {
+		        prefixRE = "0b";
+	        }
+
+	        var parts = new JSRegExp("^([+\\-]?)(" + prefixRE + ")?([0-9a-z]*)(?:\\.\\d*)?$", "i").Exec(s);
+            //var parts = new JSRegExp(@"^([+\-]?)(0[xXcCbB])?([0-9A-Za-z]*)(?:\.\d*)?$").Exec(s);
 	        if (parts != null) {
 		        var signPart = parts[1].Length == 0 ? "+" : parts[1];
 		        var baseSection = parts[2];
 		        var digitsPart = parts[3];
-
+                if (fromBase == -1)
+                {
+                    if (baseSection == "0x" || baseSection == "0X") { // Hex
+				        fromBase = 16;
+			        }
+			        else if (baseSection == "0c" || baseSection == "0C") { // Octal
+				        fromBase = 8;
+			        }
+			        else if (baseSection == "0b" || baseSection == "0B") { // Binary
+				        fromBase = 2;
+			        }
+			        else {
+				        fromBase = 10;
+			        }
+                    
+                }
 		        if (fromBase < 2 || fromBase > 36) {
 			        throw new Exception("Illegal radix " + fromBase + ".");
 		        }
 		        // Check for digits outside the range
 		        if (!(radixRegex[fromBase].Test(digitsPart))) {
-			        throw new Exception("Bad digit for radix " + fromBase);
+                    throw new Exception("Bad digit for radix " + fromBase + " ('" + originalS + "'=>'" + digitsPart + "')");
 		        }
 
 		        // Strip leading zeros, and convert to array
@@ -255,7 +291,10 @@ namespace NetWebScript.Script.Numercis
 			        while (digits.Length >= base_log10) {
 				        d.Push(JSNumber.ParseInt(digits.Splice(-base_log10).Join(""), 10));
 			        }
-			        d.Push(JSNumber.ParseInt(digits.Join(""), 10));
+                    if (digits.Length > 0)
+                    {
+                        d.Push(JSNumber.ParseInt(digits.Join(""), 10));
+                    }
 			        return new JSBigInteger(d, sign);
 		        }
 
@@ -293,15 +332,15 @@ namespace NetWebScript.Script.Numercis
 	        var b = n._d;
 	        var al = a.Length;
 	        var bl = b.Length;
-	        var sum = new JSArray<JSNumber>(Math.Max(al, bl) + 1);
+	        var sum = new JSNumber[Math.Max(al, bl) + 1];
 	        var size = Math.Min(al, bl);
-            int carry = 0;
-            int digit;
+            double carry = 0;
+            double digit;
             int i;
 	        for (i = 0; i < size; i++) {
 		        digit = a[i] + b[i] + carry;
 		        sum[i] = digit % @base;
-		        carry = (digit / @base) | 0;
+                carry = (int)(digit / @base) & 0x7FFFFFFF;
 	        }
 	        if (bl > al) {
 		        a = b;
@@ -310,7 +349,7 @@ namespace NetWebScript.Script.Numercis
 	        for (i = size; carry > 0 && i < al; i++) {
 		        digit = a[i] + carry;
 		        sum[i] = digit % @base;
-                carry = (digit / @base) | 0;
+                carry = (int)(digit / @base) & 0x7FFFFFFF;
 	        }
 	        if (carry != 0) {
 		        sum[i] = carry;
@@ -368,7 +407,7 @@ namespace NetWebScript.Script.Numercis
 	        var b = n._d;
 	        var al = a.Length;
 	        var bl = b.Length;
-	        var diff = new JSArray<JSNumber>(al); // al >= bl since a > b
+	        var diff = new JSNumber[al]; // al >= bl since a > b
 	        var borrow = 0;
 	        int i;
 	        JSNumber digit;
@@ -472,33 +511,33 @@ namespace NetWebScript.Script.Numercis
 	        var bl = b.Length;
 
 	        var pl = al + bl;
-	        var partial = new JSArray<JSNumber>(pl);
+            var partial = new JSNumber[pl];
 	        int i;
 	        for (i = 0; i < pl; i++) {
 		        partial[i] = 0;
 	        }
 
 	        for (i = 0; i < bl; i++) {
-		        var carry = 0;
-		        var bi = b[i];
-		        var jlimit = al + i;
-		        int digit;
+                double carry = 0;
+                double bi = b[i];
+                double jlimit = al + i;
+                double digit;
                 int j;
 		        for (j = i; j < jlimit; j++) {
 			        digit = partial[j] + bi * a[j - i] + carry;
-			        carry = (digit / @base) | 0;
-			        partial[j] = (digit % @base) | 0;
+			        carry = (int)(digit / @base) & 0x7FFFFFFF;
+                    partial[j] = (int)(digit % @base) & 0x7FFFFFFF;
 		        }
 		        if (carry!=0) {
 			        digit = partial[j] + carry;
-			        carry = (digit / @base) | 0;
+                    carry = (int)(digit / @base) & 0x7FFFFFFF;
 			        partial[j] = digit % @base;
 		        }
 	        }
 	        return new JSBigInteger(partial, this._s * n._s);
         }
 
-        private JSBigInteger MultiplySingleDigit (int n) {
+        private JSBigInteger MultiplySingleDigit (double n) {
 	        if (n == 0 || this._s == 0) {
 		        return ZERO;
 	        }
@@ -506,12 +545,12 @@ namespace NetWebScript.Script.Numercis
 		        return this;
 	        }
 
-	        int digit;
+            double digit;
 	        if (this._d.Length == 1) {
 		        digit = this._d[0] * n;
 		        if (digit >= @base) {
-			        return new JSBigInteger(new JSNumber[]{(digit % @base)|0,
-					        (digit / @base)|0}, 1);
+                    return new JSBigInteger(new JSNumber[]{(int)(digit % @base)& 0x7FFFFFFF,
+					        (int)(digit / @base)& 0x7FFFFFFF}, 1);
 		        }
 		        return new JSBigInteger(new JSNumber[]{digit}, 1);
 	        }
@@ -527,21 +566,19 @@ namespace NetWebScript.Script.Numercis
 	        var al = a.Length;
 
 	        var pl = al + 1;
-	        var partial = new JSArray<JSNumber>(pl);
+	        var partial = new JSNumber[pl];
 	        for (var i = 0; i < pl; i++) {
 		        partial[i] = 0;
 	        }
             int j;
-	        var carry = 0;
+            double carry = 0;
 	        for (j = 0; j < al; j++) {
 		        digit = n * a[j] + carry;
-		        carry = (digit / @base) | 0;
-		        partial[j] = (digit % @base) | 0;
+                carry = (int)(digit / @base) & 0x7FFFFFFF;
+                partial[j] = (int)(digit % @base) & 0x7FFFFFFF;
 	        }
 	        if (carry!=0) {
-		        digit = carry;
-		        carry = (digit / @base) | 0;
-		        partial[j] = digit % @base;
+                partial[j] = carry;
 	        }
 
 	        return new JSBigInteger(partial, 1);
@@ -562,15 +599,16 @@ namespace NetWebScript.Script.Numercis
 
 	        var digits = this._d;
 	        var length = digits.Length;
-	        var imult1 = new JSArray<JSNumber>(length + length + 1);
-	        int product, carry, k;
+	        var imult1 = new JSNumber[length + length + 1];
+	        double product, carry;
+            int k;
 	        int i;
 
 	        // Calculate diagonal
 	        for (i = 0; i < length; i++) {
 		        k = i * 2;
 		        product = digits[i] * digits[i];
-		        carry = (product / @base) | 0;
+                carry = (int)(product / @base) & 0x7FFFFFFF;
 		        imult1[k] = product % @base;
 		        imult1[k + 1] = carry;
 	        }
@@ -581,14 +619,14 @@ namespace NetWebScript.Script.Numercis
 		        k = i * 2 + 1;
 		        for (var j = i + 1; j < length; j++, k++) {
 			        product = digits[j] * digits[i] * 2 + imult1[k] + carry;
-			        carry = (product / @base) | 0;
+                    carry = (int)(product / @base) & 0x7FFFFFFF;
 			        imult1[k] = product % @base;
 		        }
 		        k = length + i;
 		        var digit = carry + imult1[k];
-		        carry = (digit / @base) | 0;
+                carry = (int)(digit / @base) & 0x7FFFFFFF;
 		        imult1[k] = digit % @base;
-		        imult1[k + 1] += carry;
+		        imult1[k + 1] = (imult1[k + 1] ?? 0) + carry;
 	        }
 
 	        return new JSBigInteger(imult1, 1);
@@ -601,8 +639,6 @@ namespace NetWebScript.Script.Numercis
 	        return this.DivRem(n)[1];
         }
         public JSBigInteger[] DivRem (JSBigInteger n) {
-
-
 	        if (n._s == 0) {
 		        throw new Exception("Divide by zero");
 	        }
@@ -621,20 +657,20 @@ namespace NetWebScript.Script.Numercis
 		        return new JSBigInteger[]{ZERO, this};
 	        }
 
-	        var sign = this._s * n._s;
+            var sign = this._s * n._s;
 	        var a = n.Abs();
-	        var b_digits = this._d.Slice();
+	        var b_digits = this._d;
+	        var b_index = b_digits.Length;
 	        var digits = n._d.Length;
-	        var max = b_digits.Length;
 	        var quot = new JSArray<JSNumber>();
 	        double guess;
+            JSBigInteger check;
 
-	        var part = new JSBigInteger(new JSNumber[0], 1);
+	        var part = new JSBigInteger(new JSNumber[0], 0);
 	        part._s = 1;
 
-	        while (b_digits.Length > 0) {
-		        part._d.Unshift(b_digits.Pop());
-		        part = new JSBigInteger(part._d, 1);
+	        while (b_index >0) {
+		        part._d.Unshift(b_digits[--b_index]);
 
 		        if (part.CompareAbs(n) < 0) {
 			        quot.Push(0);
@@ -646,34 +682,37 @@ namespace NetWebScript.Script.Numercis
 		        else {
                     var xlen = part._d.Length;
                     var ylen = a._d.Length;
-			        var highx = part._d[xlen-1]*@base + part._d[xlen-2];
-			        var highy = a._d[ylen-1]*@base + a._d[ylen-2];
+			        double highx = part._d[xlen-1]*@base + part._d[xlen-2];
+                    double highy = a._d[ylen - 1] * @base + a._d[ylen - 2];
 			        if (part._d.Length > a._d.Length) {
 				        // The length of part._d can either match a._d length,
 				        // or exceed it by one.
-				        highx = (highx+1)*@base;
+                        highx = (highx + 1) * @base;
 			        }
 			        guess = JSMath.Ceil(highx/highy);
 		        }
-                JSBigInteger check;
 		        do {
-			        check = a.MultiplySingleDigit((int)guess);
+			        check = a.MultiplySingleDigit(guess);
 			        if (check.CompareAbs(part) <= 0) {
 				        break;
 			        }
 			        guess--;
-		        } while (guess!=0);
+                } while (guess != 0);
 
 		        quot.Push(guess);
-		        if (guess==0) {
+		        if (guess == 0) {
 			        continue;
 		        }
 		        var diff = part.Subtract(check);
 		        part._d = diff._d.Slice();
+		        if (part._d.Length == 0) {
+			        part._s = 0;
+		        }
 	        }
 
-	        return new JSBigInteger[]{new JSBigInteger(quot.Reverse(), sign),
-		           new JSBigInteger(part._d, this._s)};
+
+            return new JSBigInteger[]{new JSBigInteger(quot.Reverse(), sign),
+                   new JSBigInteger(part._d, this._s)};
         }
 
         public JSBigInteger[] DivRemSmall (int n) {
@@ -702,8 +741,8 @@ namespace NetWebScript.Script.Numercis
 
 	        // divide a single digit by a single digit
 	        if (this._d.Length == 1) {
-		        var q = new JSBigInteger(new JSNumber[]{(this._d[0] / n) | 0}, 1);
-		        r = new JSBigInteger(new JSNumber[]{(this._d[0] % n) | 0}, 1);
+		        var q = new JSBigInteger(new JSNumber[]{(this._d[0] / n) & 0x7FFFFFFF}, 1);
+		        r = new JSBigInteger(new JSNumber[]{(this._d[0] % n) & 0x7FFFFFFF}, 1);
 		        if (sign < 0) {
 			        q = q.Negate();
 		        }
@@ -714,11 +753,11 @@ namespace NetWebScript.Script.Numercis
 	        }
 
 	        var digits = this._d.Slice();
-	        var quot = new JSArray<JSNumber>(digits.Length);
-	        var part = 0;
-	        var diff = 0;
+	        var quot = new JSNumber[digits.Length];
+            double part = 0;
+	        double diff = 0;
 	        var i = 0;
-	        int guess;
+            double guess;
 
 	        while (digits.Length>0) {
 		        part = part * @base + digits[digits.Length - 1];
@@ -732,7 +771,7 @@ namespace NetWebScript.Script.Numercis
 			        guess = 0;
 		        }
 		        else {
-			        guess = (part / n) | 0;
+			        guess = (int)(part / n) & 0x7FFFFFFF;
 		        }
 
 		        var check = n * guess;
@@ -751,7 +790,7 @@ namespace NetWebScript.Script.Numercis
 	        if (this._s < 0) {
 		        r = r.Negate();
 	        }
-	        return new JSBigInteger[]{new JSBigInteger(quot.Reverse(), sign), r};
+	        return new JSBigInteger[]{new JSBigInteger(((JSArray<JSNumber>)quot).Reverse(), sign), r};
         }
 
         public bool IsEven () {
@@ -859,10 +898,21 @@ namespace NetWebScript.Script.Numercis
 
 	        return aux;
         }
-        public int ValueOf() {
-	        return JSNumber.ParseInt(this.ToString(), 10);
+        private int ValueOfSmall() {
+            if (this._s == 0)
+            {
+                return 0;
+            }
+            if (this._d.Length > 1)
+            {
+                throw new Exception("Not that small");
+            }
+            return this._s * this._d[0];
         }
-
+        public JSNumber ValueOf()
+        {
+            return JSNumber.ParseInt(this.ToString(), 10);
+        }
         public bool Equals(JSBigInteger n)
         {
             if (n == null)

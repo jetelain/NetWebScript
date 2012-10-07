@@ -1,11 +1,11 @@
-﻿using System.Globalization;
-using System;
+﻿using System;
+using System.Globalization;
 namespace NetWebScript.Script
 {
     /// <summary>
     /// Wrapper object to work with numercial values.
     /// </summary>
-    [Imported(Name="Number", IgnoreNamespace=true)]
+    [Imported(Name = "Number", IgnoreNamespace = true)]
     public sealed class JSNumber
     {
         private readonly double value;
@@ -74,16 +74,63 @@ namespace NetWebScript.Script
             return ParseInt(trimmed, 10);
         }
 
-        [ScriptAlias("parseInt")]
-        public static JSNumber ParseInt(string s, int radix)
+        private static int Base36DigitToNumber(char digit)
         {
-            if (radix == 0)
+            if (digit >= '0' && digit <= '9')
+            {
+                return (int)digit - '0';
+            }
+            if (digit >= 'A' && digit <= 'Z')
+            {
+                return (int)digit - 55;
+            }
+            throw new ArgumentException();
+        }
+
+        private static int BaseToNumber(string value, int fromBase)
+        {
+            value = value.ToUpperInvariant();
+            bool isNegative = false;
+            if (value[0] == '-')
+            {
+                value = value.Substring(1);
+                isNegative = true;
+            }
+            int intValue = 0;
+            foreach (var c in value)
+            {
+                intValue *= fromBase;
+                int digitValue =  Base36DigitToNumber(c);
+                if (digitValue > fromBase)
+                {
+                    throw new ArgumentException();
+                }
+                intValue += digitValue;
+            }
+            if (isNegative)
+            {
+                return -intValue;
+            }
+            return intValue;
+        }
+
+        [ScriptAlias("parseInt")]
+        public static JSNumber ParseInt(string s, int fromBase)
+        {
+            if (fromBase == 0)
             {
                 return ParseInt(s);
             }
             try
             {
-                return new JSNumber(Convert.ToInt32(s, radix));
+                if (fromBase != 2 /*&& fromBase != 8 */&& fromBase != 10 && fromBase != 16)
+                {
+                    return BaseToNumber(s, fromBase);
+                }
+                else
+                {
+                    return new JSNumber(Convert.ToInt64(s, fromBase));
+                }
             }
             catch
             {
@@ -158,6 +205,18 @@ namespace NetWebScript.Script
         }
 
         [ScriptBody(Inline = "num")]
+        public static implicit operator JSNumber(long num)
+        {
+            return new JSNumber((double)num);
+        }
+
+        [ScriptBody(Inline = "num")]
+        public static implicit operator JSNumber(int num)
+        {
+            return new JSNumber((double)num);
+        }
+
+        [ScriptBody(Inline = "num")]
         public static implicit operator double(JSNumber num)
         {
             return num.value;
@@ -168,9 +227,19 @@ namespace NetWebScript.Script
         {
             return (int)num.value;
         }
+        [ScriptBody(Inline = "num")]
+        public static implicit operator long(JSNumber num)
+        {
+            return (long)num.value;
+        }
 
         public static bool operator ==(JSNumber s1, object s2)
         {
+            JSNumber num = s2 as JSNumber;
+            if (s1 != null && num != null)
+            {
+                return s1.value == num.value;
+            }
             return (double)s1 == (s2 as double?);
         }
 
@@ -179,10 +248,20 @@ namespace NetWebScript.Script
             return (double)s1 != (s2 as double?);
         }
 
+        public static bool operator ==(JSNumber s1, JSNumber s2)
+        {
+            return object.Equals(s1, s2);
+        }
+
+        public static bool operator !=(JSNumber s1, JSNumber s2)
+        {
+            return !object.Equals(s1, s2);
+        }
+
         [ImportedExtension]
         public override int GetHashCode()
         {
-            return (int)(((double)this)%0x7fffffff);
+            return (int)(((double)this) % 0x7fffffff);
         }
 
         [ImportedExtension]

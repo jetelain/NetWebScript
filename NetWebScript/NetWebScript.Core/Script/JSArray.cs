@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace NetWebScript.Script
 {
@@ -63,7 +64,7 @@ namespace NetWebScript.Script
 
         public JSArray(int size)
         {
-            
+            list = new List<T>(Enumerable.Repeat(default(T), size));
         }
 
         private JSArray(List<T> list)
@@ -247,6 +248,12 @@ namespace NetWebScript.Script
         {
             list.Insert(0, value1);
             return list.Count;
+        }
+
+        [ScriptBody(Inline = "jsarray")]
+        public static JSArray<T> New(params T[] jsarray)
+        {
+            return (JSArray<T>)jsarray;
         }
     }
 }

@@ -79,10 +79,13 @@ namespace NetWebScript.JsClr.AstBuilder.AstFilter
                         {
                             var arrayCreation = (ArrayCreationExpression)sequence.GetCapture("createArray");
                             arrayCreation.Initialize = values;
-                            foreach (var item in items)
-                            {
-                                list.RemoveAll(i => object.ReferenceEquals(i,item));
-                            }
+                            int first = list.IndexOf(items[0]);
+                            list.RemoveRange(first, items.Count);
+                            //foreach (var item in items)
+                            //{
+                            //    //list.RemoveAll(i => object.ReferenceEquals(i,item));
+                            //    list.Remove(item);
+                            //}
                         }
                     }
                 }

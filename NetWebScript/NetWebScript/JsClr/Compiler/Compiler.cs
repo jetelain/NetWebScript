@@ -7,6 +7,7 @@ using System.Reflection;
 using NetWebScript.JsClr.Runtime;
 using NetWebScript.Page;
 using NetWebScript.Remoting.Serialization;
+using System.Diagnostics;
 
 namespace NetWebScript.JsClr.Compiler
 {
@@ -41,8 +42,11 @@ namespace NetWebScript.JsClr.Compiler
 
             var assemblies = AssembliesPath.Select(n => Assembly.LoadFrom(n)).ToArray();
 
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             var compiler = new ModuleCompiler(Debug, Pretty);
             var cultures = new CulturesCompiler();
+
 
             foreach (var assembly in assemblies)
             {
@@ -68,11 +72,14 @@ namespace NetWebScript.JsClr.Compiler
                     compiler.AddEntryPoint(pageType);
                 }
             }
+            watch.Stop();
+            reporter.Info(string.Format("Processed code in {0} msec", watch.ElapsedMilliseconds));
 
             if (ReportMessage(compiler.GetMessages()))
             {
                 return false;
             }
+            watch.Restart();
 
             compiler.ModuleName = Name;
             compiler.ModuleFilename = Name + ".js";
@@ -106,6 +113,8 @@ namespace NetWebScript.JsClr.Compiler
                     WritePage(writer, Name, compiler, pageType, factory, cultures.Cultures);
                 }
             }
+            reporter.Info(string.Format("Wrote files in {0} msec", watch.ElapsedMilliseconds));
+            watch.Stop();
 
             return true;
         }

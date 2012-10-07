@@ -6,7 +6,7 @@ namespace NetWebScript.Equivalents.Collections.Generic
 {
     [ScriptEquivalent(typeof(System.Collections.Generic.List<>))]
     [ScriptAvailable]
-    internal class List<T> : IList<T>
+    internal class List<T> : IList<T>, ICollection
     {
         private readonly Script.JSArray<T> data = new Script.JSArray<T>();
 
@@ -149,5 +149,20 @@ namespace NetWebScript.Equivalents.Collections.Generic
         }
 
         #endregion
+
+        public void CopyTo(System.Array array, int index)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool IsSynchronized
+        {
+            get { return false; }
+        }
+
+        public object SyncRoot
+        {
+            get { throw new System.NotImplementedException(); }
+        }
     }
 }

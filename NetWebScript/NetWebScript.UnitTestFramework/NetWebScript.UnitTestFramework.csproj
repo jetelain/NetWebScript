@@ -50,6 +50,7 @@
     <Compile Include="Client\TestRunnerPage.cs" />
     <Compile Include="Compiler\UnitTestPageFactory.cs" />
     <Compile Include="Equivalent\Assert.cs" />
+    <Compile Include="Equivalent\CollectionAssertEquiv.cs" />
     <Compile Include="UnitTestRemoteRunner.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -470,6 +470,11 @@ namespace NetWebScript.JsClr.AstBuilder
             NumberConversion(instruction, typeof(int));
         }
 
+        public override void OnConv_Ovf_I(Instruction instruction)
+        {
+            NumberConversion(instruction, typeof(int));
+        }
+
         public override void OnConv_I1(Instruction instruction)
         {
             NumberConversion(instruction, typeof(byte));

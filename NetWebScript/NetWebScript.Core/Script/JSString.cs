@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Diagnostics.Contracts;
@@ -202,6 +203,10 @@ namespace NetWebScript.Script
 
 		public string[] Split(string separator)
 		{
+            if (separator == string.Empty)
+            {
+                return data.ToCharArray().Select(c => c.ToString()).ToArray();
+            }
 			return data.Split(new[] { separator }, StringSplitOptions.None);
 		}
 
@@ -217,11 +222,23 @@ namespace NetWebScript.Script
 
 		public string Substr(int startIndex)
 		{
+            if (startIndex < 0)
+            {
+                return string.Empty;
+            }
 			return data.Substring(startIndex);
 		}
 
 		public string Substr(int startIndex, int length)
 		{
+            if (length <= 0)
+            {
+                return string.Empty;
+            }
+            if (startIndex < 0)
+            {
+                return string.Empty;
+            }
 			return data.Substring(startIndex, length);
 		}
 

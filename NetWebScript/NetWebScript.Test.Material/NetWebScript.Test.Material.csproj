@@ -67,7 +67,12 @@
     <Compile Include="Tests\Linq\EnumerableTest.cs" />
     <Compile Include="Tests\Logic.cs" />
     <Compile Include="Tests\MathTest.cs" />
+    <Compile Include="Tests\Numerics\JSBigIntegerTestAddResults.cs" />
     <Compile Include="Tests\Numerics\JSBigIntegerTest.cs" />
+    <Compile Include="Tests\Numerics\JSBigIntegerTestDivRemResults.cs" />
+    <Compile Include="Tests\Numerics\JSBigIntegerTestMultiplyResults.cs" />
+    <Compile Include="Tests\Numerics\JSBigIntegerTestSubtractResults.cs" />
+    <Compile Include="Tests\Numerics\JSBigIntegerTestValues.cs" />
     <Compile Include="Tests\ObjectTest.cs" />
     <Compile Include="Tests\Remoting\ProxiesTest.cs" />
     <Compile Include="Tests\StringTest.cs" />
